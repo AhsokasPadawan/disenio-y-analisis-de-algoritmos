@@ -1,0 +1,32 @@
+{
+  "titulo": "Índice de Módulos de Ejercicios de Algoritmos",
+  "descripcion": "Manifest con el mapeo modular de archivos de ejercicios por eje temático de la cátedra de DAA.",
+  "fecha_actualizacion": "2026-11-07",
+  "total_ejercicios_global": 150,
+  "modulos": [
+    {
+      "tema": "divide_and_conquer",
+      "archivo": "ejercicios_divide_and_conquer.json",
+      "titulo": "Banco de Ejercicios: Divide and Conquer y Subtract & Conquer",
+      "cantidad_ejercicios": 41
+    },
+    {
+      "tema": "greedy",
+      "archivo": "ejercicios_greedy.json",
+      "titulo": "Banco de Ejercicios: Algoritmos Greedy (Voraces)",
+      "cantidad_ejercicios": 35
+    },
+    {
+      "tema": "programacion_dinamica",
+      "archivo": "ejercicios_programacion_dinamica.json",
+      "titulo": "Banco de Ejercicios: Programación Dinámica",
+      "cantidad_ejercicios": 33
+    },
+    {
+      "tema": "backtracking",
+      "archivo": "ejercicios_backtracking.json",
+      "titulo": "Banco de Ejercicios: Backtracking y Branch & Bound",
+      "cantidad_ejercicios": 41
+    }
+  ]
+}

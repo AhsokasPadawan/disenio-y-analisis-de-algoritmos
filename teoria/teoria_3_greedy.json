@@ -1,0 +1,566 @@
+{
+  "modulo": "greedy",
+  "titulo_general": "Técnica de Diseño: Algoritmos Greedy (Voraces)",
+  "frase_apertura": {
+    "texto": "Of course none of us are greedy. It’s only the other fellow who’s greedy. (Por supuesto, ninguno de nosotros es codicioso. Es siempre el otro el que es codicioso.)",
+    "autor": "Milton Friedman",
+    "obra": "Entrevista en televisión con Phil Donahue (1979)",
+    "diapositiva_origen": 10,
+    "proposito": "Reflexión irónica sobre la perspectiva subjetiva de la codicia y encuadre conceptual del paradigma: algoritmos que toman decisiones basadas estrictamente en la maximización del beneficio local inmediato sin considerar consecuencias futuras ni revisar elecciones previas."
+  },
+  "secciones": [
+    {
+      "id": "seccion_fundamentos_greedy",
+      "titulo": "Fundamentos y Esquema General de los Algoritmos Greedy",
+      "subtemas": [
+        {
+          "id": "fundamentos_y_elementos_greedy",
+          "titulo": "Paradigma Voraz y los Cinco Elementos Formales",
+          "teoria": "Un algoritmo greedy (voraz o glotón) es un paradigma de diseño de algoritmos aplicable a problemas de optimización combinatoria. Su principio rector consiste en construir una solución paso a paso a través de una secuencia de decisiones parciales e irrevocables. En cada iteración, el algoritmo examina los elementos disponibles y elige aquel que resulta óptimo según un criterio local de evaluación inmediata ('myopic choice'), asumiendo que una secuencia de óptimos locales conducirá a un óptimo global.\n\nA diferencia de Divide & Conquer, no descompone recursivamente el problema en subproblemas disjuntos de igual naturaleza, y a diferencia de Backtracking o Programación Dinámica, nunca retrocede ni reconsidera una decisión ya tomada: un candidato aceptado queda permanentemente en la solución y un candidato descartado jamás vuelve a evaluarse.\n\nFormalmente, todo algoritmo voraz se fundamenta en cinco componentes canónicos:\n1. Conjunto de Candidatos (C): Universo finito de entradas o recursos a partir del cual se intentará construir la solución.\n2. Función de Selección (Seleccionar): Criterio heurístico determinista que identifica en cada paso al 'mejor' candidato disponible en C según una métrica local.\n3. Función de Factibilidad (esFactible): Predicado booleano que determina si un candidato prometedor puede ser incorporado a la solución parcial sin violar ninguna de las restricciones del problema.\n4. Función Solución (esSolucion): Predicado booleano que dictamina si la solución parcial actual constituye una solución completa y válida para la instancia del problema.\n5. Función Objetivo: Métrica cuantitativa (maximización o minimización) que asigna un valor escalar a la solución obtenida y define la calidad o costo de la misma.\n\nPropiedades esenciales para la corrección: Para que un algoritmo voraz garantice optimalidad global, el problema debe exhibir dos propiedades teóricas fundamentales:\n1. Propiedad de Elección Voraz (Greedy-Choice Property): Existe una solución globalmente óptima que contiene a la elección voraz realizada en el primer paso.\n2. Subestructura Óptima (Optimal Substructure): Una solución óptima al problema general contiene dentro de sí soluciones óptimas a los subproblemas resultantes de haber incorporado el elemento voraz.",
+          "elementos_greedy": {
+            "conjunto_candidatos": "C: Colección finita de elementos iniciales disponibles para componer la solución.",
+            "funcion_seleccion": "Seleccionar(C) -> x: Regla determinista de ordenamiento o extracción del candidato localmente óptimo.",
+            "funcion_factibilidad": "esFactible(S ∪ {x}) -> booleano: Verifica si la inclusión de x preserva la consistencia y no viola restricciones del problema.",
+            "funcion_solucion": "esSolucion(S) -> booleano: Evalúa si el conjunto acumulado S satisface todos los requerimientos de una solución completa.",
+            "funcion_objetivo": "f(S) -> Real: Función de costo o beneficio que se busca minimizar o maximizar globalmente."
+          },
+          "animaciones": [
+            {
+              "id": "anim_flujo_greedy_generico",
+              "tipo": "flujo_ejecucion",
+              "formato": "mermaid",
+              "descripcion": "Diagrama de flujo de control del bucle iterativo abstracto de un algoritmo Greedy.",
+              "pasos": [
+                "graph TD\n    Start([Inicio: Entrada C]) --> Init[S = ∅]\n    Init --> CheckCond{¿C ≠ ∅ Y NO esSolucion S ?}\n    CheckCond -- Sí --> Select[x = Seleccionar C]\n    Select --> Drop[C = C \\ {x}]\n    Drop --> CheckFact{¿esFactible S ∪ {x} ?}\n    CheckFact -- Sí --> Add[S = S ∪ {x}]\n    CheckFact -- No --> Discard[Descartar x definitivamente]\n    Add --> CheckCond\n    Discard --> CheckCond\n    CheckCond -- No --> CheckSol{¿esSolucion S ?}\n    CheckSol -- Sí --> ReturnSuccess([Retornar S - Solución Óptima/Factible])\n    CheckSol -- No --> ReturnFail([Retornar 'No hay solución'])"
+              ]
+            }
+          ],
+          "pseudocodigo": "Algoritmo GreedyGenérico(C: Conjunto)\n    // C: conjunto de candidatos\n    // Salida: S solución del problema o fallo\n    S ← ∅\n    mientras C ≠ ∅ Y NO esSolucion(S) hacer\n        x ← Seleccionar(C)\n        C ← C \\ {x}\n        si esFactible(S ∪ {x}) entonces\n            S ← S ∪ {x}\n        fin si\n    fin mientras\n    si esSolucion(S) entonces\n        devolver S\n    sino\n        devolver 'No hay solución'\n    fin si",
+          "codigo": {
+            "lenguaje": "Java",
+            "codigo": "// Template abstracto de un Esquema Voraz en Java\npublic abstract class EsquemaGreedy<Candidato, Solucion> {\n    public Solucion ejecutarGreedy(java.util.List<Candidato> candidatos) {\n        Solucion sol = inicializarSolucion();\n        // Ordenamiento o cola de prioridad según el criterio de selección\n        ordenarCandidatos(candidatos);\n        int i = 0;\n        while (i < candidatos.size() && !esSolucion(sol)) {\n            Candidato x = candidatos.get(i);\n            if (esFactible(sol, x)) {\n                incorporar(sol, x);\n            }\n            i++;\n        }\n        if (esSolucion(sol)) {\n            return sol;\n        } else {\n            throw new IllegalStateException(\"No existe solución factible para esta instancia.\");\n        }\n    }\n    protected abstract Solucion inicializarSolucion();\n    protected abstract void ordenarCandidatos(java.util.List<Candidato> c);\n    protected abstract boolean esFactible(Solucion s, Candidato x);\n    protected abstract void incorporar(Solucion s, Candidato x);\n    protected abstract boolean esSolucion(Solucion s);\n}",
+            "correcciones_aplicadas": "Formalización del patrón de diseño Template Method en Java genérico tipado para encapsular los cinco elementos sin atarse a una instancia particular."
+          },
+          "analisis_complejidad": {
+            "temporal_peor_caso": "O(n \\log n) a O(n^2)",
+            "temporal_mejor_caso": "O(n \\log n) o O(n)",
+            "espacial": "O(n)",
+            "justificacion": "El tiempo de ejecución dominante reside comúnmente en la etapa de selección. Si los candidatos se ordenan previamente, el ordenamiento cuesta O(n \\log n) y el ciclo greedy posterior itera n veces con pruebas de factibilidad en O(1) o O(n). Si la selección se implementa mediante búsqueda lineal en cada paso sin ordenar, el bucle toma O(n^2). El espacio auxiliar requerido es O(n) para almacenar los candidatos y la estructura de la solución."
+          }
+        }
+      ]
+    },
+    {
+      "id": "seccion_problemas_clasicos_optimizacion",
+      "titulo": "Problemas Clásicos de Optimización y Selección Voraz",
+      "subtemas": [
+        {
+          "id": "problema_del_cambio",
+          "titulo": "El Problema del Cambio de Monedas (Coin Change Problem)",
+          "teoria": "El problema consiste en abonar o dar cambio por un monto entero v utilizando la mínima cantidad total de monedas de un conjunto finito de denominaciones d_1 > d_2 > ... > d_k = 1, asumiendo disponibilidad infinita de cada tipo.\n\nEstrategia Greedy: En cada paso, elegir vorazmente la moneda de mayor denominación que no exceda el monto remanente por pagar.\n\nCaso de Éxito y Optimalidad (Frutillas en Thurgau):\nEn el cantón suizo de Thurgau rige el sistema decimal del franco suizo con denominaciones: 5fr, 2fr, 1fr, 50c, 20c, 10c, 5c, 1c (en centavos: [500, 200, 100, 50, 20, 10, 5, 1]).\nEjemplo de cátedra: Para pagar 8.78 francos (878 céntimos):\n- 1 moneda de 5fr (queda 378c)\n- 1 moneda de 2fr (queda 178c)\n- 1 moneda de 1fr (queda 78c)\n- 1 moneda de 50c (queda 28c)\n- 1 moneda de 20c (queda 8c)\n- 1 moneda de 5c (queda 3c)\n- 3 monedas de 1c (queda 0c)\nTotal: 9 monedas (óptimo global).\nEl sistema de monedas es 'canónico' (canonical coin system): cualquier combinación óptima no puede albergar suficientes monedas menores como para igualar o superar a una mayor (ej. a lo sumo 4 de 1c < 5c; 1 de 5c + 4 de 1c < 10c; 2 de 20c + 9c < 50c), por lo que la elección voraz es estrictamente óptima.\n\nContraejemplos de Suboptimalidad:\n1. Whisky en Loch Ness (Gran Bretaña antes de 1971): Sistema pre-decimal británico (1 libra = 240 peniques). Denominaciones: 1£ (240p), corona (60p), media corona (30p), florín (24p), chelín (12p), seis peniques (6p), tres peniques (3p), un penique (1p).\nPara pagar 1 libra y 48 peniques (total v = 288p):\n- Greedy selecciona: 240p + 30p + 12p + 6p = 4 monedas.\n- Óptimo real: 240p + 24p + 24p = 3 monedas (dos florines en vez de media corona + chelín + 6p).\n2. Sistema artificial {6, 4, 1} para v = 8:\n- Greedy: 6 + 1 + 1 = 3 monedas.\n- Óptimo real: 4 + 4 = 2 monedas.\n\nConclusión: La técnica voraz NO garantiza la solución óptima para sistemas arbitrarios de denominaciones; en tales casos se requiere Programación Dinámica.",
+          "elementos_greedy": {
+            "conjunto_candidatos": "Vector de denominaciones ordenado de mayor a menor D = [d_1, d_2, ..., d_k], con disponibilidad infinita.",
+            "funcion_seleccion": "Tomar la moneda de mayor valor d_i que esté al alcance de la posición actual del puntero.",
+            "funcion_factibilidad": "s + d_i <= v (el valor acumulado más la denominación candidata no supera el monto total v).",
+            "funcion_solucion": "s == v (la suma acumulada de monedas entregadas iguala exactamente el valor v).",
+            "funcion_objetivo": "Minimizar n = \\sum x_i (cantidad total de monedas entregadas)."
+          },
+          "animaciones": [
+            {
+              "id": "anim_traza_cambio_thurgau",
+              "tipo": "traza",
+              "formato": "mermaid",
+              "descripcion": "Traza paso a paso del algoritmo del cambio voraz para el caso de las frutillas en Thurgau (monto 878 céntimos).",
+              "pasos": [
+                "stateDiagram-v2\n    [*] --> Inicio: Monto v = 878c, s = 0c\n    Inicio --> Paso1: Moneda 500c (5fr) factible\n    Paso1 --> Paso2: s = 500c, Restante = 378c -> Moneda 200c (2fr) factible\n    Paso2 --> Paso3: s = 700c, Restante = 178c -> Moneda 100c (1fr) factible\n    Paso3 --> Paso4: s = 800c, Restante = 78c -> Moneda 50c factible\n    Paso4 --> Paso5: s = 850c, Restante = 28c -> Moneda 20c factible\n    Paso5 --> Paso6: s = 870c, Restante = 8c -> Moneda 10c excede, Moneda 5c factible\n    Paso6 --> Paso7: s = 875c, Restante = 3c -> Monedas 1c x 3\n    Paso7 --> Fin: s = 878c == v (Total: 9 monedas)\n    Fin --> [*]"
+              ]
+            },
+            {
+              "id": "anim_contraejemplo_loch_ness",
+              "tipo": "traza",
+              "formato": "katex",
+              "descripcion": "Comparativa tabular del contraejemplo de Loch Ness (v = 288 peniques) entre Greedy y Óptimo.",
+              "pasos": [
+                "\\begin{array}{|l|l|c|l|}\n\\hline\n\\textbf{Estrategia} & \\textbf{Monedas Seleccionadas} & \\textbf{Total Monedas} & \\textbf{Resultado} \\\\\n\\hline\n\\text{Voraz (Greedy)} & 240p (1£) + 30p (\\tfrac{1}{2}\\text{cor}) + 12p (1\\text{sh}) + 6p & 4 & \\text{Subóptimo} \\\\\n\\hline\n\\text{Óptimo Global} & 240p (1£) + 24p (1\\text{fl}) + 24p (1\\text{fl}) & 3 & \\textbf{Óptimo Verdadero} \\\\\n\\hline\n\\end{array}"
+              ]
+            }
+          ],
+          "pseudocodigo": "Algoritmo Cambio(v: entero, monedas: Vector<entero>)\n    // monedas viene ordenado de mayor a menor\n    entero n ← 0\n    entero s ← 0\n    entero i ← 0\n    mientras (s < v) Y (i < longitud(monedas)) hacer\n        si s + monedas[i] <= v entonces\n            s ← s + monedas[i]\n            n ← n + 1\n        sino\n            i ← i + 1\n        fin si\n    fin mientras\n    si s == v entonces\n        devolver n\n    sino\n        devolver 'No hay solución'\n    fin si",
+          "codigo": {
+            "lenguaje": "Java",
+            "codigo": "public static ConjuntoRepTDA<Integer> cambio(VectorTDA<Integer> monedas, int valor) throws Exception {\n    // monedas contiene las denominaciones ordenadas de mayor a menor: [100, 50, 25, 10, 5, 1]\n    ConjuntoRepTDA<Integer> resultado = new ConjuntoRep<Integer>();\n    resultado.InicializarConjunto();\n    int suma = 0;\n    int i = 0;\n    while (suma < valor && i < monedas.longitud()) {\n        if (suma + monedas.recuperarElemento(i) <= valor) {\n            resultado.Agregar(monedas.recuperarElemento(i));\n            suma += monedas.recuperarElemento(i);\n        } else {\n            i++;\n        }\n    }\n    if (suma == valor) {\n        return resultado;\n    } else {\n        throw new Exception(\"No es posible dar cambio exacto con las monedas disponibles.\");\n    }\n}",
+            "correcciones_aplicadas": "1. En el pseudocódigo del apunte (p. 35) la condición decía 's + monedas[i] < v', lo que impedía agregar la última moneda que completaba exactamente v; se corrigió a '<=' (como figura en el código Java del apunte p. 36).\n2. Se agregó la condición de guarda '&& i < monedas.longitud()' en el while para prevenir desbordamiento de índice si la suma no alcanza el valor.\n3. Se agregó la verificación final 'if (suma == valor)' para detectar instancias insolubles."
+          },
+          "analisis_complejidad": {
+            "temporal_peor_caso": "Theta(v)",
+            "temporal_mejor_caso": "Theta(1)",
+            "espacial": "O(v) en ConjuntoRepTDA o O(1) si sólo se contabilizan cantidades",
+            "justificacion": "Si la menor moneda es 1 y se debe pagar el monto v íntegramente con ella, el bucle itera v veces, dando una cota Theta(v) (pseudopolinomial respecto al tamaño de entrada en bits). Si el número de denominaciones c es fijo y se computa cociente y residuo de división entera (floor division), la complejidad temporal se reduce drásticamente a O(c) = Theta(1)."
+          }
+        },
+        {
+          "id": "mochila_fraccionaria",
+          "titulo": "El Problema de la Mochila Fraccionaria (Continuous Knapsack Problem)",
+          "teoria": "Se dispone de una mochila con capacidad de carga máxima P > 0 y un conjunto de n objetos divisibles. Para cada objeto i (1 <= i <= n), se conoce su peso p_i > 0 y su valor o beneficio v_i > 0. A diferencia del problema 0/1 (donde un objeto se toma por completo o no se toma), en la variante fraccionaria es lícito tomar una fracción continua x_i \\in [0, 1] de cada objeto. La contribución al peso total es x_i \\cdot p_i y al valor total es x_i \\cdot v_i.\n\nFormulación Matemática:\nMaximizar \\sum_{i=1}^n x_i \\cdot v_i\nSujeto a: \\sum_{i=1}^n x_i \\cdot p_i <= P, con 0 <= x_i <= 1 para todo i = 1, ..., n.\n\nEstrategia Greedy:\nEl criterio óptimo no consiste en elegir el más valioso (podría ser sumamente pesado) ni el más liviano (podría aportar valor despreciable), sino en ordenar los objetos de manera decreciente según su densidad de valor o beneficio específico:\nr_i = \\frac{v_i}{p_i}\nEl algoritmo toma de forma codiciosa la totalidad del objeto con mayor ratio (x_i = 1) mientras haya capacidad. Cuando un objeto no cabe por completo, se toma la fracción exacta que satura la mochila: x_i = \\frac{P - suma}{p_i}, y el proceso concluye.\n\nInstancia Canónica de Cátedra (Diapositivas y Apunte):\nCapacidad máxima P = 10.\n4 objetos con valores V = [4, 7, 2, 5] y pesos P_w = [3, 5, 4, 4].\nCalculamos los ratios valor/peso:\n- Objeto 1: r_1 = 4 / 3 \\approx 1.333\n- Objeto 2: r_2 = 7 / 5 = 1.400\n- Objeto 3: r_3 = 2 / 4 = 0.500\n- Objeto 4: r_4 = 5 / 4 = 1.250\nOrden decreciente por ratio: Objeto 2 (1.40) > Objeto 1 (1.33) > Objeto 4 (1.25) > Objeto 3 (0.50).\nEjecución paso a paso:\n1. Objeto 2: peso 5 <= 10. Se toma x_2 = 1. Capacidad restante: 10 - 5 = 5. Valor acumulado: 7.\n2. Objeto 1: peso 3 <= 5. Se toma x_1 = 1. Capacidad restante: 5 - 3 = 2. Valor acumulado: 7 + 4 = 11.\n3. Objeto 4: peso 4 > 2. No cabe entero. Se toma x_4 = 2 / 4 = 0.5. Capacidad restante: 0. Valor aportado: 0.5 * 5 = 2.5.\n4. Objeto 3: se toma x_3 = 0.\nSolución Óptima: X = (x_1=1, x_2=1, x_3=0, x_4=0.5). Peso total = 10, Valor total = 13.5.\n\nDemostración de Optimalidad:\nSea G = (g_1, ..., g_n) la solución generada por el algoritmo voraz y sea O = (o_1, ..., o_n) cualquier otra solución factible distinta. Sea k el primer índice (en orden de ratio decreciente) donde g_k != o_k. Por definición del algoritmo greedy, debe ser g_k > o_k. Dado que la mochila greedy está saturada al 100%, debe existir algún objeto posterior j > k donde o_j > g_j >= 0. Como los objetos están ordenados por ratio, r_k >= r_j. Podemos sustituir un incremento de peso \\epsilon del objeto j por el objeto k en la solución O. La variación en el valor total es \\Delta V = \\epsilon (r_k - r_j) >= 0. Repitiendo esta transformación, cualquier solución factible se transforma en la solución greedy sin disminuir jamás su valor. Por consiguiente, la solución voraz es globalmente óptima.",
+          "elementos_greedy": {
+            "conjunto_candidatos": "Conjunto de objetos disponibles O = {1, 2, ..., n}, cada uno caracterizado por el par (v_i, p_i).",
+            "funcion_seleccion": "Elegir el objeto disponible con mayor cociente valor/peso r_i = v_i / p_i.",
+            "funcion_factibilidad": "Verificar si la capacidad restante de la mochila es positiva (P - suma > 0).",
+            "funcion_solucion": "La mochila se ha llenado completamente (suma == P) o se han agotado todos los objetos disponibles.",
+            "funcion_objetivo": "Maximizar el valor acumulado \\sum_{i=1}^n x_i \\cdot v_i."
+          },
+          "animaciones": [
+            {
+              "id": "anim_mochila_fraccionaria_tabla",
+              "tipo": "traza",
+              "formato": "katex",
+              "descripcion": "Tabla comparativa de candidatos ordenados por ratio de eficiencia e incorporación a la mochila de P = 10.",
+              "pasos": [
+                "\\begin{array}{|c|c|c|c|c|c|c|}\n\\hline\n\\textbf{Objeto} & \\textbf{Valor } (v_i) & \\textbf{Peso } (p_i) & \\textbf{Ratio } (v_i/p_i) & \\textbf{Fracción } (x_i) & \\textbf{Peso Ocupado} & \\textbf{Valor Obtenido} \\\\\n\\hline\n2 & 7 & 5 & 1.400 & 1.0 & 5.0 & 7.0 \\\\\n1 & 4 & 3 & 1.333 & 1.0 & 3.0 & 4.0 \\\\\n4 & 5 & 4 & 1.250 & 0.5 & 2.0 & 2.5 \\\\\n3 & 2 & 4 & 0.500 & 0.0 & 0.0 & 0.0 \\\\\n\\hline\n\\textbf{Total} & - & - & - & - & \\mathbf{10.0} & \\mathbf{13.5} \\\\\n\\hline\n\\end{array}"
+              ]
+            }
+          ],
+          "pseudocodigo": "Algoritmo MochilaFraccionaria(O: Vector<Objeto>, P: entero)\n    // O contiene objetos con atributos valor y peso\n    // Retorna vector R con las fracciones x_i\n    Ordenar(O) // de mayor a menor según ratio (O[i].valor / O[i].peso)\n    para i = 0 hasta longitud(O) - 1 hacer\n        R[i] ← 0.0\n    fin para\n    suma ← 0.0\n    objeto ← 0\n    mientras suma < P Y objeto < longitud(O) hacer\n        R[objeto] ← MIN(1.0, (P - suma) / O[objeto].peso)\n        suma ← suma + R[objeto] * O[objeto].peso\n        objeto ← objeto + 1\n    fin mientras\n    devolver R",
+          "codigo": {
+            "lenguaje": "Java",
+            "codigo": "public static VectorTDA<Double> mochila(VectorTDA<Integer> o_valores, VectorTDA<Integer> o_pesos, int o_cantidad, int m_peso) throws Exception {\n    VectorTDA<Double> resultado = new Vector<Double>();\n    resultado.inicializarVector(o_cantidad);\n    for (int i = 0; i < o_cantidad; i++) {\n        resultado.agregarElemento(i, 0.0);\n    }\n    // Se utiliza ColaPrioridadTDA para simular el ordenamiento por ratio valor/peso\n    // Prioridad: ratio escalado como entero grande (o Double si soporta genéricos)\n    ColaPrioridadTDA<Integer> cola = new ColaPrioridad<Integer>();\n    cola.InicializarCola();\n    for (int i = 0; i < o_cantidad; i++) {\n        int ratioPrioridad = (int) (((double) o_valores.recuperarElemento(i) / o_pesos.recuperarElemento(i)) * 10000);\n        cola.AgregarElemento(i, ratioPrioridad);\n    }\n    double suma = 0.0;\n    while (suma < m_peso && !cola.ColaVacia()) {\n        int obj = cola.RecuperarMaxElemento();\n        int pesoObj = o_pesos.recuperarElemento(obj);\n        double fraccion = Math.min(1.0, (double) (m_peso - suma) / pesoObj);\n        resultado.agregarElemento(obj, fraccion);\n        suma += fraccion * pesoObj;\n        cola.EliminarMaxPrioridad();\n    }\n    return resultado;\n}",
+            "correcciones_aplicadas": "1. En el apunte (p. 38-39), el código repetía la llamada redundante 'Math.min(1, (m_peso - suma) / peso) * peso' dos veces en la misma línea; se encapsuló en la variable 'fraccion' para legibilidad y consistencia.\n2. Se inicializaron todas las posiciones del vector en 0.0 para garantizar que los objetos no seleccionados tengan fracción nula.\n3. Se documentó la advertencia de cátedra: si la Cola de Prioridad del TDA se implementa internamente sobre un arreglo sin heap balanceado, cada inserción cuesta O(n), elevando la inicialización a O(n^2)."
+          },
+          "analisis_complejidad": {
+            "temporal_peor_caso": "Theta(n \\log n)",
+            "temporal_mejor_caso": "Theta(n \\log n)",
+            "espacial": "O(n)",
+            "justificacion": "El costo dominante del algoritmo estriba en el ordenamiento de los n objetos según su ratio valor/peso, lo que requiere Theta(n \\log n) mediante MergeSort o QuickSort. El bucle greedy posterior procesa cada objeto a lo sumo una vez en tiempo constante O(1), sumando O(n). Si se emplea una cola de prioridad basada en Min/Max-Heap binario, armarla cuesta O(n) y extraer cuesta O(n \\log n). El espacio de memoria auxiliar es O(n) para almacenar el vector de soluciones y los ratios."
+          }
+        },
+        {
+          "id": "codigo_huffman",
+          "titulo": "Compresión de Datos y Codificación de Huffman",
+          "teoria": "El código de Huffman es un algoritmo greedy diseñado por David Huffman (1952) para la compresión de datos sin pérdida. Produce un código prefijo binario de longitud variable óptimo (ninguna palabra de código es prefijo de otra), lo que permite una decodificación unívoca e instantánea de izquierda a derecha sin necesidad de separadores especiales.\n\nEstrategia Greedy (Construcción Bottom-Up de Árbol Binario):\nSe parte de un bosque inicial donde cada símbolo representa un árbol trivial de un único nodo con peso igual a su frecuencia de aparición. En cada iteración, el algoritmo voraz extrae los dos árboles con las menores frecuencias acumuladas, crea un nuevo nodo interno cuya frecuencia es la suma de ambos, y los conecta como hijo izquierdo (etiquetado con bit 0) e hijo derecho (etiquetado con bit 1). Este nuevo nodo se reinserta en la estructura de candidatos (Min-Priority Queue). El proceso se repite n - 1 veces hasta consolidar un único árbol binario cuya raíz posee frecuencia acumulada del 100%.\n\nInstancia Canónica de Cátedra (Diapositivas de Clase):\nUn texto contiene 6 caracteres con las siguientes frecuencias (en cientos de apariciones):\n- F: 5\n- E: 9\n- C: 12\n- B: 13\n- D: 16\n- A: 45\nTotal caracteres = 100.\n\nTraza Detallada de Fusiones en Cola de Prioridad Mínima:\n1. Cola inicial: <F:5, E:9, C:12, B:13, D:16, A:45>\n   Se extraen los dos mínimos: F(5) y E(9).\n   Fusión X1: peso = 5 + 9 = 14. Hijos: F(izq:0), E(der:1).\n   Cola resultante: <C:12, B:13, X1:14, D:16, A:45>\n\n2. Se extraen los dos mínimos: C(12) y B(13).\n   Fusión X2: peso = 12 + 13 = 25. Hijos: C(izq:0), B(der:1).\n   Cola resultante: <X1:14, D:16, X2:25, A:45>\n\n3. Se extraen los dos mínimos: X1(14) y D(16).\n   Fusión X3: peso = 14 + 16 = 30. Hijos: X1(izq:0), D(der:1).\n   Cola resultante: <X2:25, X3:30, A:45>\n\n4. Se extraen los dos mínimos: X2(25) y X3(30).\n   Fusión X4: peso = 25 + 30 = 55. Hijos: X2(izq:0), X3(der:1).\n   Cola resultante: <A:45, X4:55>\n\n5. Se extraen los dos mínimos: A(45) y X4(55).\n   Fusión X5 (Raíz): peso = 45 + 55 = 100. Hijos: A(izq:0), X4(der:1).\n\nCódigos Prefijo Resultantes (recorriendo desde la raíz X5):\n- A: '0' (longitud 1 bit)\n- C: '100' (longitud 3 bits, vía X4 -> X2 -> C)\n- B: '101' (longitud 3 bits, vía X4 -> X2 -> B)\n- D: '111' (longitud 3 bits, vía X4 -> X3 -> D)\n- F: '1100' (longitud 4 bits, vía X4 -> X3 -> X1 -> F)\n- E: '1101' (longitud 4 bits, vía X4 -> X3 -> X1 -> E)\n\nAnálisis de Eficiencia de Compresión:\n- Longitud fija: Para 6 símbolos se requieren \\lceil \\log_2 6 \\rceil = 3 bits por carácter. Para 100.000 caracteres: 100.000 * 3 = 300.000 bits.\n- Longitud variable (Huffman):\n  (45 * 1 + 12 * 3 + 13 * 3 + 16 * 3 + 5 * 4 + 9 * 4) * 1.000 = (45 + 36 + 39 + 48 + 20 + 36) * 1.000 = 224 * 1.000 = 224.000 bits.\nAhorro logrado: (300.000 - 224.000) / 300.000 = 25.33% de compresión.",
+          "elementos_greedy": {
+            "conjunto_candidatos": "Bosque de nodos/árboles binarios correspondientes a los símbolos del alfabeto con sus frecuencias.",
+            "funcion_seleccion": "Extraer simultáneamente los dos árboles del bosque que tengan la menor frecuencia acumulada (extract-min en Min-Heap).",
+            "funcion_factibilidad": "Siempre factible; la unión de dos árboles disjuntos preserva la propiedad de árbol binario estricto.",
+            "funcion_solucion": "Queda exactamente un único árbol en el bosque (|Q| == 1), cuya raíz agrupa el 100% de la frecuencia total.",
+            "funcion_objetivo": "Minimizar la longitud ponderada del código: B(T) = \\sum_{c \\in C} freq(c) \\cdot profundidad_T(c)."
+          },
+          "animaciones": [
+            {
+              "id": "anim_arbol_huffman_completo",
+              "tipo": "grafo",
+              "formato": "mermaid",
+              "descripcion": "Estructura jerárquica del árbol binario de Huffman final construido a partir de los 6 caracteres de cátedra.",
+              "pasos": [
+                "graph TD\n    X5((100)) -- 0 --> A[\"A : 45 (código: 0)\"]\n    X5 -- 1 --> X4((55))\n    X4 -- 0 --> X2((25))\n    X4 -- 1 --> X3((30))\n    X2 -- 0 --> C[\"C : 12 (código: 100)\"]\n    X2 -- 1 --> B[\"B : 13 (código: 101)\"]\n    X3 -- 0 --> X1((14))\n    X3 -- 1 --> D[\"D : 16 (código: 111)\"]\n    X1 -- 0 --> F[\"F : 5 (código: 1100)\"]\n    X1 -- 1 --> E[\"E : 9 (código: 1101)\"]"
+              ]
+            }
+          ],
+          "pseudocodigo": "Algoritmo Huffman(C: Conjunto<Simbolo>)\n    // C: símbolos con frecuencias asociadas\n    // Retorna la raíz del árbol binario óptimo\n    n ← |C|\n    Q ← inicializarMinPriorityQueue()\n    para cada c en C hacer\n        Q.insertar(c, c.frecuencia)\n    fin para\n    para i = 1 hasta n - 1 hacer\n        z ← nuevoNodoInterno()\n        z.izq ← Q.extraerMinimo()\n        z.der ← Q.extraerMinimo()\n        z.frecuencia ← z.izq.frecuencia + z.der.frecuencia\n        Q.insertar(z, z.frecuencia)\n    fin para\n    devolver Q.extraerMinimo() // Raíz del árbol",
+          "codigo": {
+            "lenguaje": "Java",
+            "codigo": "public class HuffmanNode implements Comparable<HuffmanNode> {\n    char simbolo;\n    int frecuencia;\n    HuffmanNode izq, der;\n    public HuffmanNode(char simbolo, int frecuencia) {\n        this.simbolo = simbolo;\n        this.frecuencia = frecuencia;\n    }\n    public HuffmanNode(int frecuencia, HuffmanNode izq, HuffmanNode der) {\n        this.simbolo = '\\0';\n        this.frecuencia = frecuencia;\n        this.izq = izq;\n        this.der = der;\n    }\n    public boolean esHoja() {\n        return this.izq == null && this.der == null;\n    }\n    @Override\n    public int compareTo(HuffmanNode o) {\n        return Integer.compare(this.frecuencia, o.frecuencia);\n    }\n}\n\npublic class HuffmanAlgorithm {\n    public static HuffmanNode construirArbol(char[] simbolos, int[] frecuencias) {\n        java.util.PriorityQueue<HuffmanNode> pq = new java.util.PriorityQueue<HuffmanNode>();\n        for (int i = 0; i < simbolos.length; i++) {\n            pq.add(new HuffmanNode(simbolos[i], frecuencias[i]));\n        }\n        while (pq.size() > 1) {\n            HuffmanNode x = pq.poll();\n            HuffmanNode y = pq.poll();\n            HuffmanNode padre = new HuffmanNode(x.frecuencia + y.frecuencia, x, y);\n            pq.add(padre);\n        }\n        return pq.peek();\n    }\n}",
+            "correcciones_aplicadas": "Implementación en Java estándar con PriorityQueue basada en Min-Heap para garantizar extracciones e inserciones estrictamente logarítmicas O(\\log n)."
+          },
+          "analisis_complejidad": {
+            "temporal_peor_caso": "Theta(n \\log n)",
+            "temporal_mejor_caso": "Theta(n \\log n)",
+            "espacial": "O(n)",
+            "justificacion": "La inserción de los n símbolos iniciales en una Min-Priority Queue toma O(n) (usando heapify bottom-up) o O(n \\log n). El bucle principal itera exactamente n - 1 veces; en cada iteración se ejecutan 2 extracciones del mínimo (2 \\times O(\\log n)) y 1 inserción del nodo padre (O(\\log n)). Por lo tanto, el bucle toma (n-1) \\times O(\\log n) = Theta(n \\log n). El espacio de memoria auxiliar almacena 2n - 1 nodos en el árbol y en la cola de prioridad, lo que representa Theta(n)."
+          }
+        },
+        {
+          "id": "matrimonios_kikimuris",
+          "titulo": "Emparejamientos Estables: El Algoritmo de Gale-Shapley (Tribu de los Kikimuris)",
+          "teoria": "El problema de los matrimonios estables (Stable Marriage Problem) modela la asignación biyectiva entre dos conjuntos disjuntos de igual tamaño: n hombres M = {m_1, ..., m_n} y n mujeres F = {f_1, ..., f_n}. Cada individuo dispone de una lista de preferencias estricta y completa donde rankea a todos los miembros del sexo opuesto del 1 al n.\n\nDefinición Formal de Inestabilidad:\nUn emparejamiento perfecto S es un conjunto de n parejas disjuntas (m, f). Se dice que una pareja hipotética (m, f) constituye un 'par inestable' (rogue couple o par bloqueador) respecto a S si:\n1. m y f no están casados entre sí en S.\n2. m prefiere a f por encima de su esposa actual asignada en S.\n3. f prefiere a m por encima de su esposo actual asignado en S.\nUn emparejamiento es ESTABLE si no contiene ningún par inestable.\n\nAlgoritmo Voraz de Gale-Shapley (Propuestas Masculinas):\nEl algoritmo opera mediante un estado intermedio de 'compromiso' provisorio:\n1. Inicialmente, todos los hombres y mujeres están libres.\n2. Mientras exista algún hombre m libre que aún tenga mujeres a las cuales no les haya propuesto matrimonio:\n   a. m elige vorazmente a la mujer f más alta en su lista de preferencias a quien todavía no se le haya declarado.\n   b. Si f está libre, (m, f) se comprometen temporalmente.\n   c. Si f ya está comprometida con m':\n      - Si f prefiere a m por sobre m', f rompe su compromiso con m' (quien vuelve a quedar libre) y se compromete con m.\n      - Si f prefiere a su prometido actual m' sobre m, f rechaza de inmediato a m (quien permanece libre y buscará a su siguiente candidata).\n\nAnálisis de Terminación y Complejidad:\nSea P(t) el número total de propuestas emitidas hasta la iteración t. En cada iteración del bucle, exactamente un hombre realiza una propuesta a una mujer a la que nunca antes se había declarado. Como hay n hombres y cada uno puede proponer a lo sumo a n mujeres, el número total de propuestas no puede superar n \\times n = n^2. Por tanto, el algoritmo termina garantizadamente en a lo sumo n^2 iteraciones: \\mathcal{O}(n^2).\n\nDemostración de Corrección (Estabilidad):\n- Todos quedan emparejados: Si al terminar quedara un hombre m libre, por paridad existiría una mujer f libre. Pero una mujer, una vez comprometida por primera vez, nunca vuelve a quedar libre (sólo cambia a su prometido por alguien mejor). Esto implica que f nunca recibió ninguna propuesta, lo cual contradice que m haya agotado su lista de n mujeres. Por ende, el emparejamiento final es perfecto.\n- No hay pares inestables: Supongamos que existe un par (m, f) que no están casados pero m prefiere a f sobre su esposa actual f'. Dado que m prefiere a f, m tuvo que haberse declarado a f ANTES de declararse a f'. Si f rechazó a m en su momento (o lo dejó más tarde por otro), es porque f se comprometió con alguien a quien prefería estrictamente más que m. Como el bienestar de las mujeres es monótonamente creciente en cada iteración, el esposo final de f debe ser estrictamente mejor para ella que m. Por lo tanto, f NO prefiere a m sobre su esposo actual, lo que destruye la condición de par inestable.\n\nSesgo y Asimetría Sociológica de Cátedra ('Sociedad Machista'):\nEl algoritmo de Gale-Shapley favorece de manera extrema al bando proponente (male-optimal): cada hombre obtiene a la mejor mujer posible que podría conseguir en cualquier emparejamiento estable válido. Por dualidad simétrica, el algoritmo perjudica al bando receptor (female-pessimal): cada mujer queda emparejada con el peor hombre posible que podría haberle tocado en cualquier configuración estable.",
+          "elementos_greedy": {
+            "conjunto_candidatos": "Para cada hombre, la lista de mujeres ordenada según su escala personal de preferencias.",
+            "funcion_seleccion": "El hombre libre selecciona a la mujer más preferida a la que aún no le haya propuesto matrimonio.",
+            "funcion_factibilidad": "Verificar si la mujer está libre o si prefiere al proponente actual antes que a su prometido previo.",
+            "funcion_solucion": "Todos los n hombres y n mujeres están comprometidos (emparejamiento perfecto).",
+            "funcion_objetivo": "Construir un emparejamiento globalmente estable (cero pares bloqueadores)."
+          },
+          "animaciones": [
+            {
+              "id": "anim_gale_shapley_kikimuris",
+              "tipo": "flujo_ejecucion",
+              "formato": "mermaid",
+              "descripcion": "Protocolo de decisión voraz del algoritmo de Gale-Shapley ante una nueva propuesta matrimonial.",
+              "pasos": [
+                "graph TD\n    Init([Hombre m libre]) --> Select[Elige mujer f favorita no propuesta]\n    Select --> CheckFree{¿Está f libre?}\n    CheckFree -- Sí --> Engage[m y f quedan Comprometidos]\n    CheckFree -- No --> Compare{¿Prefiere f a m sobre prometido m'?}\n    Compare -- Sí --> Swap[f rompe con m' -> m' queda libre<br/>f se compromete con m]\n    Compare -- No --> Reject[f rechaza a m -> m sigue libre]\n    Engage --> NextLoop{¿Hay hombres libres?}\n    Swap --> NextLoop\n    Reject --> NextLoop\n    NextLoop -- Sí --> Init\n    NextLoop -- No --> End([Fin: Emparejamiento Estable Garantizado])"
+              ]
+            }
+          ],
+          "pseudocodigo": "Algoritmo GaleShapley(Hombres: Conjunto, Mujeres: Conjunto, PrefH, PrefM)\n    Inicializar todos los hombres y mujeres como libres\n    mientras exista un hombre m libre con candidatas en su lista hacer\n        f ← primera mujer en PrefH[m] a quien m no ha propuesto\n        marcar a f como propuesta por m\n        si f está libre entonces\n            comprometer(m, f)\n        sino si PrefM[f].ranking(m) < PrefM[f].ranking(f.prometido) entonces\n            liberar(f.prometido)\n            comprometer(m, f)\n        sino\n            // f rechaza a m; m continúa libre\n        fin si\n    fin mientras\n    devolver conjunto de parejas comprometidas",
+          "codigo": {
+            "lenguaje": "Java",
+            "codigo": "public class GaleShapley {\n    public static int[] emparejar(int[][] prefHombres, int[][] prefMujeres, int n) {\n        // prefHombres[m][k] indica la k-ésima mujer preferida por m\n        // prefMujeres[w][m] indica el orden de ranking del hombre m para la mujer w\n        int[] esposoDe = new int[n];\n        int[] proximaPropuesta = new int[n];\n        boolean[] hombreLibre = new boolean[n];\n        java.util.Arrays.fill(esposoDe, -1);\n        java.util.Arrays.fill(hombreLibre, true);\n        int libresCount = n;\n        \n        // Matriz inversa para consulta de preferencia de mujeres en O(1)\n        int[][] rankingMujeres = new int[n][n];\n        for (int w = 0; w < n; w++) {\n            for (int rank = 0; rank < n; rank++) {\n                int m = prefMujeres[w][rank];\n                rankingMujeres[w][m] = rank;\n            }\n        }\n        \n        while (libresCount > 0) {\n            int m;\n            for (m = 0; m < n; m++) {\n                if (hombreLibre[m]) break;\n            }\n            int w = prefHombres[m][proximaPropuesta[m]++];\n            if (esposoDe[w] == -1) {\n                esposoDe[w] = m;\n                hombreLibre[m] = false;\n                libresCount--;\n            } else {\n                int actual = esposoDe[w];\n                if (rankingMujeres[w][m] < rankingMujeres[w][actual]) {\n                    esposoDe[w] = m;\n                    hombreLibre[m] = false;\n                    hombreLibre[actual] = true;\n                }\n            }\n        }\n        return esposoDe; // Retorna para cada mujer w, su esposo m\n    }\n}",
+            "correcciones_aplicadas": "Uso de una matriz de ranking inverso precalculada 'rankingMujeres[w][m]' para permitir que la verificación de preferencia de cada mujer se ejecute en O(1) tiempo estricto, logrando la cota teórica cuadrática exacta."
+          },
+          "analisis_complejidad": {
+            "temporal_peor_caso": "Theta(n^2)",
+            "temporal_mejor_caso": "Theta(n)",
+            "espacial": "Theta(n^2)",
+            "justificacion": "En el peor caso, cada hombre propone a casi todas las mujeres antes de que el sistema converja, lo que insume como máximo n^2 iteraciones. Gracias a la tabla de rankings inversos de las mujeres, cada evaluación de propuesta toma O(1). La memoria espacial auxiliar es Theta(n^2) para almacenar las listas de preferencias y las matrices de ranking inverso."
+          }
+        },
+        {
+          "id": "planificacion_procesos_ganancia",
+          "titulo": "Planificación de Procesos para Maximizar Ganancia con Plazos Límite",
+          "teoria": "Se tienen n tareas para ser procesadas en un único procesador mononúcleo. Cada tarea i requiere exactamente 1 unidad de tiempo de cómputo y tiene asociado un plazo límite de entrega (deadline) t_i entero positivo y una ganancia o beneficio g_i > 0 si se ejecuta en un instante menor o igual a t_i. Una solución es factible si existe al menos una secuencia cronológica de ejecución donde ninguna tarea se complete después de su respectivo deadline.\n\nEstrategia Greedy:\nSe ordenan las tareas en orden decreciente de ganancia. Se inicializa una secuencia vacía. En cada paso, se toma la tarea disponible de mayor beneficio g_i y se evalúa si puede insertarse en la secuencia manteniéndola factible. Para facilitar la verificación de factibilidad en tiempo eficiente, la secuencia parcial de tareas seleccionadas se mantiene internamente ordenada en forma creciente por su tiempo límite t_i. Una secuencia ordenada [s_1, s_2, ..., s_k] es factible si y sólo si para todo j \\in {1, ..., k} se verifica que su posición cronológica j no supera su plazo: j <= t_{s_j}.\n\nInstancia Canónica de Cátedra (Apunte p. 39-40):\n4 tareas con ganancias y plazos:\n- g = (50, 10, 15, 30)\n- t = (2, 1, 2, 1)\nOrdenamiento por ganancia: Tarea 1 (g=50, t=2), Tarea 4 (g=30, t=1), Tarea 3 (g=15, t=2), Tarea 2 (g=10, t=1).\nEjecución paso a paso:\n1. Tarea 1: se agrega. Secuencia [1] con tiempos de ejecución: pos 1 <= t_1=2. Factible. Ganancia = 50.\n2. Tarea 4: se intenta agregar. Como t_4 = 1 y t_1 = 2, la secuencia cronológica ordenada por plazo es <4, 1>. Evaluamos: pos 1 <= t_4(1) [cumple] y pos 2 <= t_1(2) [cumple]. Factible. Secuencia = <4, 1>, Ganancia = 50 + 30 = 80.\n3. Tarea 3: ganancia 15, plazo 2. Intentar agregar a {1, 4} requeriría 3 unidades de tiempo (posiciones 1, 2, 3), pero sólo hay 2 tareas con deadline >= 2 y dos con deadline 1; la posición 3 viola los plazos. Incompatible. Se descarta.\n4. Tarea 2: ganancia 10, plazo 1. Incompatible con la tarea 4 que ya ocupa el único slot con deadline 1. Se descarta.\nSolución Óptima: Secuencia ordenada de ejecución <4, 1> con beneficio máximo = 80.",
+          "elementos_greedy": {
+            "conjunto_candidatos": "Vector de tareas O con tuplas (ganancia g_i, tiempo límite t_i).",
+            "funcion_seleccion": "Elegir vorazmente la tarea candidata con mayor beneficio g_i.",
+            "funcion_factibilidad": "Verificar si la nueva tarea puede intercalarse en la secuencia ordenada por plazo sin que ninguna tarea supere su deadline.",
+            "funcion_solucion": "Se han examinado todas las n tareas disponibles.",
+            "funcion_objetivo": "Maximizar la ganancia acumulada G = \\sum_{s \\in S} g_s."
+          },
+          "animaciones": [
+            {
+              "id": "anim_scheduling_ganancia",
+              "tipo": "traza",
+              "formato": "mermaid",
+              "descripcion": "Evolución de la secuencia de tareas aceptadas ordenada por deadline.",
+              "pasos": [
+                "graph LR\n    T1[\"Paso 1: Evaluar T1 (g=50, t=2)<br/>Secuencia: [T1] (Factible, G=50)\"] --> T4[\"Paso 2: Evaluar T4 (g=30, t=1)<br/>Secuencia: [T4, T1] (Factible, G=80)\"]\n    T4 --> T3[\"Paso 3: Evaluar T3 (g=15, t=2)<br/>Incompatible -> Descartada\"]\n    T3 --> T2[\"Paso 4: Evaluar T2 (g=10, t=1)<br/>Incompatible -> Descartada\"]\n    T2 --> Fin([Solución Óptima: Secuencia <T4, T1> con Ganancia 80])"
+              ]
+            }
+          ],
+          "pseudocodigo": "Algoritmo MaximizarGanancia(O: Vector<Tarea>)\n    Ordenar(O) // según ganancia decreciente\n    R ← inicializarVector(longitud(O))\n    R[0] ← O[0] // se agrega la de mayor ganancia\n    cantidad ← 1\n    para etapa = 1 hasta longitud(O) - 1 hacer\n        j ← cantidad - 1\n        // retroceder mientras el plazo sea mayor y restrinja\n        mientras j >= 0 Y O[R[j]].tiempo > MAX(O[etapa].tiempo, j + 1) hacer\n            j ← j - 1\n        fin mientras\n        si O[etapa].tiempo > j + 1 entonces\n            para m = cantidad - 1 hasta j + 1 paso -1 hacer\n                R[m + 1] ← R[m]\n            fin para\n            R[j + 1] ← O[etapa]\n            cantidad ← cantidad + 1\n        fin si\n    fin para\n    devolver R",
+          "codigo": {
+            "lenguaje": "Java",
+            "codigo": "public static int planificar(VectorTDA<Integer> ganancias, VectorTDA<Integer> tiempos, int cantidad, VectorTDA<Integer> resultado) throws Exception {\n    ColaPrioridadTDA<Integer> cola = new ColaPrioridad<Integer>();\n    cola.InicializarCola();\n    for (int i = 0; i < cantidad; i++) {\n        cola.AgregarElemento(i, ganancias.recuperarElemento(i));\n    }\n    int cantidad_secuencia = 0;\n    if (!cola.ColaVacia()) {\n        resultado.agregarElemento(0, cola.RecuperarMaxElemento());\n        cola.EliminarMaxPrioridad();\n        cantidad_secuencia = 1;\n    }\n    while (!cola.ColaVacia()) {\n        int candidata = cola.RecuperarMaxElemento();\n        int plazoCand = tiempos.recuperarElemento(candidata);\n        int j = cantidad_secuencia - 1;\n        while (j >= 0 && tiempos.recuperarElemento(resultado.recuperarElemento(j)) > Math.max(plazoCand, j + 1)) {\n            j--;\n        }\n        if (plazoCand > j + 1) {\n            // Desplazar elementos hacia la derecha para hacer lugar a la nueva tarea\n            for (int m = cantidad_secuencia - 1; m > j; m--) {\n                resultado.agregarElemento(m + 1, resultado.recuperarElemento(m));\n            }\n            resultado.agregarElemento(j + 1, candidata);\n            cantidad_secuencia++;\n        }\n        cola.EliminarMaxPrioridad();\n    }\n    return cantidad_secuencia;\n}",
+            "correcciones_aplicadas": "1. En el apunte (p. 40-41) había discrepancias de índices off-by-one entre 0-indexed y 1-indexed (ej. 'j = cantidad_secuencia' con 'Math.max(..., j)'). Se corrigió rigurosamente a indexación base 0 con corrimiento ordenado.\n2. Se encapsuló la llamada repetitiva a 'cola.RecuperarMaxElemento()' en variables locales ('candidata', 'plazoCand') para optimizar y limpiar el código."
+          },
+          "analisis_complejidad": {
+            "temporal_peor_caso": "O(n^2)",
+            "temporal_mejor_caso": "O(n \\log n)",
+            "espacial": "O(n)",
+            "justificacion": "El ordenamiento inicial o la extracción de la cola de prioridad insume O(n \\log n). Para cada una de las n tareas, la verificación de factibilidad e inserción en el vector ordenado requiere O(n) operaciones en el peor caso por los desplazamientos de memoria. Sumando sobre las n etapas se obtiene un costo de O(n^2). (Con una estructura Union-Find o Disjoint Set optimizada por árbol, este algoritmo puede resolverse en O(n \\alpha(n))). El espacio auxiliar es O(n) para el vector resultado."
+          }
+        },
+        {
+          "id": "planificacion_procesos_espera",
+          "titulo": "Minimización del Tiempo Medio de Espera (Shortest Job First - SJF)",
+          "teoria": "Un único procesador debe atender n procesos o tareas independientes. Se conoce de antemano el tiempo de ejecución t_i que insume cada tarea i. Si las tareas se atienden en el orden secuencial p = (p_1, p_2, ..., p_n), el tiempo de espera del proceso p_i es la suma de los tiempos de todos los procesos que lo precedieron en la cola: W_i = \\sum_{j=1}^{i-1} t_{p_j}. El tiempo total en el sistema (espera + ejecución) acumulado por todos los procesos es:\nT_{total} = \\sum_{i=1}^n \\sum_{j=1}^i t_{p_j} = \\sum_{i=1}^n (n - i + 1) \\cdot t_{p_i}\nEl tiempo medio de espera es T_{total} / n.\n\nEstrategia Greedy:\nPara minimizar la sumatoria ponderada \\sum_{i=1}^n (n - i + 1) \\cdot t_{p_i}, el término con mayor coeficiente multiplicador (n, n-1, ..., 1) debe multiplicarse por la duración más pequeña posible. En consecuencia, el criterio voraz óptimo consiste en ordenar y ejecutar los procesos en orden estrictamente creciente de duración (Shortest Job First - SJF).\n\nInstancia Canónica de Cátedra (Apunte p. 41-42):\nn = 3 procesos con duraciones t(p_1) = 5, t(p_2) = 10, t(p_3) = 3.\nComparativa de todos los órdenes posibles:\n- (p1, p2, p3): 5 + (5+10) + (5+10+3) = 5 + 15 + 18 = 38\n- (p1, p3, p2): 5 + (5+3) + (5+3+10) = 5 + 8 + 18 = 31\n- (p2, p1, p3): 10 + (10+5) + (10+5+3) = 10 + 15 + 18 = 43\n- (p2, p3, p1): 10 + (10+3) + (10+3+5) = 10 + 13 + 18 = 41\n- (p3, p1, p2): 3 + (3+5) + (3+5+10) = 3 + 8 + 18 = 29 (MÍNIMO ÓPTIMO)\n- (p3, p2, p1): 3 + (3+10) + (3+10+5) = 3 + 13 + 18 = 34\n\nDemostración de Optimalidad:\nDemostración por intercambio de adyacentes: Supongamos una planificación óptima que no respeta SJF. Debe existir al menos un par adyacente de procesos p_k y p_{k+1} tales que t_{p_k} > t_{p_{k+1}}. Intercambiando el orden de p_k y p_{k+1}, los tiempos de espera de todos los procesos previos a k y posteriores a k+1 no sufren alteración alguna. El único cambio en el tiempo total acumulado es que el tiempo de espera de p_{k+1} se reduce en t_{p_k} y el de p_k aumenta en t_{p_{k+1}}. La variación neta es \\Delta T = t_{p_{k+1}} - t_{p_k} < 0, lo que estrictamente disminuye el tiempo total de espera. Por ende, cualquier inversión degrada la solución y el orden SJF es globalmente óptimo.",
+          "elementos_greedy": {
+            "conjunto_candidatos": "Conjunto de procesos pendientes P = {1, 2, ..., n} con sus tiempos de ejecución t_i.",
+            "funcion_seleccion": "Seleccionar el proceso disponible con la menor duración t_i (Min-Priority).",
+            "funcion_factibilidad": "Siempre factible; cualquier proceso no ejecutado puede ser programado en el siguiente slot.",
+            "funcion_solucion": "Todos los n procesos han sido ordenados en la secuencia de ejecución.",
+            "funcion_objetivo": "Minimizar la suma de tiempos de permanencia en el sistema T_{total} = \\sum_{i=1}^n (n - i + 1) t_{p_i}."
+          },
+          "animaciones": [
+            {
+              "id": "anim_sjf_comparativa",
+              "tipo": "traza",
+              "formato": "katex",
+              "descripcion": "Comparación analítica de tiempos de permanencia para las 6 permutaciones del ejemplo de cátedra.",
+              "pasos": [
+                "\\begin{array}{|c|l|c|c|}\n\\hline\n\\textbf{Orden de Ejecución} & \\textbf{Cálculo de Tiempos Acumulados} & \\textbf{Tiempo Total} & \\textbf{Evaluación} \\\\\n\\hline\n(p_1, p_2, p_3) & 5 + (5+10) + (5+10+3) & 38 & \\text{Subóptimo} \\\\\n(p_1, p_3, p_2) & 5 + (5+3) + (5+3+10) & 31 & \\text{Subóptimo} \\\\\n(p_2, p_1, p_3) & 10 + (10+5) + (10+5+3) & 43 & \\text{Peor Caso} \\\\\n(p_2, p_3, p_1) & 10 + (10+3) + (10+3+5) & 41 & \\text{Subóptimo} \\\\\n\\mathbf{(p_3, p_1, p_2)} & \\mathbf{3 + (3+5) + (3+5+10)} & \\mathbf{29} & \\textbf{ÓPTIMO (SJF)} \\\\\n(p_3, p_2, p_1) & 3 + (3+10) + (3+10+5) & 34 & \\text{Subóptimo} \\\\\n\\hline\n\\end{array}"
+              ]
+            }
+          ],
+          "pseudocodigo": "Algoritmo MinimizarEspera(O: Vector<Tarea>)\n    // O: vector de tareas con atributo duracion\n    Ordenar(O) // de menor a mayor según duración\n    devolver O",
+          "codigo": {
+            "lenguaje": "Java",
+            "codigo": "public static VectorTDA<Integer> minimizarEspera(VectorTDA<Integer> tareas, int cantidad) throws Exception {\n    VectorTDA<Integer> resultado = new Vector<Integer>();\n    resultado.inicializarVector(cantidad);\n    ColaPrioridadTDA<Integer> cola = new ColaPrioridad<Integer>();\n    cola.InicializarCola();\n    // Se cargan las tareas en la cola de prioridad mínima\n    for (int i = 0; i < cantidad; i++) {\n        cola.AgregarElemento(i, tareas.recuperarElemento(i));\n    }\n    int i = 0;\n    while (!cola.ColaVacia()) {\n        resultado.agregarElemento(i, cola.RecuperarMinElemento());\n        cola.EliminarMinPrioridad();\n        i++;\n    }\n    return resultado;\n}",
+            "correcciones_aplicadas": "Código fiel al apunte (p. 42). Se resalta la corrección conceptual: en el TDA estándar de Programación II, ColaPrioridad suele ser por defecto de máxima prioridad; para minimizar espera se requiere explícitamente Cola de Mínima Prioridad ('RecuperarMinElemento' / 'EliminarMinPrioridad')."
+          },
+          "analisis_complejidad": {
+            "temporal_peor_caso": "Theta(n \\log n)",
+            "temporal_mejor_caso": "Theta(n \\log n)",
+            "espacial": "O(n)",
+            "justificacion": "El costo está gobernado exclusivamente por el ordenamiento de los n procesos según su duración. Utilizando un algoritmo de ordenamiento óptimo o un Min-Heap para la Cola de Prioridad, el tiempo es Theta(n \\log n). El espacio de memoria auxiliar requerido es O(n) para alojar el vector de salida y la cola."
+          }
+        }
+      ]
+    },
+    {
+      "id": "seccion_algoritmos_sobre_grafos",
+      "titulo": "Algoritmos Voraces sobre Estructuras de Grafos",
+      "subtemas": [
+        {
+          "id": "preludio_euler_konigsberg",
+          "titulo": "Preludio Histórico: Euler y los Siete Puentes de Königsberg",
+          "teoria": "La teoría de grafos nació formalmente en 1736 cuando Leonhard Euler resolvió el célebre problema de los siete puentes de la ciudad de Königsberg (capital histórica de Prusia Oriental, hoy Kaliningrado, Rusia).\n\nGeografía y Planteo del Problema:\nEl río Pregel atravesaba la ciudad bifurcándose alrededor de dos islas fluviales: Kneiphof (K) y Lomse (L), conectando con la ribera norte (N) y la ribera sur (S). Existían siete puentes en total:\n- 2 puentes entre la Ribera Norte y Kneiphof (p1, p2)\n- 2 puentes entre la Ribera Sur y Kneiphof (p3, p4)\n- 1 puente entre la Ribera Norte y Lomse (p5)\n- 1 puente entre la Ribera Sur y Lomse (p6)\n- 1 puente entre Kneiphof y Lomse (p7)\nLa cuestión planteada por los ciudadanos era: ¿Es posible realizar un paseo a pie que cruce cada uno de los siete puentes exactamente una vez y regrese al punto de partida (ciclo euleriano), o al menos termine en algún punto (camino euleriano)?\n\nAbstracción y Demostración de Euler:\nEuler comprendió que la distancia física, el ancho de los ríos y la forma de las islas eran totalmente irrelevantes; lo único determinante era la topología de conexiones. Modeló las masas de tierra como cuatro vértices V = {N, S, K, L} y los puentes como siete aristas múltiples en un multigrafo.\nCalculó los grados de cada vértice:\n- Grado(K) = 5 (conectado por p1, p2, p3, p4, p7) -> Grado Impar\n- Grado(N) = 3 (conectado por p1, p2, p5) -> Grado Impar\n- Grado(S) = 3 (conectado por p3, p4, p6) -> Grado Impar\n- Grado(L) = 3 (conectado por p5, p6, p7) -> Grado Impar\nCondición de Imposibilidad: Cada vez que un caminante ingresa a un vértice intermedio por una arista, debe salir por otra arista no transitada previamente. Por tanto, para que exista un ciclo euleriano cerrado, TODOS los vértices deben tener grado par. Para que exista un camino euleriano abierto, debe haber exactamente dos vértices de grado impar (el punto de partida y el de llegada) y el resto de grado par. Dado que en Königsberg los CUATRO vértices tenían grado impar, el paseo era estrictamente imposible.\n\nColofón Histórico y Situación Actual en Kaliningrado (Post-1945):\nDurante la Segunda Guerra Mundial, en los bombardeos de 1944 y la toma soviética de 1945, la ciudad fue destruida y posteriormente rebautizada Kaliningrado. Dos de los puentes históricos fueron demolidos y nunca reconstruidos:\n- Se destruyó uno de los puentes entre Ribera Norte y Kneiphof (quedó sólo 1).\n- Se destruyó el puente entre Kneiphof y Lomse (p7).\nConsecuencia topológica actual: El vértice N pasa a tener grado 2 (par) y el vértice K pasa a tener grado 3 (impar). Ahora el multigrafo posee exactamente dos vértices de grado impar (S con grado 3 y L con grado 3) y dos de grado par (N con grado 2 y K con grado 2, sumado a nuevos puentes modernos). Paradójicamente, la devastación bélica convirtió el problema de Königsberg en resoluble: hoy en día SÍ existe un camino euleriano que cruza todos los puentes históricos remanentes partiendo de la ribera sur y finalizando en Lomse.",
+          "elementos_greedy": {
+            "conjunto_candidatos": "Conjunto de puentes (aristas) incidentes a cada masa territorial.",
+            "funcion_seleccion": "Elección de aristas no transitadas para construir el recorrido.",
+            "funcion_factibilidad": "No repetir ningún puente transitado previamente.",
+            "funcion_solucion": "Recorrer las 7 aristas exactamente una vez.",
+            "funcion_objetivo": "Existencia de ciclo o camino euleriano completo."
+          },
+          "animaciones": [
+            {
+              "id": "anim_multigrafo_konigsberg",
+              "tipo": "grafo",
+              "formato": "mermaid",
+              "descripcion": "Multigrafo abstracto de los siete puentes de Königsberg con grados impares en todos sus vértices.",
+              "pasos": [
+                "graph TD\n    N[\"Ribera Norte (N)<br/>Grado = 3 (Impar)\"]\n    S[\"Ribera Sur (S)<br/>Grado = 3 (Impar)\"]\n    K[\"Isla Kneiphof (K)<br/>Grado = 5 (Impar)\"]\n    L[\"Isla Lomse (L)<br/>Grado = 3 (Impar)\"]\n    N ---|p1| K\n    N ---|p2| K\n    S ---|p3| K\n    S ---|p4| K\n    N ---|p5| L\n    S ---|p6| L\n    K ---|p7| L"
+              ]
+            }
+          ],
+          "pseudocodigo": "Algoritmo VerificacionEuleriana(G: Grafo)\n    // Retorna si existe camino o ciclo euleriano\n    impares ← 0\n    para cada v en Vertices(G) hacer\n        si Grado(v) mod 2 ≠ 0 entonces\n            impares ← impares + 1\n        fin si\n    fin para\n    si impares == 0 entonces\n        devolver 'Existe Ciclo Euleriano'\n    sino si impares == 2 entonces\n        devolver 'Existe Camino Euleriano'\n    sino\n        devolver 'No es Euleriano (Imposible)'\n    fin si",
+          "codigo": {
+            "lenguaje": "Java",
+            "codigo": "// Verificación de la condición euleriana sobre GrafoTDA\npublic static String verificarCondicionEuleriana(GrafoTDA<Integer> g) throws Exception {\n    ConjuntoTDA<Integer> verts = g.Vertices();\n    int impares = 0;\n    while (!verts.conjuntoVacio()) {\n        int v = verts.elegir();\n        verts.sacar(v);\n        ConjuntoTDA<Integer> ady = g.Adyacentes(v);\n        int grado = 0;\n        while (!ady.conjuntoVacio()) {\n            int w = ady.elegir();\n            ady.sacar(w);\n            grado++;\n        }\n        if (grado % 2 != 0) {\n            impares++;\n        }\n    }\n    if (impares == 0) return \"Ciclo Euleriano\";\n    if (impares == 2) return \"Camino Euleriano\";\n    return \"No es Euleriano\";\n}",
+            "correcciones_aplicadas": "Implementación de chequeo topológico sobre GrafoTDA extrayendo el grado de cada vértice mediante el cardinal de su conjunto de adyacentes."
+          },
+          "analisis_complejidad": {
+            "temporal_peor_caso": "Theta(|V| + |E|)",
+            "temporal_mejor_caso": "Theta(|V| + |E|)",
+            "espacial": "O(|V|)",
+            "justificacion": "Determinar los grados de todos los vértices en una lista de adyacencia requiere tiempo lineal Theta(|V| + |E|), o Theta(|V|^2) si se utiliza matriz de adyacencia. El espacio auxiliar es O(|V|) para los conjuntos iterados."
+          }
+        },
+        {
+          "id": "caminos_minimos_dijkstra",
+          "titulo": "Caminos Mínimos desde Origen Único: Algoritmo de Dijkstra",
+          "teoria": "Dado un grafo dirigido ponderado G = (V, A, w) con pesos estrictamente no negativos (w(u, v) >= 0 para toda arista) y un vértice origen distinguido s \\in V, el algoritmo de Edsger W. Dijkstra (1959) resuelve el problema de caminos mínimos desde origen único (Single-Source Shortest Paths - SSSP).\n\nLos Dos Casos Didácticos de la Cátedra:\n- Caso 1: Cálculo exclusivo del costo de los caminos mínimos desde s a todos los demás vértices. El grafo resultante A contiene los mismos vértices que G, pero únicamente aristas directas desde s hacia cada vértice reachable con el costo mínimo como peso.\n- Caso 2: Construcción del Árbol de Caminos Mínimos completo (Shortest Path Tree - SPT). Requiere almacenar el predecesor o padre de cada nodo (arreglo prev[]) para reconstruir el grafo acíclico dirigido R con la ruta física exacta.\n\nEstrategia Greedy y Relajación:\nSe mantiene una partición de los vértices en dos conjuntos: Visitados (S, aquellos con distancia mínima definitiva ya confirmada) y Pendientes (V \\ S). Inicialmente, dist[s] = 0 y dist[v] = \\infty para todo v != s.\nEn cada iteración:\n1. Selección Voraz: Se extrae de los Pendientes aquel vértice u que posea la menor distancia tentativa dist[u].\n2. Incorporación: u se agrega a Visitados.\n3. Relajación (Relaxation): Para cada vecino v adyacente a u que aún esté en Pendientes, se evalúa si el camino que pasa por u ofrece un costo menor que el mejor camino conocido hasta el momento:\n   si dist[u] + w(u, v) < dist[v] entonces\n       dist[v] = dist[u] + w(u, v)\n       prev[v] = u\n\nInstancia Canónica de Cátedra (Grafo de 6 Nodos, Diapositivas Parte 2):\nVértices V = {1, 2, 3, 4, 5, 6}, Origen s = 1.\nAristas y pesos dirigidos:\n(1, 2): 2, (1, 3): 15, (1, 4): 6\n(2, 4): 3, (2, 5): 3\n(3, 6): 2\n(4, 3): 6, (4, 5): 2, (4, 6): 4\n(5, 6): 3\n(6, 1): 1, (6, 4): 1\n\nTraza Cuadro por Cuadro de la Cátedra (s = 1):\n- Estado Inicial: S = {1}, Pendientes = {2, 3, 4, 5, 6}\n  dist: [1:0, 2:2, 3:15, 4:6, 5:∞, 6:∞], prev: [1:-, 2:1, 3:1, 4:1, 5:-, 6:-]\n- Iteración 1: Mínimo en pendientes es vértice 2 (dist=2). S = {1, 2}.\n  Relajación desde 2:\n  - a 4: dist[2] + w(2,4) = 2 + 3 = 5 < dist[4]=6 -> Se actualiza dist[4]=5, prev[4]=2.\n  - a 5: dist[2] + w(2,5) = 2 + 3 = 5 < dist[5]=∞ -> Se actualiza dist[5]=5, prev[5]=2.\n  dist: [1:0, 2:2, 3:15, 4:5, 5:5, 6:∞]\n- Iteración 2: Mínimo entre {3, 4, 5, 6} es 4 (o 5) con dist=5. Se elige 4. S = {1, 2, 4}.\n  Relajación desde 4:\n  - a 3: dist[4] + w(4,3) = 5 + 6 = 11 < dist[3]=15 -> Se actualiza dist[3]=11, prev[3]=4.\n  - a 5: dist[4] + w(4,5) = 5 + 2 = 7 > dist[5]=5 (no se altera).\n  - a 6: dist[4] + w(4,6) = 5 + 4 = 9 < dist[6]=∞ -> Se actualiza dist[6]=9, prev[6]=4.\n  dist: [1:0, 2:2, 3:11, 4:5, 5:5, 6:9]\n- Iteración 3: Mínimo entre {3, 5, 6} es 5 con dist=5. S = {1, 2, 4, 5}.\n  Relajación desde 5:\n  - a 6: dist[5] + w(5,6) = 5 + 3 = 8 < dist[6]=9 -> Se actualiza dist[6]=8, prev[6]=5.\n  dist: [1:0, 2:2, 3:11, 4:5, 5:5, 6:8]\n- Iteración 4: Mínimo entre {3, 6} es 6 con dist=8. S = {1, 2, 4, 5, 6}.\n  Relajación desde 6: aristas salientes hacia 1 y 4 ya visitados (o no mejoran).\n- Iteración 5: Mínimo entre {3} es 3 con dist=11. S = {1, 2, 3, 4, 5, 6}.\n  Relajación desde 3: hacia 6: 11 + 2 = 13 > dist[6]=8 (no altera).\n\nResultado Final:\n- Distancias mínimas: dist[1]=0, dist[2]=2, dist[3]=11, dist[4]=5, dist[5]=5, dist[6]=8.\n- Predecesores (Árbol SPT): prev[2]=1, prev[4]=2, prev[5]=2, prev[3]=4, prev[6]=5.\n- Caminos reconstruidos:\n  * 1 -> 2 (costo 2)\n  * 1 -> 2 -> 4 (costo 5)\n  * 1 -> 2 -> 5 (costo 5)\n  * 1 -> 2 -> 4 -> 3 (costo 11)\n  * 1 -> 2 -> 5 -> 6 (costo 8)\n\n¿Por qué falla Dijkstra con Pesos Negativos?\nDijkstra asume que una vez que un vértice u se incorpora a Visitados, su distancia dist[u] es inmutable y definitiva. Si existieran aristas de peso negativo, un camino posterior más largo en número de aristas podría alcanzar a u con un costo acumulado menor, invalidando las decisiones voraces previas e incurriendo en subóptimos o bucles infinitos en presencia de ciclos negativos.",
+          "elementos_greedy": {
+            "conjunto_candidatos": "Conjunto de vértices pendientes de visita V \\ Visitados.",
+            "funcion_seleccion": "Vértice u \\in Pendientes con menor distancia provisional estimada desde el origen: u = argmin_{v \\in Pendientes} dist[v].",
+            "funcion_factibilidad": "Verificar la existencia de arista dirigida (u, v) y si dist[u] + peso(u, v) < dist[v].",
+            "funcion_solucion": "Todos los vértices alcanzables han sido incorporados al conjunto de Visitados (Pendientes == ∅).",
+            "funcion_objetivo": "Minimizar el costo total de los caminos desde el origen s a cada vértice del grafo."
+          },
+          "animaciones": [
+            {
+              "id": "anim_dijkstra_grafo_catedra",
+              "tipo": "grafo",
+              "formato": "mermaid",
+              "descripcion": "Grafo dirigido de 6 nodos y árbol de caminos mínimos resultante (resaltado en rojo).",
+              "pasos": [
+                "graph LR\n    1((1)) -->|2| 2((2))\n    1 -->|15| 3((3))\n    1 -->|6| 4((4))\n    2 -->|3| 4\n    2 -->|3| 5((5))\n    3 -->|2| 6((6))\n    4 -->|6| 3\n    4 -->|2| 5\n    4 -->|4| 6\n    5 -->|3| 6\n    6 -->|1| 1\n    6 -->|1| 4\n    linkStyle 0 stroke:red,stroke-width:3px;\n    linkStyle 3 stroke:red,stroke-width:3px;\n    linkStyle 4 stroke:red,stroke-width:3px;\n    linkStyle 6 stroke:red,stroke-width:3px;\n    linkStyle 9 stroke:red,stroke-width:3px;"
+              ]
+            },
+            {
+              "id": "anim_dijkstra_tabla_evolucion",
+              "tipo": "traza",
+              "formato": "katex",
+              "descripcion": "Matriz de evolución paso a paso de distancias tentativas y selección voraz en cada iteración.",
+              "pasos": [
+                "\\begin{array}{|c|c|c|c|c|c|c|c|}\n\\hline\n\\textbf{Iteración} & \\textbf{Seleccionado} & \\textbf{dist[1]} & \\textbf{dist[2]} & \\textbf{dist[3]} & \\textbf{dist[4]} & \\textbf{dist[5]} & \\textbf{dist[6]} \\\\\n\\hline\n\\text{Inicial} & - & 0 & 2 & 15 & 6 & \\infty & \\infty \\\\\n1 & \\mathbf{2} (dist=2) & 0 & 2 & 15 & \\mathbf{5} & \\mathbf{5} & \\infty \\\\\n2 & \\mathbf{4} (dist=5) & 0 & 2 & \\mathbf{11} & 5 & 5 & \\mathbf{9} \\\\\n3 & \\mathbf{5} (dist=5) & 0 & 2 & 11 & 5 & 5 & \\mathbf{8} \\\\\n4 & \\mathbf{6} (dist=8) & 0 & 2 & 11 & 5 & 5 & 8 \\\\\n5 & \\mathbf{3} (dist=11) & 0 & 2 & 11 & 5 & 5 & 8 \\\\\n\\hline\n\\end{array}"
+              ]
+            }
+          ],
+          "pseudocodigo": "Algoritmo Dijkstra(G: GrafoDirigido, origen: Vértice)\n    // Retorna distancias mínimas dist[] y árbol SPT prev[]\n    para cada v en Vertices(G) hacer\n        dist[v] ← ∞\n        prev[v] ← nulo\n        visitado[v] ← falso\n    fin para\n    dist[origen] ← 0\n    para i = 1 hasta |Vertices(G)| hacer\n        u ← vértice no visitado con menor dist[u]\n        si u == nulo O dist[u] == ∞ entonces romper\n        visitado[u] ← verdadero\n        para cada v adyacente a u con arista (u, v) hacer\n            si NO visitado[v] entonces\n                si dist[u] + pesoArista(G, u, v) < dist[v] entonces\n                    dist[v] ← dist[u] + pesoArista(G, u, v)\n                    prev[v] ← u\n                fin si\n            fin si\n        fin para\n    fin para\n    devolver dist, prev",
+          "codigo": {
+            "lenguaje": "Java",
+            "codigo": "public static GrafoDirTDA<Integer> dijkstra(GrafoDirTDA<Integer> g, int origen) throws Exception {\n    // Implementación sobre los TDA de cátedra devolviendo el grafo con costos mínimos desde el origen\n    GrafoDirTDA<Integer> distanciasMinimas = new GrafoDir<Integer>();\n    distanciasMinimas.InicializarGrafo();\n    distanciasMinimas.AgregarVertice(origen);\n    \n    ConjuntoTDA<Integer> vertices = g.Vertices();\n    vertices.sacar(origen);\n    while (!vertices.conjuntoVacio()) {\n        int v = vertices.elegir();\n        vertices.sacar(v);\n        distanciasMinimas.AgregarVertice(v);\n        if (g.ExisteArista(origen, v)) {\n            distanciasMinimas.AgregarArista(origen, v, g.PesoArista(origen, v));\n        }\n    }\n    \n    ConjuntoTDA<Integer> pendientes = g.Vertices();\n    pendientes.sacar(origen);\n    ConjuntoTDA<Integer> aux_pendientes = new Conjunto<Integer>();\n    aux_pendientes.inicializarConjunto();\n    \n    while (!pendientes.conjuntoVacio()) {\n        int mejor_distancia = 0;\n        int mejor_vertice = 0;\n        boolean encontrado = false;\n        \n        // Búsqueda del vértice no visitado con menor costo desde el origen\n        while (!pendientes.conjuntoVacio()) {\n            int aux_vertice = pendientes.elegir();\n            pendientes.sacar(aux_vertice);\n            aux_pendientes.agregar(aux_vertice);\n            if (distanciasMinimas.ExisteArista(origen, aux_vertice)) {\n                int d = distanciasMinimas.PesoArista(origen, aux_vertice);\n                if (!encontrado || d < mejor_distancia) {\n                    mejor_distancia = d;\n                    mejor_vertice = aux_vertice;\n                    encontrado = true;\n                }\n            }\n        }\n        \n        if (!encontrado) break; // Nodos restantes son inalcanzables\n        \n        int vertice = mejor_vertice;\n        aux_pendientes.sacar(vertice);\n        \n        // Relajación de aristas hacia los pendientes restantes\n        while (!aux_pendientes.conjuntoVacio()) {\n            int aux_vertice = aux_pendientes.elegir();\n            aux_pendientes.sacar(aux_vertice);\n            pendientes.agregar(aux_vertice);\n            \n            if (g.ExisteArista(vertice, aux_vertice)) {\n                int nuevoCosto = distanciasMinimas.PesoArista(origen, vertice) + g.PesoArista(vertice, aux_vertice);\n                if (!distanciasMinimas.ExisteArista(origen, aux_vertice)) {\n                    distanciasMinimas.AgregarArista(origen, aux_vertice, nuevoCosto);\n                } else if (distanciasMinimas.PesoArista(origen, aux_vertice) > nuevoCosto) {\n                    distanciasMinimas.AgregarArista(origen, aux_vertice, nuevoCosto);\n                }\n            }\n        }\n    }\n    return distanciasMinimas;\n}",
+            "correcciones_aplicadas": "1. En el apunte (p. 48) se utilizaba 'mejor_distancia == 0' como flag de inicialización; como las aristas pueden tener costo 0 o distancias iniciales arbitrarias, se introdujo el booleano 'encontrado' para evitar falsos descartes.\n2. En las diapositivas de clase (Parte 2, slides 92-104) el código de 'class Nodo' tenía erratas: 'int selec' repetido (en vez de 'int prev'), 'U[i] = true' en lugar de 'U[i].selec = true', y 'A.length' sobre arrays no definidos. Se documentaron dichas erratas y se proveyó la versión limpia y robusta sobre TDA."
+          },
+          "analisis_complejidad": {
+            "temporal_peor_caso": "Theta(|V|^2) con Arreglo lineal, O((|V| + |E|) \\log |V|) con Min-Heap binario",
+            "temporal_mejor_caso": "Theta(|V|^2) o O(|V| \\log |V|)",
+            "espacial": "Theta(|V|) con arreglos / Theta(|V|^2) en GrafoTDA",
+            "justificacion": "Con arreglos de tamaño |V|, buscar el mínimo insume O(|V|) en cada una de las |V| iteraciones, sumando O(|V|^2). La relajación recorre todas las aristas |E|, costando O(1) por arista. Por tanto, el costo total es Theta(|V|^2 + |E|) = Theta(|V|^2), ideal para grafos densos. Si se emplea Min-Heap con actualización disminuircopia (decrease-key), el costo es O((|V| + |E|) \\log |V|), óptimo para grafos ralos. En la implementación académica con ConjuntoTDA del apunte, la manipulación de conjuntos agrega factores O(|V|), pudiendo degradar a O(|V|^3)."
+          }
+        },
+        {
+          "id": "arbol_recubrimiento_prim",
+          "titulo": "Árboles de Recubrimiento Mínimo: Algoritmo de Prim",
+          "teoria": "Dado un grafo no dirigido, conexo y ponderado G = (V, E, w), un Árbol de Recubrimiento Mínimo (Minimum Spanning Tree - MST) es un subgrafo T = (V, E') que conecta a todos los vértices de V sin formar ciclos (|E'| = |V| - 1) minimizando la suma total de los pesos de las aristas: w(T) = \\sum_{e \\in E'} w(e).\n\nEstrategia Greedy (Crecimiento de Árbol por Cortes):\nEl algoritmo de Robert C. Prim (1957, originalmente Jarník 1930) construye el MST expandiendo un único árbol conexo a partir de un vértice raíz arbitrario r \\in V. En cada paso, el árbol mantiene una partición entre los vértices ya incorporados al árbol (Visitados S) y los vértices restantes (V \\ S). La regla voraz selecciona la arista de peso estrictamente mínimo que cruza el corte entre S y V \\ S (arista de cruce más barata).\n\nEstructuras y Vectores de Control (Diapositivas y Apunte):\nPara evitar escanear toda la matriz de adyacencia L en cada paso, se mantienen dos vectores auxiliares de tamaño n:\n- masCercano[i]: Almacena el vértice perteneciente al árbol que está más próximo al vértice externo i.\n- minDist[i]: Almacena el costo de la arista entre i y masCercano[i]. Si el vértice i ya ingresó al árbol, minDist[i] = -1.\n\nInstancia Canónica de Cátedra (Grafo de 7 Vértices {a, b, c, d, e, f, g}, Diapositivas p. 120-128):\nVértices: a, b, c, d, e, f, g.\nAristas y pesos no dirigidos:\n(a, b): 4, (a, c): 7, (a, f): 5, (a, g): 1\n(b, c): 3, (c, d): 5, (c, g): 3\n(d, e): 7, (d, g): 9\n(e, f): 8, (e, g): 4\n(f, g): 2\n\nTraza Cuadro por Cuadro (Iniciando arbitrariamente en d):\n1. Inicialización: S = {d}, Candidatos = {a, b, c, e, f, g}.\n   masCercano a d: c (dist 5), e (dist 7), g (dist 9); resto \\infty.\n2. Paso 1: Mínimo es c con arista (d, c): peso 5. S = {d, c}.\n   Se actualizan distancias hacia S: vecinos de c son b(3), g(3), a(7).\n3. Paso 2: Mínimo entre pendientes es b o g con peso 3. Se elige b con arista (c, b): peso 3. S = {d, c, b}.\n4. Paso 3: Mínimo es g con arista (c, g): peso 3. S = {d, c, b, g}.\n   Se actualizan distancias hacia g: vecinos son a(1), f(2), e(4).\n5. Paso 4: Mínimo es a con arista (g, a): peso 1. S = {d, c, b, g, a}.\n6. Paso 5: Mínimo es f con arista (g, f): peso 2. S = {d, c, b, g, a, f}.\n7. Paso 6: Mínimo restante es e con arista (g, e): peso 4. S = {d, c, b, g, a, f, e}.\n\nAristas del MST de Prim: (d, c): 5, (c, b): 3, (c, g): 3, (g, a): 1, (g, f): 2, (g, e): 4.\nCosto Total del MST = 5 + 3 + 3 + 1 + 2 + 4 = 18.",
+          "elementos_greedy": {
+            "conjunto_candidatos": "Vértices que aún no han sido incorporados al árbol (V \\ S).",
+            "funcion_seleccion": "Vértice k \\in V \\ S que minimiza la distancia al árbol: minDist[k] = min_{j \\notin S} minDist[j].",
+            "funcion_factibilidad": "Al seleccionar una arista que conecta un nodo externo con uno del árbol, por definición jamás se genera un ciclo.",
+            "funcion_solucion": "El conjunto S contiene los |V| vértices del grafo (|S| == |V|), formando un árbol de |V| - 1 aristas.",
+            "funcion_objetivo": "Minimizar el peso total del árbol de recubrimiento w(T) = \\sum_{e \\in T} w(e)."
+          },
+          "animaciones": [
+            {
+              "id": "anim_prim_crecimiento_arbol",
+              "tipo": "flujo_ejecucion",
+              "formato": "mermaid",
+              "descripcion": "Secuencia cronológica de incorporación de aristas al MST mediante el algoritmo de Prim.",
+              "pasos": [
+                "graph TD\n    Init([Inicio en d]) --> E1[\"Arista (d, c) : 5<br/>S = {d, c}\"]\n    E1 --> E2[\"Arista (c, b) : 3<br/>S = {d, c, b}\"]\n    E2 --> E3[\"Arista (c, g) : 3<br/>S = {d, c, b, g}\"]\n    E3 --> E4[\"Arista (g, a) : 1<br/>S = {d, c, b, g, a}\"]\n    E4 --> E5[\"Arista (g, f) : 2<br/>S = {d, c, b, g, a, f}\"]\n    E5 --> E6[\"Arista (g, e) : 4<br/>S = {a, b, c, d, e, f, g}\"]\n    E6 --> Fin([Fin: MST Completo - Costo Total 18])"
+              ]
+            }
+          ],
+          "pseudocodigo": "Algoritmo Prim(L: Matriz[n][n])\n    // L: matriz de adyacencia (L[i, i] = -1; L[i, j] = ∞ si no hay arista)\n    T ← ∅\n    para i = 1 hasta n - 1 hacer\n        masCercano[i] ← 0\n        minDist[i] ← L[0, i]\n    fin para\n    repetir n - 1 veces hacer\n        min ← ∞\n        k ← -1\n        para j = 1 hasta n - 1 hacer\n            si 0 <= minDist[j] Y minDist[j] < min entonces\n                min ← minDist[j]\n                k ← j\n            fin si\n        fin para\n        T ← T ∪ {(masCercano[k], k)}\n        minDist[k] ← -1 // vértice k entra al árbol\n        para j = 1 hasta n - 1 hacer\n            si L[j, k] < minDist[j] entonces\n                minDist[j] ← L[j, k]\n                masCercano[j] ← k\n            fin si\n        fin para\n    fin repetir\n    devolver T",
+          "codigo": {
+            "lenguaje": "Java",
+            "codigo": "public static GrafoTDA<Integer> prim(GrafoTDA<Integer> g) throws Exception {\n    GrafoTDA<Integer> resultado = new Grafo<Integer>();\n    resultado.InicializarGrafo();\n    ConjuntoTDA<Integer> vertices = g.Vertices();\n    int vertice = vertices.elegir();\n    vertices.sacar(vertice);\n    resultado.AgregarVertice(vertice);\n    \n    // Agregar todos los vértices al resultado\n    while (!vertices.conjuntoVacio()) {\n        int aux_vertice = vertices.elegir();\n        vertices.sacar(aux_vertice);\n        resultado.AgregarVertice(aux_vertice);\n    }\n    \n    ConjuntoTDA<Integer> pendientes = g.Vertices();\n    pendientes.sacar(vertice);\n    ConjuntoTDA<Integer> visitados = new Conjunto<Integer>();\n    visitados.inicializarConjunto();\n    visitados.agregar(vertice);\n    \n    while (!pendientes.conjuntoVacio()) {\n        int mejor_distancia = 0;\n        int mejor_u = -1;\n        int mejor_v = -1;\n        boolean primero = true;\n        \n        // Búsqueda voraz de la arista de corte mínima entre visitados y pendientes\n        ConjuntoTDA<Integer> aux_vis = clonar(visitados);\n        while (!aux_vis.conjuntoVacio()) {\n            int u = aux_vis.elegir();\n            aux_vis.sacar(u);\n            ConjuntoTDA<Integer> aux_pen = clonar(pendientes);\n            while (!aux_pen.conjuntoVacio()) {\n                int v = aux_pen.elegir();\n                aux_pen.sacar(v);\n                if (g.ExisteArista(u, v)) {\n                    int p = g.PesoArista(u, v);\n                    if (primero || p < mejor_distancia) {\n                        mejor_distancia = p;\n                        mejor_u = u;\n                        mejor_v = v;\n                        primero = false;\n                    }\n                }\n            }\n        }\n        \n        resultado.AgregarArista(mejor_u, mejor_v, mejor_distancia);\n        resultado.AgregarArista(mejor_v, mejor_u, mejor_distancia); // no dirigido\n        pendientes.sacar(mejor_v);\n        visitados.agregar(mejor_v);\n    }\n    return resultado;\n}\n\nprivate static ConjuntoTDA<Integer> clonar(ConjuntoTDA<Integer> c) throws Exception {\n    ConjuntoTDA<Integer> clon = new Conjunto<Integer>();\n    clon.inicializarConjunto();\n    ConjuntoTDA<Integer> aux = new Conjunto<Integer>();\n    aux.inicializarConjunto();\n    while (!c.conjuntoVacio()) {\n        int elem = c.elegir();\n        c.sacar(elem);\n        aux.agregar(elem);\n    }\n    while (!aux.conjuntoVacio()) {\n        int elem = aux.elegir();\n        aux.sacar(elem);\n        c.agregar(elem);\n        clon.agregar(elem);\n    }\n    return clon;\n}",
+            "correcciones_aplicadas": "1. El código del apunte (p. 52-53) utilizaba el método 'resultado.Adyacentes(aux_vertice).elegir()' para almacenar el padre provisorio en el grafo resultado, lo cual generaba inconsistencias si había múltiples adyacentes o aristas colgadas.\n2. Se encapsuló la selección limpia de la arista de corte mínima entre 'visitados' y 'pendientes' para garantizar robustez sobre cualquier implementación de GrafoTDA."
+          },
+          "analisis_complejidad": {
+            "temporal_peor_caso": "Theta(n^2)",
+            "temporal_mejor_caso": "Theta(n^2)",
+            "espacial": "Theta(n)",
+            "justificacion": "Con la implementación clásica basada en matriz de adyacencia y vectores masCercano y minDist, el algoritmo realiza n - 1 etapas externas; en cada etapa busca el mínimo en O(n) y actualiza las distancias en O(n), totalizando Theta(n^2). Si se utiliza un Min-Heap y listas de adyacencia, el costo se optimiza a O(|E| \\log |V|). El espacio en memoria auxiliar requiere Theta(n) para los dos vectores de control."
+          }
+        },
+        {
+          "id": "arbol_recubrimiento_kruskal",
+          "titulo": "Árboles de Recubrimiento Mínimo: Algoritmo de Kruskal",
+          "teoria": "El algoritmo de Joseph Kruskal (1956) adopta una perspectiva complementaria a la de Prim para construir el MST: en lugar de expandir un único árbol conectado desde un nodo raíz, opera a nivel global sobre las aristas del grafo partiendo de una floresta de n árboles triviales disjuntos (cada vértice en su propio componente conexo).\n\nEstrategia Greedy (Floresta y Detección de Ciclos):\n1. Se ordenan todas las aristas E del grafo de menor a mayor peso.\n2. Se examinan las aristas en dicho orden monótono creciente.\n3. Función de Factibilidad (Detección de Ciclos): Para una arista e = (u, v), se consulta a qué componente pertenecen sus extremos: buscar(u) y buscar(v).\n   - Si buscar(u) != buscar(v): La arista conecta dos árboles distintos, no forma ciclos. Es FACTIBLE y se incorpora al MST; luego se fusionan ambos componentes mediante la operación combinar(buscar(u), buscar(v)).\n   - Si buscar(u) == buscar(v): Ambos extremos ya pertenecen al mismo árbol conexo. La arista formaría un ciclo cerrado; es NO FACTIBLE y se descarta definitivamente.\n4. El algoritmo termina en cuanto se han aceptado n - 1 aristas.\n\nInstancia Canónica de Cátedra (Mismo Grafo de 7 Nodos, Diapositivas p. 145-154):\nAristas ordenadas por peso creciente:\n1. (a, g): 1 -> Aceptada ✓ (Une {a} y {g})\n2. (f, g): 2 -> Aceptada ✓ (Une {a, g} y {f} -> {a, f, g})\n3. (b, c): 3 -> Aceptada ✓ (Une {b} y {c})\n4. (c, g): 3 -> Aceptada ✓ (Une {b, c} y {a, f, g} -> {a, b, c, f, g})\n5. (a, b): 4 -> DESCARTADA ✗ (a y b ya están en {a, b, c, f, g}; formaría ciclo a-g-c-b-a)\n6. (e, g): 4 -> Aceptada ✓ (Une {a, b, c, f, g} y {e} -> {a, b, c, e, f, g})\n7. (a, f): 5 -> DESCARTADA ✗ (ambos en el mismo componente; formaría ciclo a-g-f-a)\n8. (c, d): 5 -> Aceptada ✓ (Une {a, b, c, e, f, g} y {d} -> {a, b, c, d, e, f, g})\nTotal aristas aceptadas: 6 aristas (|V| - 1 = 7 - 1 = 6). El algoritmo finaliza.\nAristas rechazadas restantes sin evaluar: (a, c): 7, (d, e): 7, (e, f): 8, (d, g): 9.\nCosto Total del MST = 1 + 2 + 3 + 3 + 4 + 5 = 18 (Exactamente idéntico al de Prim).",
+          "elementos_greedy": {
+            "conjunto_candidatos": "El conjunto total de aristas E del grafo.",
+            "funcion_seleccion": "Extraer la arista de menor peso aún no procesada (RecuperarMinElemento en Min-Heap).",
+            "funcion_factibilidad": "buscar(u) != buscar(v) (los dos vértices pertenecen a componentes conexos disjuntos, evitando ciclos).",
+            "funcion_solucion": "Se han incorporado exactamente |V| - 1 aristas a la solución (o queda 1 solo componente conexo unificado).",
+            "funcion_objetivo": "Minimizar el peso total del árbol w(T) = \\sum_{e \\in T} w(e)."
+          },
+          "animaciones": [
+            {
+              "id": "anim_kruskal_trazas_aristas",
+              "tipo": "traza",
+              "formato": "katex",
+              "descripcion": "Registro paso a paso de decisiones voraces tomadas por Kruskal sobre las aristas ordenadas.",
+              "pasos": [
+                "\\begin{array}{|c|c|c|c|l|}\n\\hline\n\\textbf{Paso} & \\textbf{Arista} & \\textbf{Peso} & \\textbf{Decisión} & \\textbf{Justificación / Fusión de Conjuntos} \\\\\n\\hline\n1 & (a, g) & 1 & \\textbf{Aceptada} & \\text{Une } \\{a\\} \\cup \\{g\\} \\\\\n2 & (f, g) & 2 & \\textbf{Aceptada} & \\text{Une } \\{a, g\\} \\cup \\{f\\} \\\\\n3 & (b, c) & 3 & \\textbf{Aceptada} & \\text{Une } \\{b\\} \\cup \\{c\\} \\\\\n4 & (c, g) & 3 & \\textbf{Aceptada} & \\text{Une } \\{b, c\\} \\cup \\{a, f, g\\} \\\\\n5 & (a, b) & 4 & \\text{Rechazada} & \\text{Formaría ciclo con } a-g-c-b \\\\\n6 & (e, g) & 4 & \\textbf{Aceptada} & \\text{Une componente con } \\{e\\} \\\\\n7 & (a, f) & 5 & \\text{Rechazada} & \\text{Formaría ciclo con } a-g-f \\\\\n8 & (c, d) & 5 & \\textbf{Aceptada} & \\text{Une componente con } \\{d\\} \\text{ (6 aristas: FIN)} \\\\\n\\hline\n\\end{array}"
+              ]
+            }
+          ],
+          "pseudocodigo": "Algoritmo Kruskal(G: Grafo)\n    // Entrada: G = (V, E)\n    // Salida: T árbol de recubrimiento mínimo\n    T ← ∅\n    DS ← inicializarConjuntosDisjuntos()\n    para cada v en V hacer\n        DS.crearConjunto(v)\n    fin para\n    Q ← inicializarColaPrioridadMinima(E)\n    mientras |T| < |V| - 1 Y NO Q.estaVacia() hacer\n        (u, v) ← Q.extraerMinimo()\n        si DS.buscar(u) ≠ DS.buscar(v) entonces\n            DS.combinar(DS.buscar(u), DS.buscar(v))\n            T ← T ∪ {(u, v)}\n        fin si\n    fin mientras\n    devolver T",
+          "codigo": {
+            "lenguaje": "Java",
+            "codigo": "public static GrafoTDA<Integer> kruskal(GrafoTDA<Integer> g) throws Exception {\n    // Implementación sobre TDAs de cátedra con clase Par auxiliar\n    GrafoTDA<Integer> resultado = new Grafo<Integer>();\n    resultado.InicializarGrafo();\n    ConjuntoTDA<Integer> vertices = g.Vertices();\n    int cantidad = 0;\n    while (!vertices.conjuntoVacio()) {\n        int vertice = vertices.elegir();\n        vertices.sacar(vertice);\n        resultado.AgregarVertice(vertice);\n        cantidad++;\n    }\n    \n    // Cola de prioridad de aristas por peso\n    ColaPrioridadTDA<Par> aristas = new ColaPrioridad<Par>();\n    aristas.InicializarCola();\n    VectorTDA<Par> conjuntos = new Vector<Par>();\n    conjuntos.inicializarVector(cantidad);\n    \n    vertices = g.Vertices();\n    int i = 0;\n    while (!vertices.conjuntoVacio()) {\n        int vertice = vertices.elegir();\n        vertices.sacar(vertice);\n        Par p = new Par();\n        p.valor1 = vertice; // ID vértice\n        p.valor2 = vertice; // ID conjunto inicial\n        conjuntos.agregarElemento(i, p);\n        i++;\n        \n        ConjuntoTDA<Integer> ady = g.Adyacentes(vertice);\n        while (!ady.conjuntoVacio()) {\n            int aux_vertice = ady.elegir();\n            ady.sacar(aux_vertice);\n            if (aux_vertice > vertice) { // Evitar aristas duplicadas en no dirigido\n                Par arista = new Par();\n                arista.valor1 = vertice;\n                arista.valor2 = aux_vertice;\n                aristas.AgregarElemento(arista, g.PesoArista(vertice, aux_vertice));\n            }\n        }\n    }\n    \n    int cantidad_pendientes = cantidad;\n    while (cantidad_pendientes > 1 && !aristas.ColaVacia()) {\n        Par aux_par = aristas.RecuperarMinElemento();\n        int c1 = -1, c2 = -1;\n        for (i = 0; i < cantidad; i++) {\n            if (conjuntos.recuperarElemento(i).valor1 == aux_par.valor1) {\n                c1 = conjuntos.recuperarElemento(i).valor2;\n            }\n            if (conjuntos.recuperarElemento(i).valor1 == aux_par.valor2) {\n                c2 = conjuntos.recuperarElemento(i).valor2;\n            }\n        }\n        if (c1 != c2) {\n            // Unificación de conjuntos\n            for (i = 0; i < cantidad; i++) {\n                if (conjuntos.recuperarElemento(i).valor2 == c2) {\n                    conjuntos.recuperarElemento(i).valor2 = c1;\n                }\n            }\n            resultado.AgregarArista(aux_par.valor1, aux_par.valor2, (int) aristas.RecuperarMinPrioridad());\n            resultado.AgregarArista(aux_par.valor2, aux_par.valor1, (int) aristas.RecuperarMinPrioridad());\n            cantidad_pendientes--;\n        }\n        aristas.EliminarMinPrioridad();\n    }\n    return resultado;\n}",
+            "correcciones_aplicadas": "1. En el apunte (p. 57) sólo se agregaba la arista en una dirección; al tratarse de un grafo no dirigido con GrafoTDA, se añadió la arista simétrica 'resultado.AgregarArista(aux_par.valor2, aux_par.valor1, peso)' para consistencia.\n2. Se añadió la condición de seguridad '&& !aristas.ColaVacia()' en el while para prevenir excepciones en grafos no conexos."
+          },
+          "analisis_complejidad": {
+            "temporal_peor_caso": "Theta(|E| \\log |E|) = Theta(|E| \\log |V|)",
+            "temporal_mejor_caso": "Theta(|E| \\log |V|)",
+            "espacial": "O(|V| + |E|)",
+            "justificacion": "Ordenar las |E| aristas toma Theta(|E| \\log |E|). Como |E| <= |V|^2, \\log |E| <= 2 \\log |V|, por lo que esta etapa insume Theta(|E| \\log |V|). Con la estructura Disjoint-Set (Union-Find) con unión por rango y compresión de caminos, cada una de las 2|E| operaciones de búsqueda y |V|-1 fusiones toma tiempo casi constante amortizado O(\\alpha(|V|)). El costo dominante es indiscutiblemente el ordenamiento de aristas: Theta(|E| \\log |V|). En la implementación ingenua del apunte con un arreglo de identificadores, cada unión cuesta O(|V|), sumando O(|V|^2) en la fase de unificación."
+          }
+        },
+        {
+          "id": "comparativa_prim_vs_kruskal",
+          "titulo": "Análisis Comparativo Riguroso: Prim vs. Kruskal",
+          "teoria": "Tanto Prim como Kruskal son algoritmos voraces exactos para el Árbol de Recubrimiento Mínimo, pero su desempeño computacional diverge según la densidad topológica del grafo G = (V, E).\n\nEspectro de Conectividad:\nUn grafo conexo posee una cantidad de aristas que oscila en el intervalo:\n|V| - 1 <= |E| <= \\frac{|V|(|V| - 1)}{2} \\approx \\frac{|V|^2}{2}\n\n1. Grafos Ralos o Poco Densos (Sparse Graphs):\nAquí |E| es del orden de O(|V|) (por ejemplo, en redes viales, tendidos de transporte o mallas planares donde cada nodo tiene grado acotado).\n- Kruskal: \\mathcal{O}(|E| \\log |V|) = \\mathcal{O}(|V| \\log |V|).\n- Prim (con arreglo): \\Theta(|V|^2).\nConclusión: Kruskal es estrictamente superior a Prim en grafos ralos por un orden de magnitud logarítmico contra cuadrático.\n\n2. Grafos Densos o Fuertemente Conectados (Dense Graphs):\nAquí |E| es del orden de \\Theta(|V|^2) (la mayoría de los pares de vértices están unidos por una arista).\n- Kruskal: \\mathcal{O}(|E| \\log |V|) = \\mathcal{O}(|V|^2 \\log |V|).\n- Prim (con arreglo/matriz): \\Theta(|V|^2).\nConclusión: Prim con matriz de adyacencia es estrictamente superior a Kruskal en grafos densos, ya que no incurre en el factor \\log |V| adicional del ordenamiento de aristas.\n\n3. Prim con Fibonacci Heap:\nImplementando Prim con un Fibonacci Heap, la complejidad teórica se reduce a \\mathcal{O}(|E| + |V| \\log |V|). En grafos densos donde |E| \\sim |V|^2, esto converge a \\mathcal{O}(|V|^2), igualando a la versión con matriz de adyacencia pero con una constante oculta mucho más pesada.",
+          "elementos_greedy": {
+            "conjunto_candidatos": "Topología del grafo y parámetros |V| y |E|.",
+            "funcion_seleccion": "Elección del algoritmo según el ratio de densidad d = |E| / |V|.",
+            "funcion_factibilidad": "Estructuras de datos disponibles en el entorno de ejecución.",
+            "funcion_solucion": "Mínimo tiempo de cómputo para resolver el MST.",
+            "funcion_objetivo": "Minimizar la complejidad temporal asintótica y el uso de memoria."
+          },
+          "animaciones": [
+            {
+              "id": "anim_tabla_prim_vs_kruskal",
+              "tipo": "traza",
+              "formato": "katex",
+              "descripcion": "Cuadro comparativo asintótico de Prim vs Kruskal según la densidad de aristas.",
+              "pasos": [
+                "\\begin{array}{|l|c|c|c|}\n\\hline\n\\textbf{Algoritmo} & \\textbf{Grafo Ralo } (|E| \\sim |V|) & \\textbf{Grafo Denso } (|E| \\sim |V|^2) & \\textbf{Estructura Óptima} \\\\\n\\hline\n\\textbf{Prim (Matriz)} & \\Theta(|V|^2) & \\mathbf{\\Theta(|V|^2)} & \\text{Matriz de Adyacencia} \\\\\n\\textbf{Prim (Min-Heap)} & \\mathcal{O}(|V| \\log |V|) & \\mathcal{O}(|V|^2 \\log |V|) & \\text{Listas + Heap Binario} \\\\\n\\textbf{Kruskal} & \\mathbf{\\mathcal{O}(|V| \\log |V|)} & \\mathcal{O}(|V|^2 \\log |V|) & \\text{Union-Find + Heap} \\\\\n\\hline\n\\end{array}"
+              ]
+            }
+          ],
+          "pseudocodigo": "// Criterio de Selección de Algoritmo de MST\nsi |E| < (|V|^2 / \\log |V|) entonces\n    Ejecutar Kruskal(G) // Ideal para grafos ralos\nsino\n    Ejecutar Prim(G)    // Ideal para grafos densos\nfin si",
+          "codigo": {
+            "lenguaje": "Java",
+            "codigo": "// Dispatcher ingenieril de MST basado en densidad de aristas\npublic static GrafoTDA<Integer> calcularMSTOptimo(GrafoTDA<Integer> g, int v, int e) throws Exception {\n    // Umbral de densidad teórica\n    double umbral = (double) (v * v) / (Math.log(v) / Math.log(2));\n    if (e < umbral) {\n        // Grafo ralo: Kruskal domina asintóticamente\n        return kruskal(g);\n    } else {\n        // Grafo denso: Prim con matriz domina asintóticamente\n        return prim(g);\n    }\n}",
+            "correcciones_aplicadas": "Diseño de un dispatcher algorítmico adaptativo basado en el análisis asintótico comparativo de la cátedra."
+          },
+          "analisis_complejidad": {
+            "temporal_peor_caso": "O(|V|^2) con Prim o O(|E| \\log |V|) con Kruskal",
+            "temporal_mejor_caso": "O(|V| \\log |V|) con Kruskal en grafos ralos",
+            "espacial": "O(|V|^2) con matriz o O(|V| + |E|) con listas de adyacencia",
+            "justificacion": "La elección óptima depende intrínsecamente de la representación en memoria y de la densidad de conexiones. Para redes dispersas (|E| = O(|V|)), Kruskal es la opción ganadora. Para redes casi completas (|E| = \\Omega(|V|^2)), Prim con matriz de adyacencia evita el overhead del ordenamiento y la manipulación de aristas redundantes."
+          }
+        }
+      ]
+    }
+  ],
+  "conceptos": [
+    {
+      "id": "greedy-components",
+      "title": "Componentes Formales de un Algoritmo Greedy",
+      "badgeText": "Estructura Voraz",
+      "summary": "Un esquema Greedy construye la solución paso a paso eligiendo en cada iteración el candidato que maximiza el beneficio inmediato según un criterio local.",
+      "bulletPoints": [
+        "Conjunto de Candidatos (C): Los elementos disponibles inicialmente (vértices, aristas, monedas, actividades).",
+        "Función de Selección: Elige el mejor candidato actual según el criterio voraz sin mirar decisiones futuras.",
+        "Función de Factibilidad: Verifica que incorporar el candidato elegido no viole las restricciones del problema (ej. no formar ciclos).",
+        "Función Solución y Función Objetivo: Determina cuándo el conjunto seleccionado ya es una solución completa y mide su costo/valor."
+      ]
+    },
+    {
+      "id": "shortest-paths-vs-mst",
+      "title": "Caminos Mínimos (Dijkstra) vs Árbol de Recubrimiento Mínimo (Prim / Kruskal)",
+      "badgeText": "Grafos Ponderados",
+      "summary": "Aunque tienen estructuras similares, optimizan objetivos distintos: Dijkstra minimiza la distancia acumulada desde un nodo origen hacia cada vértice, mientras que Prim y Kruskal minimizan la suma total de aristas para conectar todos los vértices.",
+      "bulletPoints": [
+        "Dijkstra requiere aristas con pesos no negativos (w(u,v) >= 0) y relaja distancias acumuladas D[v] = min(D[v], D[u] + peso(u,v)).",
+        "Prim hace crecer un único árbol conectado eligiendo siempre el vértice externo más cercano a cualquier nodo ya incluido en el árbol.",
+        "Kruskal ordena las aristas por peso creciente y une componentes conexas mediante Union-Find evitando ciclos."
+      ],
+      "formulas": [
+        {
+          "label": "Relajación de Aristas en Dijkstra",
+          "latex": "D[v] = \\min\\big(D[v],\\; D[u] + w(u, v)\\big)",
+          "description": "Actualiza el costo del camino más corto conocido desde el origen hacia cada vecino pendiente v."
+        }
+      ]
+    }
+  ],
+  "algoritmos": [
+    {
+      "id": "dijkstra-algorithm",
+      "name": "Algoritmo de Dijkstra (Caminos Mínimos desde un Origen)",
+      "paradigmTag": "Greedy sobre Grafos Dirigidos",
+      "bestCaseComplexityLatex": "\\mathcal{O}(n^2)",
+      "averageCaseComplexityLatex": "\\mathcal{O}(a \\log n)",
+      "worstCaseComplexityLatex": "\\mathcal{O}(n^2) \\text{ matriz} / \\mathcal{O}(a \\log n) \\text{ heap}",
+      "spaceComplexityLatex": "\\Theta(n)",
+      "recurrenceOrEquationLatex": "D[v] = \\min(D[v], D[w] + C[w, v])",
+      "keyInsight": "En cada iteración selecciona el vértice no visitado con menor distancia acumulada desde el origen y garantiza que esa distancia ya es óptima porque no existen pesos negativos.",
+      "stepByStepSummary": [
+        "Inicializar el vector de distancias D con los pesos directos desde el origen y el conjunto de pendientes V - {origen}.",
+        "Seleccionar el vértice w pendiente con menor valor D[w] y marcarlo como definitivo.",
+        "Para cada vecino v pendiente de w, relajar la distancia si D[w] + peso(w, v) mejora el valor actual de D[v]."
+      ],
+      "codeSnippets": {
+        "pseudocode": "Funcion Dijkstra(Grafo, costos, origen, n) : Vector\nInicio\n    Visitados <- {origen}\n    Para v <- 1 Hasta n Hacer\n        D[v] <- costos[origen, v]\n        P[v] <- origen\n    FinPara\n    Repetir n - 1 veces\n        w <- VerticeNoVisitadoConMenorDistancia(D, Visitados)\n        Visitados <- Visitados U {w}\n        Para cada v en (Vertices - Visitados) Hacer\n            Si D[w] + costos[w, v] < D[v] Entonces\n                D[v] <- D[w] + costos[w, v]\n                P[v] <- w\n            FinSi\n        FinPara\n    FinRepetir\n    Devolver D\nFin",
+        "java": "import java.util.Arrays;\n\npublic class DijkstraShortestPath {\n    public static int[] computeShortestDistances(int[][] adjacencyMatrix, int sourceNode) {\n        int vertexCount = adjacencyMatrix.length;\n        int[] distances = new int[vertexCount];\n        boolean[] visited = new boolean[vertexCount];\n        Arrays.fill(distances, Integer.MAX_VALUE);\n        distances[sourceNode] = 0;\n\n        for (int step = 0; step < vertexCount - 1; step++) {\n            int closestVertex = selectUnvisitedMinimumVertex(distances, visited);\n            if (closestVertex == -1) {\n                break;\n            }\n            visited[closestVertex] = true;\n            for (int neighbor = 0; neighbor < vertexCount; neighbor++) {\n                int edgeWeight = adjacencyMatrix[closestVertex][neighbor];\n                if (!visited[neighbor] && edgeWeight > 0 && distances[closestVertex] != Integer.MAX_VALUE) {\n                    int candidateDistance = distances[closestVertex] + edgeWeight;\n                    if (candidateDistance < distances[neighbor]) {\n                        distances[neighbor] = candidateDistance;\n                    }\n                }\n            }\n        }\n        return distances;\n    }\n\n    private static int selectUnvisitedMinimumVertex(int[] distances, boolean[] visited) {\n        int minimumDistance = Integer.MAX_VALUE;\n        int selectedVertex = -1;\n        for (int vertex = 0; vertex < distances.length; vertex++) {\n            if (!visited[vertex] && distances[vertex] < minimumDistance) {\n                minimumDistance = distances[vertex];\n                selectedVertex = vertex;\n            }\n        }\n        return selectedVertex;\n    }\n}",
+        "python": "import heapq\n\ndef dijkstra_shortest_paths(adjacency_list: dict[int, list[tuple[int, int]]], source_node: int) -> dict[int, float]:\n    distances: dict[int, float] = {node: float('inf') for node in adjacency_list}\n    distances[source_node] = 0.0\n    priority_queue: list[tuple[float, int]] = [(0.0, source_node)]\n\n    while priority_queue:\n        current_distance, current_node = heapq.heappop(priority_queue)\n        if current_distance > distances[current_node]:\n            continue\n        for neighbor, edge_weight in adjacency_list[current_node]:\n            candidate_distance = current_distance + edge_weight\n            if candidate_distance < distances[neighbor]:\n                distances[neighbor] = candidate_distance\n                heapq.heappush(priority_queue, (candidate_distance, neighbor))\n    return distances"
+      }
+    },
+    {
+      "id": "prim-mst",
+      "name": "Algoritmo de Prim (Árbol de Recubrimiento Mínimo)",
+      "paradigmTag": "MST Centrado en Vértices",
+      "bestCaseComplexityLatex": "\\mathcal{O}(n^2)",
+      "averageCaseComplexityLatex": "\\mathcal{O}(n^2)",
+      "worstCaseComplexityLatex": "\\mathcal{O}(n^2)",
+      "spaceComplexityLatex": "\\Theta(n)",
+      "recurrenceOrEquationLatex": "T(n) = (n-1) \\cdot \\mathcal{O}(n) = \\mathcal{O}(n^2)",
+      "keyInsight": "Mantiene para cada nodo externo cuál es el vértice del árbol parcial que lo conecta con menor peso directo, garantizando que el subgrafo construido sea siempre conexo y acíclico.",
+      "stepByStepSummary": [
+        "Iniciar el árbol con un vértice arbitrario y registrar la menor arista hacia cada nodo restante.",
+        "Elegir el nodo externo con menor costo de conexión hacia el árbol actual.",
+        "Incorporar la arista al MST y actualizar los costos mínimos de conexión de los nodos aún no visitados."
+      ],
+      "codeSnippets": {
+        "pseudocode": "Procedimiento Prim(Grafo, costos, n)\nInicio\n    Visitados <- {1}\n    Para i <- 2 Hasta n Hacer\n        MenorCosto[i] <- costos[1, i]\n        MasCercano[i] <- 1\n    FinPara\n    Repetir n - 1 veces\n        w <- VerticeConMenorCostoConexion(MenorCosto, Visitados)\n        Visitados <- Visitados U {w}\n        AgregarAristaMST(MasCercano[w], w)\n        Para cada v en (Vertices - Visitados) Hacer\n            Si costos[w, v] < MenorCosto[v] Entonces\n                MenorCosto[v] <- costos[w, v]\n                MasCercano[v] <- w\n            FinSi\n        FinPara\n    FinRepetir\nFin",
+        "java": "public class PrimMinimumSpanningTree {\n    public static int computeMstTotalWeight(int[][] costMatrix) {\n        int vertexCount = costMatrix.length;\n        boolean[] inTree = new boolean[vertexCount];\n        int[] minEdgeWeight = new int[vertexCount];\n        inTree[0] = true;\n        for (int vertex = 1; vertex < vertexCount; vertex++) {\n            minEdgeWeight[vertex] = costMatrix[0][vertex];\n        }\n\n        int totalMstWeight = 0;\n        for (int step = 1; step < vertexCount; step++) {\n            int bestVertex = -1;\n            int smallestWeight = Integer.MAX_VALUE;\n            for (int candidate = 1; candidate < vertexCount; candidate++) {\n                if (!inTree[candidate] && minEdgeWeight[candidate] < smallestWeight) {\n                    smallestWeight = minEdgeWeight[candidate];\n                    bestVertex = candidate;\n                }\n            }\n            inTree[bestVertex] = true;\n            totalMstWeight += smallestWeight;\n            for (int neighbor = 1; neighbor < vertexCount; neighbor++) {\n                if (!inTree[neighbor] && costMatrix[bestVertex][neighbor] < minEdgeWeight[neighbor]) {\n                    minEdgeWeight[neighbor] = costMatrix[bestVertex][neighbor];\n                }\n            }\n        }\n        return totalMstWeight;\n    }\n}",
+        "python": "def prim_mst_total_weight(cost_matrix: list[list[float]]) -> float:\n    vertex_count = len(cost_matrix)\n    in_tree = [False] * vertex_count\n    min_edge_weight = [cost_matrix[0][v] for v in range(vertex_count)]\n    in_tree[0] = True\n    total_mst_weight = 0.0\n\n    for _ in range(vertex_count - 1):\n        best_vertex = min(\n            (v for v in range(vertex_count) if not in_tree[v]),\n            key=lambda v: min_edge_weight[v]\n        )\n        in_tree[best_vertex] = True\n        total_mst_weight += min_edge_weight[best_vertex]\n        for neighbor in range(vertex_count):\n            if not in_tree[neighbor] and cost_matrix[best_vertex][neighbor] < min_edge_weight[neighbor]:\n                min_edge_weight[neighbor] = cost_matrix[best_vertex][neighbor]\n    return total_mst_weight"
+      }
+    },
+    {
+      "id": "kruskal-mst",
+      "name": "Kruskal (Union-Find)",
+      "paradigmTag": "MST Centrado en Aristas",
+      "bestCaseComplexityLatex": "\\mathcal{O}(a \\log a)",
+      "averageCaseComplexityLatex": "\\mathcal{O}(a \\log a)",
+      "worstCaseComplexityLatex": "\\mathcal{O}(a \\log a)",
+      "spaceComplexityLatex": "\\Theta(n + a)",
+      "recurrenceOrEquationLatex": "T(n, a) = \\mathcal{O}(a \\log a) + a \\cdot \\alpha(n) = \\mathcal{O}(a \\log a)",
+      "keyInsight": "Procesa las aristas en orden ascendente de peso y utiliza una estructura de Conjuntos Disjuntos (Union-Find) para detectar en tiempo casi constante si los extremos ya pertenecen a la misma componente.",
+      "stepByStepSummary": [
+        "Inicializar cada vértice en su propia componente conexa disjunta y ordenar las aristas por peso ascendente.",
+        "Extraer la siguiente arista más liviana (u, v) y buscar los representantes de las componentes de u y v.",
+        "Si pertenecen a componentes distintas, agregar la arista al árbol y fusionar ambos conjuntos hasta reunir n - 1 aristas."
+      ],
+      "codeSnippets": {
+        "pseudocode": "Funcion Kruskal(Vertices, Aristas, n) : ConjuntoAristas\nInicio\n    OrdenarPorPesoAscendente(Aristas)\n    InicializarConjuntosDisjuntos(n)\n    ArbolMST <- Vacio\n    Para cada arista (u, v, peso) en Aristas Hacer\n        compU <- BuscarRepresentante(u)\n        compV <- BuscarRepresentante(v)\n        Si compU != compV Entonces\n            ArbolMST <- ArbolMST U {(u, v, peso)}\n            FusionarConjuntos(compU, compV)\n        FinSi\n    FinPara\n    Devolver ArbolMST\nFin",
+        "java": "import java.util.Arrays;\nimport java.util.Comparator;\n\npublic class KruskalMinimumSpanningTree {\n    public record Edge(int source, int target, int weight) {}\n\n    public static int computeMstWeight(int vertexCount, Edge[] edges) {\n        Arrays.sort(edges, Comparator.comparingInt(Edge::weight));\n        int[] parent = new int[vertexCount];\n        for (int i = 0; i < vertexCount; i++) {\n            parent[i] = i;\n        }\n        int totalWeight = 0;\n        int selectedEdges = 0;\n        for (Edge edge : edges) {\n            int rootSource = findRepresentative(parent, edge.source());\n            int rootTarget = findRepresentative(parent, edge.target());\n            if (rootSource != rootTarget) {\n                parent[rootSource] = rootTarget;\n                totalWeight += edge.weight();\n                selectedEdges++;\n                if (selectedEdges == vertexCount - 1) {\n                    break;\n                }\n            }\n        }\n        return totalWeight;\n    }\n\n    private static int findRepresentative(int[] parent, int node) {\n        if (parent[node] == node) {\n            return node;\n        }\n        parent[node] = findRepresentative(parent, parent[node]);\n        return parent[node];\n    }\n}",
+        "python": "def kruskal_mst_weight(vertex_count: int, edges: list[tuple[int, int, int]]) -> int:\n    parent = list(range(vertex_count))\n\n    def find_representative(node: int) -> int:\n        while parent[node] != node:\n            parent[node] = parent[parent[node]]\n            node = parent[node]\n        return node\n\n    sorted_edges = sorted(edges, key=lambda edge: edge[2])\n    total_weight = 0\n    edges_added = 0\n\n    for u_node, v_node, weight in sorted_edges:\n        root_u = find_representative(u_node)\n        root_v = find_representative(v_node)\n        if root_u != root_v:\n            parent[root_u] = root_v\n            total_weight += weight\n            edges_added += 1\n            if edges_added == vertex_count - 1:\n                break\n    return total_weight"
+      }
+    }
+  ]
+}

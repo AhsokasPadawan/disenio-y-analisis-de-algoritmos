@@ -1,0 +1,503 @@
+{
+  "modulo": "divide_and_conquer",
+  "titulo": "Banco de Ejercicios: Divide and Conquer y Subtract & Conquer",
+  "descripcion": "Colección completa y consolidada de ejercicios de Divide and Conquer y Subtract & Conquer, provenientes de parciales, guías prácticas y diapositivas de clase (Clases 02 y 03).",
+  "total_ejercicios": 41,
+  "fecha_actualizacion": "2026-11-07",
+  "ejercicios": [
+    {
+      "id_tema": 1,
+      "tema": "divide_and_conquer",
+      "titulo": "Picos en un vector",
+      "enunciado": "Dado un vector u, un elemento pico es un elemento que no es menor que sus vecinos inmediatos.\na) Encuentre un algoritmo eficiente (mejor que O(n)) que encuentre algún elemento pico en un vector de n posiciones. Observe que puede haber varios elementos pico; basta encontrar uno de ellos (siempre hay por lo menos uno).\nb) Calcule la complejidad de su algoritmo y justifique que cumple con el requerimiento.",
+      "recurso_visual": null,
+      "fuente_original": "DAA Ejercicios primer parcial (Guía)",
+      "resolucion_propuesta": [
+        {
+          "fuente_propuesta": "DAA 02 DyC parte 1 - Slide 155",
+          "clasificacion": "divide_and_conquer",
+          "complejidad_esperada": "O(\\log n)",
+          "estrategia_sugerida": "Evaluar punto medio mid. Si u[mid] < u[mid-1], existe obligatoriamente un pico en la mitad izquierda; si u[mid] < u[mid+1], existe en la derecha; de lo contrario, mid es un pico.",
+          "nota_duplicado": "Coincide con el ejercicio propuesto #4 ('Picos en un Vector (Peak Finding)') de diapositivas de clase."
+        }
+      ],
+      "es_ejercicio_propuesto_diapositivas": true,
+      "id_global": 1
+    },
+    {
+      "id_tema": 2,
+      "tema": "divide_and_conquer",
+      "titulo": "Picos estrictos en un vector",
+      "enunciado": "Dado un vector u de números enteros, decimos que un elemento u[i] es un pico estricto en u si u[i−1] < u[i] > u[i+1]; en el caso de los elementos extremos, u[0] es un pico estricto si u[0] > u[1] y u[len(u)−1] es un pico estricto si u[len(u)−2] < u[len(u)−1]. Asumimos que si el arreglo tiene un único elemento, éste es un pico estricto. Observe que no está en general garantizada la presencia de picos estrictos.\nAsumiendo que u contiene números todos diferentes, queremos encontrar con una estrategia eficiente (mejor que O(n)) al menos un pico estricto dentro de este arreglo si es que alguno existe.\na) Describa una estrategia para encontrar el pico estricto de un arreglo que cumpla con las condiciones de los párrafos precedentes. ¿Existe siempre un pico estricto en este caso? ¿Por qué o por qué no?\nb) Escriba el pseudo-código de su solución.\nc) Determine la complejidad de su algoritmo.",
+      "recurso_visual": null,
+      "fuente_original": "DAA Ejercicios primer parcial (Guía)",
+      "id_global": 2
+    },
+    {
+      "id_tema": 3,
+      "tema": "divide_and_conquer",
+      "titulo": "Función monótonamente decreciente",
+      "enunciado": "En este ejercicio consideramos una función monótonamente decreciente f : N → Z, esto es, una función definida sobre los números naturales que devuelve valores enteros, de manera que f(i) ≥ f(i + 1). Asumiendo que podemos evaluar f en cualquier punto i en tiempo constante, queremos encontrar n = min{i ∈ N | f(i) ≤ 0}. En otras palabras, queremos encontrar el valor en el que f se vuelve no positiva.\na) Describa una estrategia que resuelva este problema en tiempo mejor que lineal.\nb) Escriba el pseudo-código de su solución.\nc) Calcule la complejidad y muestre que se cumple el requerimiento de costo.\nd) ¿Puede optimizarse esto si la función es estrictamente decreciente?",
+      "recurso_visual": null,
+      "fuente_original": "DAA Ejercicios primer parcial (Guía)",
+      "resolucion_propuesta": [
+        {
+          "fuente_propuesta": "DAA 03 DyC parte 2 - Slide 235",
+          "clasificacion": "divide_and_conquer",
+          "complejidad_esperada": "O(\\log n)",
+          "estrategia_sugerida": "Búsqueda galopante / exponencial (evaluar potencias de 2: 1, 2, 4, 8, ... hasta hallar límite superior 2^k tal que f(2^k) <= 0) seguido de búsqueda binaria clásica en [2^(k-1)..2^k].",
+          "nota_duplicado": "Coincide con el ejercicio propuesto #6 ('Búsqueda de Cero en Función Monótona Decreciente') de diapositivas de clase."
+        },
+        {
+          "fuente_propuesta": "DAA 03 DyC parte 2 - Slide 237",
+          "clasificacion": "divide_and_conquer",
+          "complejidad_esperada": "O(\\log n)",
+          "estrategia_sugerida": "Al no existir mesetas de valores constantes, las condiciones de parada se vuelven estrictas y se descartan empates en los extremos de la búsqueda binaria.",
+          "nota_duplicado": "Coincide con el ejercicio propuesto #9 ('Cero en Función Estrictamente Decreciente') de diapositivas de clase."
+        }
+      ],
+      "es_ejercicio_propuesto_diapositivas": true,
+      "id_global": 3
+    },
+    {
+      "id_tema": 4,
+      "tema": "divide_and_conquer",
+      "titulo": "Cálculo de potencia",
+      "enunciado": "Tenemos dos números enteros positivos a y b. Queremos calcular a^b, pero nuestro lenguaje de programación carece de la operación potencia. Sólo disponemos de las cuatro operaciones aritméticas básicas.\na) Describa una estrategia que resuelva este problema en tiempo mejor que O(b).\nb) Escriba el pseudo-código de su solución.\nc) Calcule la complejidad y muestre que se cumple el requerimiento de costo.",
+      "recurso_visual": null,
+      "fuente_original": "DAA Ejercicios primer parcial (Guía)",
+      "id_global": 4
+    },
+    {
+      "id_tema": 5,
+      "tema": "divide_and_conquer",
+      "titulo": "Cantidad de veces que aparece un elemento en un arreglo ordenado",
+      "enunciado": "Tenemos un arreglo ordenado a y un elemento x que está en el arreglo. Queremos encontrar la frecuencia de x en a (es decir, la cantidad de veces que aparece) de manera eficiente.\na) Describa una estrategia que encuentre la frecuencia de x en tiempo mejor que lineal.\nb) Escriba el pseudo-código de su solución.\nc) Calcule la complejidad y muestre que se cumple el requerimiento de costo.",
+      "recurso_visual": null,
+      "fuente_original": "DAA Ejercicios primer parcial (Guía)",
+      "id_global": 5
+    },
+    {
+      "id_tema": 6,
+      "tema": "divide_and_conquer",
+      "titulo": "Frecuencia de elementos en un arreglo ordenado",
+      "enunciado": "Tenemos un arreglo a ordenado y queremos obtener una lista freq que contenga una tupla (x, f) por cada elemento x en a, donde f es la frecuencia de x en a. Por ejemplo, si a = [1, 1, 2, 3, 3, 3, 3] entonces freq = [(1, 2), (2, 1), (3, 4)].\na) Describa una estrategia que resuelva este problema en tiempo mejor que lineal. Puede buscar inspiración en el ejercicio anterior.\nb) Escriba el pseudo-código de su solución.\nc) Calcule la complejidad y muestre que se cumple el requerimiento de costo.",
+      "recurso_visual": null,
+      "fuente_original": "DAA Ejercicios primer parcial (Guía)",
+      "id_global": 6
+    },
+    {
+      "id_tema": 7,
+      "tema": "divide_and_conquer",
+      "titulo": "Búsqueda en matrices doblemente ordenadas",
+      "enunciado": "Tenemos una matriz cuadrada m doblemente ordenada, es decir una matriz m ∈ Z^(n×n) en la que tanto las filas como las columnas están ordenadas en sentido creciente.\n\nEjemplo: la siguiente es una matriz doblemente ordenada.\nQueremos determinar de manera eficiente si un número x está en m.\na) Defina una estrategia eficiente para encontrar el número x en una matriz cuadrada doblemente ordenada m. Explique su estrategia. Por \"eficiente\" entendemos una estrategia de complejidad a lo sumo lineal.\nb) Escriba el pseudo-código de su estrategia.\nc) Determine la complejidad de su algoritmo para verificar que el requerimiento de eficiencia se satisfizo.\n\nAyuda: en el caso de que el elemento del centro de la matriz sea el número buscado, terminamos. Pero ¿Qué sucede si el elemento central es menor que x? ¿Dónde deberíamos proseguir la búsqueda? ¿Y si el elemento central fuera mayor que x?",
+      "recurso_visual": {
+        "tipo": "latex",
+        "formato": "katex",
+        "codigo": "\\begin{bmatrix}\n10 & 20 & 30 & 40 \\\\\n15 & 25 & 35 & 45 \\\\\n27 & 29 & 37 & 48 \\\\\n32 & 33 & 39 & 50\n\\end{bmatrix}"
+      },
+      "fuente_original": "DAA Ejercicios primer parcial (Guía)",
+      "id_global": 7
+    },
+    {
+      "id_tema": 8,
+      "tema": "divide_and_conquer",
+      "titulo": "Curvas de contagios diarios (Covid-55)",
+      "enunciado": "Estamos en el año 2099. Un grupo de infectólogos analiza las curvas de contagios diarios del virus Covid-55 que medio siglo antes había asolado al mundo hasta la llegada de la vacuna senegalesa.\nLas cifras correspondientes a cada día del año 2055 para diversos sitios se encuentran organizadas en arreglos de 365 posiciones con la cantidad de contagios diarios. En todos los arreglos se da la misma situación: la curva de contagios crece hasta un punto máximo y a partir de ese punto, comienza a decrecer, a menos que el punto máximo se encuentre al final. En otras palabras, si empieza a decrecer ya no crece más.\na) Defina una estrategia eficiente (de costo mejor que lineal) para encontrar el máximo número de contagios en cada vector.\nb) Escriba el pseudo-código de su solución.\nc) Calcule la complejidad de su algoritmo y justifique su resultado. Una complejidad sin una justificación correcta no se tendrá en cuenta.",
+      "recurso_visual": null,
+      "fuente_original": "DAA Ejercicios primer parcial (Guía)",
+      "id_global": 8
+    },
+    {
+      "id_tema": 9,
+      "tema": "divide_and_conquer",
+      "titulo": "Punto fijo en arreglo ordenado (a[i] = i)",
+      "enunciado": "Dado un arreglo ordenado con números todos diferentes a[0..n − 1], usted quiere determinar si existe un índice i tal que a[i] = i.\na) Defina una estrategia eficiente (de costo mejor que lineal) para encontrar el índice i que cumple a[i] = i o que devuelva −1 si tal índice no existe.\nb) Escriba el pseudo-código de su solución.\nc) Calcule la complejidad de su algoritmo y justifique su resultado. Una complejidad sin una justificación correcta no se tendrá en cuenta.",
+      "recurso_visual": null,
+      "fuente_original": "DAA Ejercicios primer parcial (Guía)",
+      "resolucion_propuesta": [
+        {
+          "fuente_propuesta": "DAA 03 DyC parte 2 - Slide 238",
+          "clasificacion": "divide_and_conquer",
+          "complejidad_esperada": "O(\\log n)",
+          "estrategia_sugerida": "Definir función g(i) = A[i] - i. Como A tiene elementos distintos ordenados, g(i) es monótona no decreciente. Se aplica búsqueda binaria buscando g(i) == 0.",
+          "nota_duplicado": "Coincide con el ejercicio propuesto #11 ('Punto Fijo en Arreglo Ordenado (A[i] == i)') de diapositivas de clase."
+        }
+      ],
+      "es_ejercicio_propuesto_diapositivas": true,
+      "id_global": 9
+    },
+    {
+      "id_tema": 10,
+      "tema": "divide_and_conquer",
+      "titulo": "El rincón surrealista: Huevos y rascacielos",
+      "enunciado": "La UMFM (Universidad Municipal de Fraile Muerto) está planeando un ambicioso experimento para determinar el piso más alto desde el que se puede arrojar un huevo al piso sin que se rompa. Para ello, se parte de las siguientes hipótesis:\n- Si un huevo se rompe al ser arrojado desde un piso n, entonces se romperá para cualquier piso superior (es decir, para cualquier piso m > n).\n- Si un huevo no se rompe al ser arrojado desde un piso n, entonces tampoco se romperá para ningún piso inferior (es decir, para ningún piso m < n).\nEl experimento debe llevarse a cabo con el mínimo número de huevos arrojados por expreso pedido del portero del edificio.\na) Defina una estrategia para determinar el piso máximo desde el que se puede arrojar un huevo sin que se rompa con el mínimo número de huevos arrojados.\nb) ¿Cuál será la cantidad total de huevos arrojados para un edificio de n pisos?",
+      "recurso_visual": null,
+      "fuente_original": "DAA Ejercicios primer parcial (Guía)",
+      "id_global": 10
+    },
+    {
+      "id_tema": 11,
+      "tema": "divide_and_conquer",
+      "titulo": "BST balanceado a partir de arreglo ordenado",
+      "enunciado": "Tenemos un arreglo a de números ordenados. Queremos llenar un BST con los números de a de manera que el BST quede lo más balanceado que sea posible.\n\nNota: asumimos que tenemos un TDA BST equipado con las siguientes operaciones:\n- emptyBST, que devuelve true si el BST está vacío y false en caso contrario.\n- leftChild que nos devuelve el sub-árbol izquierdo, que es también de tipo BST.\n- rightChild que nos devuelve el sub-árbol derecho, que es también de tipo BST.\n- addElem que agrega un elemento al BST con el algoritmo que conocemos de la materia anterior.\n- delElem que elimina un elemento al BST con el algoritmo que conocemos de la materia anterior.\n- root que devuelve el elemento de la raíz del BST. Falla si el BST está vacío.\n\na) Dé una estrategia para resolver este problema en tiempo lineal.\nb) Escriba el pseudo-código de su solución y calcule la complejidad correspondiente.\nc) Calcule el costo de su algoritmo.",
+      "recurso_visual": null,
+      "fuente_original": "DAA Ejercicios primer parcial (Guía)",
+      "id_global": 11
+    },
+    {
+      "id_tema": 12,
+      "tema": "divide_and_conquer",
+      "titulo": "Reconstrucción de BST a partir de listado pre-order",
+      "enunciado": "Tenemos un arreglo a de números que representa el listado pre-order de un BST. Queremos reconstruir el BST a partir de este listado.\n\nNota: asumimos que tenemos un TDA BST equipado con las operaciones estándar (emptyBST, leftChild, rightChild, addElem, delElem, root).\n\na) Dé una estrategia para resolver este problema en tiempo lineal.\nb) Escriba el pseudo-código de su solución y calcule la complejidad correspondiente.\nc) Calcule la complejidad y muestre que nos encontramos dentro de los requerimientos de costo.",
+      "recurso_visual": null,
+      "fuente_original": "DAA Ejercicios primer parcial (Guía)",
+      "id_global": 12
+    },
+    {
+      "id_tema": 13,
+      "tema": "divide_and_conquer",
+      "titulo": "Vectores rotados",
+      "enunciado": "Se tiene un vector ordenado v de n números enteros diferentes rotado k posiciones, con k ∈ {0, ..., n − 1}. Esto significa que el elemento que estaba en la posición i pasó a la posición (i + k) mod n.\na) Describa la estrategia más eficiente para encontrar los valores máximo y mínimo de v. Este vector ha sido rotado k posiciones (no conocemos k; sólo sabemos que está entre 0 y n − 1).\nb) Escriba el pseudo-código que realiza su estrategia.\nc) Justifique que su estrategia es eficiente calculando la complejidad de su programa. Justifique su resultado.",
+      "recurso_visual": null,
+      "fuente_original": "DAA Ejercicios primer parcial (Guía)",
+      "resolucion_propuesta": [
+        {
+          "fuente_propuesta": "DAA 03 DyC parte 2 - Slide 237",
+          "clasificacion": "divide_and_conquer",
+          "complejidad_esperada": "O(\\log n)",
+          "estrategia_sugerida": "Búsqueda binaria del punto de discontinuidad (inflexión donde A[i] > A[i+1]). Si A[mid] > A[fin], el punto de rotación está en la mitad derecha; sino en la izquierda.",
+          "nota_duplicado": "Coincide con el ejercicio propuesto #10 ('Máximo en Arreglo Ordenado Rotado Circularmente') de diapositivas de clase."
+        }
+      ],
+      "es_ejercicio_propuesto_diapositivas": true,
+      "id_global": 13
+    },
+    {
+      "id_tema": 14,
+      "tema": "divide_and_conquer",
+      "titulo": "Eficiencia temporal - Metodo_1",
+      "enunciado": "Calcular la eficiencia del siguiente procedimiento, mostrando la justificación del cálculo:\n\n```c\nMetodo_1 (var conjunto[1..n], int n){\n    bool variableCond = calcularCondicion(conjunto);\n    Si (variableCond){\n        Procesar(conjunto);\n        Metodo_1(conjunto, n/3);\n    } sino {\n        Metodo_1(conjunto, n/3);\n    }\n    fin sino\n}\n```\nDonde el tiempo de 'calcularCondicion' es O(log n), y 'Procesar' es O(n).",
+      "recurso_visual": null,
+      "fuente_original": "UADE Progra III - Parte 1: Análisis de eficiencia temporal",
+      "id_global": 14
+    },
+    {
+      "id_tema": 15,
+      "tema": "divide_and_conquer",
+      "titulo": "Eficiencia temporal - Metodo_2",
+      "enunciado": "Calcular la eficiencia del siguiente procedimiento, mostrando la justificación del cálculo:\n\n```c\nMetodo_2 (var conjunto[1..n], int n){\n    bool variableCond = calcularCondicion(conjunto);\n    Si (variableCond){\n        Procesar(conjunto);\n    } sino {\n        Metodo_2(conjunto, n/2);\n        Metodo_2(conjunto, n/2);\n    }\n    fin sino\n}\n```\nDonde el tiempo de 'calcularCondicion' y de 'Procesar' son constantes.",
+      "recurso_visual": null,
+      "fuente_original": "UADE Progra III - Parte 1: Análisis de eficiencia temporal",
+      "id_global": 15
+    },
+    {
+      "id_tema": 16,
+      "tema": "divide_and_conquer",
+      "titulo": "Eficiencia temporal - Metodo_3",
+      "enunciado": "Calcular la eficiencia del siguiente procedimiento, mostrando la justificación del cálculo:\n\n```c\nMetodo_3 (var conjunto[1..n], int n){\n    int val = calcularValor(n);\n    mientras (val < n){\n        Procesar(conjunto);\n    } fin mientras\n    Metodo_3(conjunto, n-1);\n    Metodo_3(conjunto, n-1);\n}\n```\nDonde el tiempo de 'calcularValor' es constante y 'Procesar' es O(n log n).",
+      "recurso_visual": null,
+      "fuente_original": "UADE Progra III - Parte 1: Análisis de eficiencia temporal",
+      "id_global": 16
+    },
+    {
+      "id_tema": 17,
+      "tema": "divide_and_conquer",
+      "titulo": "Costo de método P en algoritmo DyC",
+      "enunciado": "Dado el siguiente algoritmo DyC y conociendo que su costo es de O(n), ¿Qué orden tiene el método P?\n\n```c\nDyC(V[inicio..fin])\n    si(fin > inicio)\n        mitad = (inicio+fin)/2\n        DyC(V[inicio..mitad])\n        DyC(V[mitad+1..fin])\n        P(V)\n    finsi\nfinDyC\n```",
+      "recurso_visual": null,
+      "fuente_original": "UADE Progra III - Parte 1: Análisis de eficiencia temporal",
+      "id_global": 17
+    },
+    {
+      "id_tema": 18,
+      "tema": "divide_and_conquer",
+      "titulo": "Secuencia ordenada alfabéticamente",
+      "enunciado": "Determinar si una secuencia de n caracteres está ordenada alfabéticamente.\n\nPara este ejercicio:\n- Esbozar el algoritmo que resuelve el problema.\n- Identificar las partes que componen la solución y su relación con el esquema modelo de la técnica elegida.\n- Detallar las estructuras que se utilizarán.\n- Escribir el método en Java para resolverlo.\n- Analizar la complejidad de la solución en tiempo y espacio.",
+      "recurso_visual": null,
+      "fuente_original": "UADE Progra III - Parte 2: Divide y conquista",
+      "id_global": 18
+    },
+    {
+      "id_tema": 19,
+      "tema": "divide_and_conquer",
+      "titulo": "Pertenencia en vector ordenado",
+      "enunciado": "Dado un vector de n números naturales ordenados crecientemente, determinar si un número x dado pertenece al vector.\n\nPara este ejercicio:\n- Esbozar el algoritmo que resuelve el problema.\n- Identificar las partes que componen la solución y su relación con el esquema modelo de la técnica elegida.\n- Detallar las estructuras que se utilizarán.\n- Escribir el método en Java para resolverlo.\n- Analizar la complejidad de la solución en tiempo y espacio.",
+      "recurso_visual": null,
+      "fuente_original": "UADE Progra III - Parte 2: Divide y conquista",
+      "id_global": 19
+    },
+    {
+      "id_tema": 20,
+      "tema": "divide_and_conquer",
+      "titulo": "Cálculo de a^n con n potencia de 2",
+      "enunciado": "Calcular a^n cuando n es una potencia de 2.\n\nPara este ejercicio:\n- Esbozar el algoritmo que resuelve el problema.\n- Identificar las partes que componen la solución y su relación con el esquema modelo de la técnica elegida.\n- Detallar las estructuras que se utilizarán.\n- Escribir el método en Java para resolverlo.\n- Analizar la complejidad de la solución en tiempo y espacio.",
+      "recurso_visual": null,
+      "fuente_original": "UADE Progra III - Parte 2: Divide y conquista",
+      "id_global": 20
+    },
+    {
+      "id_tema": 21,
+      "tema": "divide_and_conquer",
+      "titulo": "Elemento mayoritario",
+      "enunciado": "Dado un vector A de números enteros, calcular elemento mayoritario. Si se tiene un vector A de n enteros, un elemento x se denomina mayoritario de A si x aparece en el vector A más de n/2 veces. Considerar que no puede haber más de un elemento mayoritario.\n\nPara este ejercicio:\n- Esbozar el algoritmo que resuelve el problema.\n- Identificar las partes que componen la solución y su relación con el esquema modelo de la técnica elegida.\n- Detallar las estructuras que se utilizarán.\n- Escribir el método en Java para resolverlo.\n- Analizar la complejidad de la solución en tiempo y espacio.",
+      "recurso_visual": null,
+      "fuente_original": "UADE Progra III - Parte 2: Divide y conquista",
+      "id_global": 21
+    },
+    {
+      "id_tema": 22,
+      "tema": "divide_and_conquer",
+      "titulo": "Multiplicación de matrices cuadradas (Strassen/DyC)",
+      "enunciado": "Dadas dos matrices cuadradas M1 y M2 de N×N, calcular el producto de ambas, donde N es una potencia de 2.\n\nPara este ejercicio:\n- Esbozar el algoritmo que resuelve el problema.\n- Identificar las partes que componen la solución y su relación con el esquema modelo de la técnica elegida.\n- Detallar las estructuras que se utilizarán.\n- Escribir el método en Java para resolverlo.\n- Analizar la complejidad de la solución en tiempo y espacio.",
+      "recurso_visual": null,
+      "fuente_original": "UADE Progra III - Parte 2: Divide y conquista",
+      "id_global": 22
+    },
+    {
+      "id_tema": 23,
+      "tema": "divide_and_conquer",
+      "titulo": "Merge-Sort tripartito (3 subvectores)",
+      "enunciado": "Dado un Vector A de números enteros, ordenarlo en forma creciente. Utilizar el método de ordenamiento Merge-Sort, pero dividiendo el vector en 3 subvectores y analizar el costo.\n\nPara este ejercicio:\n- Esbozar el algoritmo que resuelve el problema.\n- Identificar las partes que componen la solución y su relación con el esquema modelo de la técnica elegida.\n- Detallar las estructuras que se utilizarán.\n- Escribir el método en Java para resolverlo.\n- Analizar la complejidad de la solución en tiempo y espacio.",
+      "recurso_visual": null,
+      "fuente_original": "UADE Progra III - Parte 2: Divide y conquista",
+      "id_global": 23
+    },
+    {
+      "id_tema": 24,
+      "tema": "divide_and_conquer",
+      "titulo": "Torneo de fútbol round-robin (n potencia de 2)",
+      "enunciado": "Un organismo ha decidido organizar un torneo de fútbol con n equipos participantes. Cada equipo ha de competir exactamente una vez con todos los demás equipos oponentes. Además, se ha decidido que cada equipo juega exactamente un partido cada jornada, con la posible excepción de un solo día en el cual no juega. Si n es una potencia de 2, diseñar un algoritmo que permita que el torneo concluya en n-1 jornadas.\n\nPara este ejercicio:\n- Esbozar el algoritmo que resuelve el problema.\n- Identificar las partes que componen la solución y su relación con el esquema modelo de la técnica elegida.\n- Detallar las estructuras que se utilizarán.\n- Escribir el método en Java para resolverlo.\n- Analizar la complejidad de la solución en tiempo y espacio.",
+      "recurso_visual": null,
+      "fuente_original": "UADE Progra III - Parte 2: Divide y conquista",
+      "id_global": 24
+    },
+    {
+      "id_tema": 25,
+      "tema": "divide_and_conquer",
+      "titulo": "Par de puntos más cercano",
+      "enunciado": "El problema del par más cercano consiste en encontrar dos puntos dentro de un conjunto de puntos cuya distancia sea menor que la que existe entre cualquier otro par de puntos del conjunto. Suponiendo que los puntos vienen ordenados por sus coordenadas (x, y), y que han sido clasificados en orden ascendente de la coordenada x, resolver el problema.\n\nPara este ejercicio:\n- Esbozar el algoritmo que resuelve el problema.\n- Identificar las partes que componen la solución y su relación con el esquema modelo de la técnica elegida.\n- Detallar las estructuras que se utilizarán.\n- Escribir el método en Java para resolverlo.\n- Analizar la complejidad de la solución en tiempo y espacio.",
+      "recurso_visual": null,
+      "fuente_original": "UADE Progra III - Parte 2: Divide y conquista",
+      "id_global": 25
+    },
+    {
+      "id_tema": 26,
+      "tema": "divide_and_conquer",
+      "titulo": "Trasponer k elementos en vector in-place",
+      "enunciado": "Dados un vector V[0..n] y un número natural k entre 1 y n, diseñar un algoritmo eficiente que trasponga los k primeros elementos de V en los elementos en las n-k últimas posiciones, sin hacer uso de un vector auxiliar.\n\nPor ejemplo, si V es [3, 5, 12, 8, 9, 12, 4, 7, 13, 21] y K = 3, el resultado debe ser: [8, 9, 12, 4, 7, 13, 21, 3, 5, 12].\n\nPara este ejercicio:\n- Justificar la elección de la técnica.\n- Esbozar el algoritmo que resuelve el problema.\n- Detallar las estructuras que se utilizarán.\n- Escribir el método en Java para resolverlo.\n- Analizar la complejidad de la solución en tiempo y espacio.",
+      "recurso_visual": {
+        "tipo": "svg",
+        "formato": "svg",
+        "codigo": "<svg viewBox=\"0 0 520 120\" xmlns=\"http://www.w3.org/2000/svg\">\n  <rect width=\"520\" height=\"120\" fill=\"#f8fafc\" rx=\"8\"/>\n  <g font-family=\"monospace\" font-size=\"14\" text-anchor=\"middle\">\n    <!-- Array original -->\n    <text x=\"50\" y=\"35\" font-weight=\"bold\" fill=\"#334155\">V:</text>\n    <g transform=\"translate(80, 15)\">\n      <rect width=\"400\" height=\"30\" fill=\"#ffffff\" stroke=\"#64748b\" stroke-width=\"1\"/>\n      <line x1=\"40\" y1=\"0\" x2=\"40\" y2=\"30\" stroke=\"#cbd5e1\"/>\n      <line x1=\"80\" y1=\"0\" x2=\"80\" y2=\"30\" stroke=\"#cbd5e1\"/>\n      <line x1=\"120\" y1=\"0\" x2=\"120\" y2=\"30\" stroke=\"#cbd5e1\"/>\n      <line x1=\"160\" y1=\"0\" x2=\"160\" y2=\"30\" stroke=\"#cbd5e1\"/>\n      <line x1=\"200\" y1=\"0\" x2=\"200\" y2=\"30\" stroke=\"#cbd5e1\"/>\n      <line x1=\"240\" y1=\"0\" x2=\"240\" y2=\"30\" stroke=\"#cbd5e1\"/>\n      <line x1=\"280\" y1=\"0\" x2=\"280\" y2=\"30\" stroke=\"#cbd5e1\"/>\n      <line x1=\"320\" y1=\"0\" x2=\"320\" y2=\"30\" stroke=\"#cbd5e1\"/>\n      <line x1=\"360\" y1=\"0\" x2=\"360\" y2=\"30\" stroke=\"#cbd5e1\"/>\n      <text x=\"20\" y=\"20\" fill=\"#e11d48\">3</text><text x=\"60\" y=\"20\" fill=\"#e11d48\">5</text><text x=\"100\" y=\"20\" fill=\"#e11d48\">12</text>\n      <text x=\"140\" y=\"20\" fill=\"#0f172a\">8</text><text x=\"180\" y=\"20\" fill=\"#0f172a\">9</text><text x=\"220\" y=\"20\" fill=\"#0f172a\">12</text><text x=\"260\" y=\"20\" fill=\"#0f172a\">4</text><text x=\"300\" y=\"20\" fill=\"#0f172a\">7</text><text x=\"340\" y=\"20\" fill=\"#0f172a\">13</text><text x=\"380\" y=\"20\" fill=\"#0f172a\">21</text>\n    </g>\n    <!-- Array resultado -->\n    <text x=\"50\" y=\"95\" font-weight=\"bold\" fill=\"#334155\">K=3:</text>\n    <g transform=\"translate(80, 75)\">\n      <rect width=\"400\" height=\"30\" fill=\"#ffffff\" stroke=\"#64748b\" stroke-width=\"1\"/>\n      <line x1=\"40\" y1=\"0\" x2=\"40\" y2=\"30\" stroke=\"#cbd5e1\"/>\n      <line x1=\"80\" y1=\"0\" x2=\"80\" y2=\"30\" stroke=\"#cbd5e1\"/>\n      <line x1=\"120\" y1=\"0\" x2=\"120\" y2=\"30\" stroke=\"#cbd5e1\"/>\n      <line x1=\"160\" y1=\"0\" x2=\"160\" y2=\"30\" stroke=\"#cbd5e1\"/>\n      <line x1=\"200\" y1=\"0\" x2=\"200\" y2=\"30\" stroke=\"#cbd5e1\"/>\n      <line x1=\"240\" y1=\"0\" x2=\"240\" y2=\"30\" stroke=\"#cbd5e1\"/>\n      <line x1=\"280\" y1=\"0\" x2=\"280\" y2=\"30\" stroke=\"#cbd5e1\"/>\n      <line x1=\"320\" y1=\"0\" x2=\"320\" y2=\"30\" stroke=\"#cbd5e1\"/>\n      <line x1=\"360\" y1=\"0\" x2=\"360\" y2=\"30\" stroke=\"#cbd5e1\"/>\n      <text x=\"20\" y=\"20\" fill=\"#0f172a\">8</text><text x=\"60\" y=\"20\" fill=\"#0f172a\">9</text><text x=\"100\" y=\"20\" fill=\"#0f172a\">12</text><text x=\"140\" y=\"20\" fill=\"#0f172a\">4</text><text x=\"180\" y=\"20\" fill=\"#0f172a\">7</text><text x=\"220\" y=\"20\" fill=\"#0f172a\">13</text><text x=\"260\" y=\"20\" fill=\"#0f172a\">21</text>\n      <text x=\"300\" y=\"20\" fill=\"#e11d48\">3</text><text x=\"340\" y=\"20\" fill=\"#e11d48\">5</text><text x=\"380\" y=\"20\" fill=\"#e11d48\">12</text>\n    </g>\n  </g>\n</svg>"
+      },
+      "fuente_original": "UADE Progra III - Repaso de las tres técnicas anteriores",
+      "id_global": 26
+    },
+    {
+      "id_tema": 27,
+      "tema": "divide_and_conquer",
+      "titulo": "Mediana de dos vectores ordenados",
+      "enunciado": "Dados dos vectores de enteros X[0..n] e Y[0..n] con n >= 1, ordenados de forma creciente, escribir un algoritmo para hallar la mediana del vector formado por el total de los 2n elementos.\n\nPara este ejercicio:\n- Justificar la elección de la técnica.\n- Esbozar el algoritmo que resuelve el problema.\n- Detallar las estructuras que se utilizarán.\n- Escribir el método en Java para resolverlo.\n- Analizar la complejidad de la solución en tiempo y espacio.",
+      "recurso_visual": null,
+      "fuente_original": "UADE Progra III - Repaso de las tres técnicas anteriores",
+      "id_global": 27
+    },
+    {
+      "id_tema": 28,
+      "tema": "divide_and_conquer",
+      "titulo": "Subsecuencia de suma máxima en O(n log n)",
+      "enunciado": "Dado un vector V[0..n] de enteros, encontrar los valores de i y j, con 0 <= i <= j <= n, tales que se maximice sum_{k=i}^j V[k]. Diseñar un algoritmo que resuelva el problema en un tiempo en O(n log n).\n\nPara este ejercicio:\n- Justificar la elección de la técnica.\n- Esbozar el algoritmo que resuelve el problema.\n- Detallar las estructuras que se utilizarán.\n- Escribir el método en Java para resolverlo.\n- Analizar la complejidad de la solución en tiempo y espacio.",
+      "recurso_visual": null,
+      "fuente_original": "UADE Progra III - Repaso de las tres técnicas anteriores",
+      "id_global": 28
+    },
+    {
+      "id_tema": 29,
+      "tema": "divide_and_conquer",
+      "titulo": "Máximo y mínimo de un arreglo utilizando Divide and Conquer",
+      "enunciado": "Queremos determinar el máximo y el mínimo elemento de un arreglo A utilizando la técnica de divide-and-conquer (no subtract-and-conquer).\na) Describa una estrategia para encontrar los índices i, j, correspondientes al máximo y mínimo elemento de A.\nb) Escriba el pseudo-código de su solución.\nc) Determine la complejidad de su algoritmo. Justifique su resultado.",
+      "recurso_visual": null,
+      "fuente_original": "Parcial 2026.09.14 1A",
+      "id_global": 29
+    },
+    {
+      "id_tema": 30,
+      "tema": "divide_and_conquer",
+      "titulo": "Análisis de complejidad y comparación de algoritmos recursivos",
+      "enunciado": "Suponga que tiene que elegir entre los siguientes algoritmos para resolver un problema:\n- El algoritmo 1 resuelve un problema de tamaño n dividiéndolo en cinco subproblemas de tamaño n/2, resolviendo recursivamente cada subproblema y combinando las soluciones en tiempo lineal.\n- El algoritmo 2 resuelve un problema de tamaño n resolviendo recursivamente dos problemas de tamaño n − 1 y combinándolos en tiempo constante.\n- El algoritmo 3 resuelve un problema de tamaño n dividiéndolo en nueve subproblemas de tamaño n/3, resolviendo recursivamente cada subproblema y combinando las soluciones en tiempo cuadrático.\n\na) ¿Cuál es la complejidad de cada uno de estos algoritmos?\nb) ¿Cuál elegiría y por qué?\n\nRecuerde que, en los casos en que no es evidente, puede tomarse límite para n → ∞ para desempatar entre dos algoritmos.\n\nApéndice: Fórmulas de complejidad para algoritmos recursivos (substracción y división).",
+      "recurso_visual": {
+        "tipo": "latex",
+        "formato": "katex",
+        "codigo": "\\begin{aligned}\n\\text{Substracción: } & T(n) \\in \\begin{cases} \\Theta(n^k) & \\text{si } a < 1 \\\\ \\Theta(n^{k+1}) & \\text{si } a = 1 \\\\ \\Theta(a^{n/b}) & \\text{si } a > 1 \\end{cases} \\\\[1em]\n\\text{División: } & T(n) \\in \\begin{cases} \\Theta(n^k) & \\text{si } a < b^k \\\\ \\Theta(n^k \\log n) & \\text{si } a = b^k \\\\ \\Theta(n^{\\log_b a}) & \\text{si } a > b^k \\end{cases}\n\\end{aligned}"
+      },
+      "fuente_original": "Parcial 2026.09.14 1A",
+      "id_global": 30
+    },
+    {
+      "id_tema": 31,
+      "tema": "divide_and_conquer",
+      "titulo": "Raíz cuadrada entera con Divide and Conquer",
+      "enunciado": "La raíz cuadrada entera de un número n es el máximo valor entero u tal que u^2 ≤ n. Por ejemplo, la raíz entera de 18 es 4 y la de 9 es 3. Esto es porque 4^2 ≤ 18 < 5^2 y 3^2 ≤ 9 < 4^2.\nPor supuesto, esto se podía resolver en tiempo O(n) comenzando en 0 y recorriendo secuencialmente los números hasta encontrar el que buscamos. Queremos algo más eficiente.\nSe pide entonces:\na) Describa una estrategia divide-and-conquer para encontrar la raíz cuadrada entera de un número disponiendo únicamente de la posibilidad de utilizar las cuatro operaciones aritméticas básicas (no podemos calcular directamente la raíz cuadrada) en tiempo mejor que lineal.\nb) Escriba el pseudo-código de su estrategia.\nc) Determine la complejidad de su algoritmo. Muestre que satisface la especificación del primer punto.",
+      "recurso_visual": null,
+      "fuente_original": "Parcial 2026.09.14 1B",
+      "resolucion_propuesta": [
+        {
+          "fuente_propuesta": "DAA 02 DyC parte 1 - Slide 153",
+          "clasificacion": "divide_and_conquer",
+          "complejidad_esperada": "O(\\log n)",
+          "estrategia_sugerida": "Búsqueda binaria en el espacio de respuestas [1..n]. Se evalúa mid^2 <= n y se ajustan los límites izquierdo o derecho conservando el mayor entero factible.",
+          "nota_duplicado": "Coincide con el ejercicio propuesto #2 ('Raíz Cuadrada Entera') de diapositivas de clase."
+        }
+      ],
+      "es_ejercicio_propuesto_diapositivas": true,
+      "id_global": 31
+    },
+    {
+      "id_tema": 32,
+      "tema": "divide_and_conquer",
+      "titulo": "Conteo de inversiones en un arreglo (MergeSort)",
+      "enunciado": "Queremos encontrar lo más rápidamente que sea posible la cantidad de inversiones en un arreglo a de n números. Una inversión es cualquier par de índices i, j tales que i < j y a[i] > a[j].\n\nEjemplos:\n- [1, 4, 2, 7]: una inversión\n- [1, 4, 2, 2]: dos inversiones\n- [4, 3, 2, 1]: seis inversiones\n- [1, 2, 3, 4]: ninguna inversión\n\nSe propone la siguiente estrategia:\nI. Cada llamado recursivo comienza con un contador inv de inversiones inicialmente en 0.\nII. Aplicar mergeSort al arreglo a. Cada llamada recursiva devuelve el valor final de su propio contador de inversiones inv.\nIII. Cuando se llama recursivamente para cada mitad, se reciben las cantidades de inversiones (inv1 e inv2) para ambas mitades. Se suman ambos valores al contador inv.\nIV. En el paso de combinación merge de los resultados con índices ini y fin, cada vez que un elemento b[j] del sub-arreglo derecho es menor que un elemento a[i] del sub-arreglo izquierdo, se suma len(a) − i a inv.\nV. Finalmente se devuelve inv.\n\nObservación: Si b[j] < a[i], entonces b[j] es menor que todos los elementos a[k], con k > i.\n\na) Justifique por qué esta estrategia es correcta.\nb) Escriba el pseudo-código de esta solución.\nc) Determine la complejidad del algoritmo de conteo de inversiones en el arreglo original. Justifique su resultado.",
+      "recurso_visual": null,
+      "fuente_original": "Parcial 2026.09.18 1A ViMa",
+      "id_global": 32
+    },
+    {
+      "id_tema": 33,
+      "tema": "divide_and_conquer",
+      "titulo": "Comparación de algoritmos recursivos (Teorema Maestro)",
+      "enunciado": "Suponga que tiene que elegir entre los siguientes algoritmos para resolver un problema:\n- El algoritmo 1 resuelve un problema de tamaño n dividiéndolo en siete subproblemas de tamaño n/2, resolviendo recursivamente cada subproblema y combinando las soluciones en tiempo cuadrático.\n- El algoritmo 2 resuelve un problema de tamaño n dividiéndolo en dos subproblemas de tamaño n/4, resolviendo recursivamente cada subproblema y combinando las soluciones en tiempo lineal.\n- El algoritmo 3 resuelve un problema de tamaño n resolviendo recursivamente tres problemas de tamaño n − 2 y combinándolos en tiempo constante.\n\na) ¿Cuál es la complejidad de cada uno de estos algoritmos?\nb) ¿Cuál elegiría y por qué?\n\nRecuerde que, en los casos en que no es evidente, puede tomarse límite para n → ∞ para desempatar entre dos algoritmos.\n\nApéndice: Fórmulas de complejidad para algoritmos recursivos (substracción y división).",
+      "recurso_visual": {
+        "tipo": "latex",
+        "formato": "katex",
+        "codigo": "\\begin{aligned}\n\\text{Substracción: } & T(n) \\in \\begin{cases} \\Theta(n^k) & \\text{si } a < 1 \\\\ \\Theta(n^{k+1}) & \\text{si } a = 1 \\\\ \\Theta(a^{n/b}) & \\text{si } a > 1 \\end{cases} \\\\[1em]\n\\text{División: } & T(n) \\in \\begin{cases} \\Theta(n^k) & \\text{si } a < b^k \\\\ \\Theta(n^k \\log n) & \\text{si } a = b^k \\\\ \\Theta(n^{\\log_b a}) & \\text{si } a > b^k \\end{cases}\n\\end{aligned}"
+      },
+      "fuente_original": "Parcial 2026.09.18 1A ViMa",
+      "id_global": 33
+    },
+    {
+      "id_tema": 34,
+      "tema": "divide_and_conquer",
+      "titulo": "Comparación de algoritmos recursivos (Teorema Maestro)",
+      "enunciado": "Suponga que tiene que elegir entre los siguientes algoritmos para resolver un problema:\n- El algoritmo 1 resuelve un problema de tamaño n dividiéndolo en tres subproblemas de tamaño n/3, resolviendo recursivamente cada subproblema y combinando las soluciones en tiempo lineal.\n- El algoritmo 2 resuelve un problema de tamaño n dividiéndolo en cuatro subproblemas de tamaño n/2, resolviendo recursivamente cada subproblema y combinando las soluciones en tiempo constante.\n- El algoritmo 3 resuelve un problema de tamaño n resolviendo recursivamente un único subproblema de tamaño n − 1 y combinando el resultado en tiempo lineal.\n\na) ¿Cuál es la complejidad de cada uno de estos algoritmos?\nb) ¿Cuál elegiría y por qué?\n\nRecuerde que, en los casos en que no es evidente, puede tomarse límite para n → ∞ para desempatar entre dos algoritmos.\n\nApéndice: Fórmulas de complejidad para algoritmos recursivos (substracción y división).",
+      "recurso_visual": {
+        "tipo": "latex",
+        "formato": "katex",
+        "codigo": "\\begin{aligned}\n\\text{Substracción: } & T(n) \\in \\begin{cases} \\Theta(n^k) & \\text{si } a < 1 \\\\ \\Theta(n^{k+1}) & \\text{si } a = 1 \\\\ \\Theta(a^{n/b}) & \\text{si } a > 1 \\end{cases} \\\\[1em]\n\\text{División: } & T(n) \\in \\begin{cases} \\Theta(n^k) & \\text{si } a < b^k \\\\ \\Theta(n^k \\log n) & \\text{si } a = b^k \\\\ \\Theta(n^{\\log_b a}) & \\text{si } a > b^k \\end{cases}\n\\end{aligned}"
+      },
+      "fuente_original": "Parcial 2026.09.18 1B ViMa",
+      "id_global": 34
+    },
+    {
+      "id_tema": 35,
+      "tema": "divide_and_conquer",
+      "titulo": "Búsqueda en vectores rotados (Divide and Conquer)",
+      "enunciado": "Se tiene un vector ordenado v de n números enteros diferentes rotado k posiciones, con k ∈ {0, ..., n − 1}. Esto significa que el elemento que estaba en la posición i pasó a la posición (i + k) mod n. Queremos encontrar un número en este arreglo. Si el número está en el arreglo, el programa debe devolver el índice correspondiente. Si no, debe devolver −1.\n\nEjemplo: tomemos como base el vector (0, 1, 2, 4, 5, 7, 9, 11, 13, 15, 22, 25), que tiene 12 elementos. Algunas rotaciones de k posiciones son:\n- k = 0: (0, 1, 2, 4, 5, 7, 9, 11, 13, 15, 22, 25) (no cambia nada)\n- k = 5: (11, 13, 15, 22, 25, 0, 1, 2, 4, 5, 7, 9) (rotación de 5 posiciones)\n- k = 8: (5, 7, 9, 11, 13, 15, 22, 25, 0, 1, 2, 4) (rotación de 8 posiciones)\n- k = 11: (1, 2, 4, 5, 7, 9, 11, 13, 15, 22, 25, 0) (rotación de 11 posiciones)\n\na) Describa la estrategia más eficiente para resolver el problema. Recuerde que no conocemos k; sólo sabemos que está entre 0 y n−1.\nb) Escriba el pseudo-código que realiza su estrategia.\nc) Muestre que su estrategia es eficiente calculando la complejidad de su programa. Justifique su resultado.\n\nAyuda: el punto clave que debe tenerse en cuenta es que siempre que se corta un vector rotado por la mitad, hay una mitad que permanece ordenada.",
+      "recurso_visual": null,
+      "fuente_original": "Parcial 2026.09.18 1B ViNo",
+      "id_global": 35
+    },
+    {
+      "id_tema": 36,
+      "tema": "divide_and_conquer",
+      "titulo": "Productor de Soja Repetido en Fraile Muerto",
+      "enunciado": "La municipalidad de Fraile Muerto tiene un registro de los n productores de soja de la región registrados con números secuenciales (0, 1, 2, ..., n-1) almacenados en un vector P. Alguien se percata de que en el vector hay un elemento repetido (tiene n+1 elementos en lugar de n, aunque el valor del último número es n-1). Se pide elaborar una estrategia y escribir el programa correspondiente para encontrar de manera eficiente la posición del elemento repetido detallando las partes que componen la solución y su relación con el esquema general.",
+      "recurso_visual": null,
+      "fuente_original": "DAA 02 DyC parte 1 - Slide 153",
+      "es_ejercicio_propuesto_diapositivas": true,
+      "resolucion_propuesta": [
+        {
+          "clasificacion": "divide_and_conquer",
+          "complejidad_esperada": "O(\\log n)",
+          "estrategia_sugerida": "Búsqueda binaria modificada aprovechando la propiedad de orden. Si P[mid] == mid, el duplicado se ubica estrictamente a la derecha; si P[mid] < mid, el duplicado ya ocurrió a la izquierda."
+        }
+      ],
+      "id_global": 36
+    },
+    {
+      "id_tema": 37,
+      "tema": "divide_and_conquer",
+      "titulo": "El Problema de la Moneda Falsa",
+      "enunciado": "Dentro de un lote de n monedas se sabe que hay una falsa que es un poco más pesada. Se dispone de una balanza de platillos que sólo dice si un grupo en un platillo pesa más, menos, o lo mismo que otro. Determine el número mínimo de pesadas (en el peor caso) para identificar la moneda falsa.",
+      "recurso_visual": null,
+      "fuente_original": "DAA 02 DyC parte 1 - Slide 154",
+      "es_ejercicio_propuesto_diapositivas": true,
+      "resolucion_propuesta": [
+        {
+          "clasificacion": "divide_and_conquer",
+          "complejidad_esperada": "O(\\log_3 n) pesadas",
+          "estrategia_sugerida": "División tripartita: se divide el conjunto en 3 partes de tamaño n/3. Se pesan dos grupos iguales; si equilibran, la moneda está en el tercio restante; si no, está en el platillo más pesado."
+        }
+      ],
+      "id_global": 37
+    },
+    {
+      "id_tema": 38,
+      "tema": "divide_and_conquer",
+      "titulo": "Conteo de Unos en Vector Binario Ordenado",
+      "enunciado": "Suponga que v es un vector de n dígitos binarios ordenados (ej. [0, 0, 0, 1, 1, 1, 1, 1]). Encuentre un algoritmo eficiente (mejor que O(n)) que determine la cantidad de unos en v.",
+      "recurso_visual": null,
+      "fuente_original": "DAA 02 DyC parte 1 - Slide 155",
+      "es_ejercicio_propuesto_diapositivas": true,
+      "resolucion_propuesta": [
+        {
+          "clasificacion": "divide_and_conquer",
+          "complejidad_esperada": "O(\\log n)",
+          "estrategia_sugerida": "Búsqueda binaria para localizar la primera aparición del 1 (primer índice k tal que v[k] == 1 y v[k-1] == 0). La cantidad total de unos es n - k."
+        }
+      ],
+      "id_global": 38
+    },
+    {
+      "id_tema": 39,
+      "tema": "divide_and_conquer",
+      "titulo": "Búsqueda en Arreglo Infinito Ordenado",
+      "enunciado": "Se da un arreglo infinito A en el que las primeras n posiciones contienen enteros ordenados y el resto contiene infinito (o error de desbordamiento sin conocer n). Dado x, encontrar su posición en tiempo O(log n).",
+      "recurso_visual": null,
+      "fuente_original": "DAA 03 DyC parte 2 - Slide 236",
+      "es_ejercicio_propuesto_diapositivas": true,
+      "resolucion_propuesta": [
+        {
+          "clasificacion": "divide_and_conquer",
+          "complejidad_esperada": "O(\\log n)",
+          "estrategia_sugerida": "Avanzar exponencialmente index = 1, 2, 4, 8, ... hasta encontrar A[index] >= x o A[index] == infinito. Luego ejecutar búsqueda binaria acotada entre index/2 e index."
+        }
+      ],
+      "id_global": 39
+    },
+    {
+      "id_tema": 40,
+      "tema": "divide_and_conquer",
+      "titulo": "Determinación del Tamaño de Arreglo Desconocido",
+      "enunciado": "Variante del ejercicio anterior: las primeras n posiciones contienen enteros desordenados y el resto infinito. Encontrar el valor exacto de n en tiempo O(log n).",
+      "recurso_visual": null,
+      "fuente_original": "DAA 03 DyC parte 2 - Slide 237",
+      "es_ejercicio_propuesto_diapositivas": true,
+      "resolucion_propuesta": [
+        {
+          "clasificacion": "divide_and_conquer",
+          "complejidad_esperada": "O(\\log n)",
+          "estrategia_sugerida": "Búsqueda exponencial de la frontera infinito (probar 2^k hasta obtener infinito) y posterior búsqueda binaria del último índice no infinito."
+        }
+      ],
+      "id_global": 40
+    },
+    {
+      "id_tema": 41,
+      "tema": "divide_and_conquer",
+      "titulo": "Merge K-Way de Arreglos Ordenados",
+      "enunciado": "Se tienen k arreglos ordenados de n elementos cada uno y se desea combinarlos en un único arreglo ordenado de kn elementos. 1) Analizar costo de merge secuencial sucesivo. 2) Diseñar algoritmo Divide & Conquer más eficiente.",
+      "recurso_visual": null,
+      "fuente_original": "DAA 03 DyC parte 2 - Slide 238",
+      "es_ejercicio_propuesto_diapositivas": true,
+      "resolucion_propuesta": [
+        {
+          "clasificacion": "divide_and_conquer",
+          "complejidad_esperada": "Secuencial: O(k^2 * n); Divide & Conquer: O(k * n * \\log k)",
+          "estrategia_sugerida": "Árbol de mezclas balanceado: agrupar los k arreglos de a pares, mezclar cada par en O(n) produciendo k/2 arreglos de tamaño 2n, y repetir recursivamente en \\log_2 k niveles."
+        }
+      ],
+      "id_global": 41
+    }
+  ]
+}

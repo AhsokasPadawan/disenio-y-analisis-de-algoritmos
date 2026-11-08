@@ -1,0 +1,13 @@
+node_modules
+dist
+.vite
+coverage
+*.tsbuildinfo
+
+code-review/
+grilling/
+implement/
+specs/
+tdd/
+to-spec/
+

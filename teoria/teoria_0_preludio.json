@@ -1,0 +1,58 @@
+{
+  "modulo": "01_preludio",
+  "titulo_general": "Diseño y Análisis de Algoritmos - Preludio, Encuadre y Reglas de la Materia",
+  "institucion": "UADE - Facultad de Ingeniería y Ciencias Exactas",
+  "catedra": "Diseño y Análisis de Algoritmos / Programación III",
+  "profesor": "Ricardo Wehbe",
+  "autores_apunte": [
+    "María Fernanda Cuadrado Estrebou",
+    "Guillermo Hernán Trutner"
+  ],
+  "fecha_referencia": "Segundo Cuatrimestre 2026",
+  "descripcion": "Estructura teórica del preludio de la materia: encuadre normativo, reglas de cursada y evaluación, enfoque metodológico y mapa introductorio de paradigmas algorítmicos.",
+  "secciones": [
+    {
+      "id": "preludio_materia",
+      "tipo": "preludio_academico",
+      "titulo": "Preludio: Encuadre y Reglas de la Materia",
+      "subtemas": [
+        {
+          "id": "reglas_juego",
+          "titulo": "Las Reglas del Juego (Evaluación y Cursada)",
+          "teoria": "Estructura de evaluación formal de la materia:\n- **Exámenes parciales**: Dos parciales teórico-prácticos.\n  - Primer parcial: Complejidad temporal, Divide and Conquer y Programación Dinámica.\n  - Segundo parcial: Complejidad temporal (revisión acumulativa), Algoritmos Greedy y Backtracking / Branch & Bound.\n- **Régimen de recuperación**: Es posible recuperar exactamente uno de los dos parciales.\n- **Aprobación de cursada**: Haber aprobado ambos parciales o uno de ellos más su respectivo recuperatorio.\n- **Final anticipado**: Aquellos alumnos que hayan aprobado ambos parciales en primera instancia tienen la opción de rendir el examen final de forma anticipada en la fecha del recuperatorio.\n- **Examen final regular**: Instancia evaluativa integradora presencial para el cierre definitivo de la materia.",
+          "animaciones": null,
+          "pseudocodigo": null,
+          "codigo": null,
+          "analisis_complejidad": null
+        },
+        {
+          "id": "diagnostico_aprendizaje",
+          "titulo": "El Desafío Metodológico: 'Aprender a Nadar'",
+          "teoria": "Reflexión pedagógica central planteada por la cátedra:\n- ¿Se puede aprender a nadar en un aula oyendo hablar a un instructor? Tampoco se puede aprender a programar y diseñar algoritmos de forma pasiva. Requiere práctica intensiva y diseño activo.\n- **Deficiencias cognitivas comunes a superar**:\n  1. *Lógica*: Falta de rigor en el razonamiento deductivo paso a paso.\n  2. *Análisis*: Tendencia a memorizar recetas o resolver mecánicamente sin comprender a fondo el espacio de estados del problema.\n  3. *Síntesis*: Dificultad para interconectar paradigmas algorítmicos ante un problema nuevo.\n- **Objetivo central evaluado**: Capacidad analítica para seleccionar, justificar y demostrar la técnica más eficiente para cada problema.",
+          "animaciones": null,
+          "pseudocodigo": null,
+          "codigo": null,
+          "analisis_complejidad": null
+        },
+        {
+          "id": "mapa_de_tecnicas",
+          "titulo": "Hoja de Ruta: Los Cuatro Grandes Paradigmas Algorítmicos",
+          "teoria": "El curso aborda cuatro técnicas fundamentales de diseño de algoritmos para problemas de optimización y búsqueda (por orden de aparición):\n1. **Divide and Conquer**: Partición en subproblemas independientes de igual naturaleza, resolución recursiva y combinación (ej. MergeSort, Strassen).\n2. **Algoritmos Greedy (Voraces)**: Construcción de soluciones paso a paso mediante elecciones locales óptimas irreversibles sin mirar hacia el futuro (ej. Dijkstra, Kruskal, Prim, Intervalos).\n3. **Programación Dinámica**: Resolución bottom-up mediante superposición de subproblemas y principio de optimalidad, memorizando resultados en tablas para evitar recomputaciones (ej. Mochila 0/1, LCS, Floyd).\n4. **Backtracking y Ramificación & Poda (Branch & Bound)**: Exploración exhaustiva y sistemática del árbol de soluciones con poda de ramas inviables o no prometedoras (ej. N-Reinas, Mochila exacta, Minimax).",
+          "animaciones": [
+            {
+              "id": "anim_mapa_paradigmas",
+              "tipo": "diagrama_flujo",
+              "formato": "mermaid",
+              "codigo": "graph TD\n    A[Diseño y Análisis de Algoritmos] --> B[Divide and Conquer]\n    A --> C[Greedy]\n    A --> D[Programación Dinámica]\n    A --> E[Backtracking & Branch and Bound]\n    B --> B1[Subproblemas independientes / Recursión]\n    C --> C1[Elección local óptima / Irreversible]\n    D --> D1[Subproblemas solapados / Tabla bottom-up]\n    E --> E1[Árbol de estados / Podas por cotas]"
+            }
+          ],
+          "pseudocodigo": null,
+          "codigo": null,
+          "analisis_complejidad": null
+        }
+      ]
+    }
+  ],
+  "conceptos": [],
+  "algoritmos": []
+}

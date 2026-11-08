@@ -1,0 +1,534 @@
+{
+  "modulo": "divide_and_conquer",
+  "titulo_general": "Técnica de Diseño: Divide and Conquer y Subtract & Conquer",
+  "frase_apertura": {
+    "texto": "(...) de diviser chacune des difficultés que j'examinerais, en autant de parcelles qu'il se pourrait, et qu'il serait requis pour les mieux résoudre. ((...) dividir los problemas bajo examen en tantas partes como sea posible y necesario para resolverlos mejor.)",
+    "autor": "René Descartes",
+    "obra": "Discours de la méthode (1637)",
+    "diapositiva_origen": 34,
+    "proposito": "Encuadre epistemológico e intuición formal sobre la deconstrucción analítica de problemas complejos en componentes ortogonales de menor dimensión."
+  },
+  "secciones": [
+    {
+      "id": "fundamentos_y_marco_conceptual",
+      "titulo": "1. Fundamentos del Paradigma Divide & Conquer",
+      "subtemas": [
+        {
+          "id": "paradigma_dyc_definicion",
+          "titulo": "Estructura del Paradigma y Principio de Deconstrucción",
+          "teoria": "La técnica Divide & Conquer (Dividir y Conquistar) consiste en descomponer una instancia problemática de tamaño $n$ en un conjunto de $a$ subproblemas más pequeños de tamaño aproximado $n/b$, de idéntica naturaleza entre sí y respecto al problema original. Esta deconstrucción se aplica de manera recursiva hasta alcanzar instancias mínimas de tamaño suficientemente reducido ('casos base' o casos triviales) cuya resolución es inmediata ($O(1)$). Tras conquistar los casos base, las soluciones parciales se combinan de forma ascendente (bottom-up) para estructurar la solución global. Para garantizar la eficiencia, los subproblemas deben ser estrictamente independientes (disjuntos en cálculo) y los costos combinados de división y recombinación no deben neutralizar la ventaja asintótica.",
+          "animaciones": [
+            {
+              "id": "anim_dyc_flujo_tripartito",
+              "tipo": "flujo_ejecucion",
+              "formato": "mermaid",
+              "descripcion": "Ciclo recursivo tripartito: Dividir, Conquistar y Combinar",
+              "pasos": [
+                "graph TD\n  P[Instancia Original: Tamaño n] -->|1. Dividir| S1[Subproblema 1: n/b]\n  P -->|1. Dividir| S2[Subproblema 2: n/b]\n  S1 -->|Recursión| B1[Caso Base 1: O 1]\n  S1 -->|Recursión| B2[Caso Base 2: O 1]\n  S2 -->|Recursión| B3[Caso Base 3: O 1]\n  S2 -->|Recursión| B4[Caso Base 4: O 1]\n  B1 & B2 -->|2. Conquistar / Combinar| R1[Solución Parcial 1]\n  B3 & B4 -->|2. Conquistar / Combinar| R2[Solución Parcial 2]\n  R1 & R2 -->|3. Combinar Global| SOL[Solución Final]"
+              ]
+            }
+          ],
+          "pseudocodigo": "ALGORITMO D&C (x)\n    si CasoBase(x) entonces\n        devolver SolucionDirecta(x)\n    sino\n        <x_1, ..., x_a> <- descomponer(x)\n        para i <- 1 hasta a hacer\n            y_i <- D&C(x_i)\n        fin para\n        devolver combinar(y_1, ..., y_a)\n    fin si",
+          "codigo": {
+            "lenguaje": "Java",
+            "codigo": "public abstract class EsquemaDyC<P, R> {\n    public abstract boolean esCasoBase(P problema);\n    public abstract R solucionDirecta(P problema);\n    public abstract P[] descomponer(P problema);\n    public abstract R combinar(R[] solucionesParciales);\n\n    public R resolver(P problema) {\n        if (esCasoBase(problema)) {\n            return solucionDirecta(problema);\n        }\n        P[] subproblemas = descomponer(problema);\n        @SuppressWarnings(\"unchecked\")\n        R[] soluciones = (R[]) new Object[subproblemas.length];\n        for (int i = 0; i < subproblemas.length; i++) {\n            soluciones[i] = resolver(subproblemas[i]);\n        }\n        return combinar(soluciones);\n    }\n}",
+            "correcciones_aplicadas": "Formalización genérica en Java del algoritmo D&C abstracto respetando desacoplamiento y tipado seguro."
+          },
+          "analisis_complejidad": {
+            "ecuacion_recurrencia": "T(n) = a \\cdot T(n/b) + f(n)",
+            "metodo_resolucion": "Teorema Maestro por División",
+            "temporal_peor_caso": "O(n^{\\log_b a}) \\text{ si } a > b^k; \\quad O(n^k \\log n) \\text{ si } a = b^k; \\quad O(n^k) \\text{ si } a < b^k",
+            "temporal_mejor_caso": "O(1) al evaluar un caso base inmediato",
+            "espacial": "O(\\log_b n) en stack de ejecución para algoritmos in-place, extensible a O(n) si la recombinación utiliza buffers auxiliares",
+            "justificacion": "La cota asintótica queda definida por la relación entre la proliferación de hojas en el árbol de recursión ($n^{\\log_b a}$) y el costo polinómico de recombinación $f(n) \\in \\Theta(n^k)$."
+          }
+        },
+        {
+          "id": "suma_nodos_abb",
+          "titulo": "Ejemplo Estructural: Suma de Nodos en un ABB",
+          "teoria": "El Árbol Binario de Búsqueda (ABB) constituye la manifestación geométrica natural del paradigma: un nodo raíz con dos subárboles disjuntos de estructura idéntica. Calcular la suma de todos sus nodos descompone la instancia en $Suma(T.hijoIzq())$ y $Suma(T.hijoDer())$, con caso base en árbol vacío ($0$), combinando ambas evaluaciones mediante la adición del valor de la raíz.",
+          "animaciones": [
+            {
+              "id": "anim_abb_deconstruccion",
+              "tipo": "arbol_recursion",
+              "formato": "mermaid",
+              "descripcion": "Descomposición estructural recursiva de un Árbol Binario de Búsqueda",
+              "pasos": [
+                "graph TD\n  R((Raíz)) -->|T.hijoIzq| I[Subárbol Izquierdo]\n  R -->|T.hijoDer| D[Subárbol Derecho]\n  I -->|Recursión| I1((I_1))\n  I -->|Recursión| I2((I_2))\n  D -->|Recursión| D1((D_1))\n  D -->|Recursión| D2((D_2))"
+              ]
+            }
+          ],
+          "pseudocodigo": "ALGORITMO Suma (ABB T)\n    si T.arbolVacio() entonces\n        devolver 0\n    sino\n        devolver T.raiz() + Suma(T.hijoIzq()) + Suma(T.hijoDer())\n    fin si",
+          "codigo": {
+            "lenguaje": "Java",
+            "codigo": "public static int sumaABB(ABB T) {\n    if (T == null || T.arbolVacio()) {\n        return 0;\n    }\n    return T.raiz() + sumaABB(T.hijoIzq()) + sumaABB(T.hijoDer());\n}",
+            "correcciones_aplicadas": "Se agregó validación defensiva contra puntero nulo previa a la invocación de `T.arbolVacio()`."
+          },
+          "analisis_complejidad": {
+            "ecuacion_recurrencia": "T(n) = 2T(n/2) + c \\quad \\text{(en árbol perfectamente balanceado)}",
+            "metodo_resolucion": "Teorema Maestro con a=2, b=2, k=0 (a > b^k)",
+            "temporal_peor_caso": "O(n) (se visita obligatoriamente cada nodo del árbol)",
+            "temporal_mejor_caso": "O(1) para árbol vacío",
+            "espacial": "O(n) en árbol degenerado (lista enlazada); O(\\log n) en árbol balanceado",
+            "justificacion": "La visita sistemática requiere recorrer los $n$ nodos. En árboles balanceados el stack almacena la altura $\\log_2 n$."
+          }
+        },
+        {
+          "id": "potencia_modular_optimizada",
+          "titulo": "Cálculo de Potencias: Reducción de Ramificación",
+          "teoria": "El cómputo de $a^{2^k}$ evidencia la importancia de evitar llamadas recursivas gemelas. Una implementación ingenua calcula `Potencia(a, n/2) * Potencia(a, n/2)`, incurriendo en $a=2, b=2, k=0 \\Rightarrow O(n)$. Al almacenar el resultado intermedio `quad = Potencia(a, n/2)` y retornar `quad * quad`, se reduce la ramificación a $a=1, b=2, k=0$, transformando la complejidad a orden logarítmico estricto $\\Theta(\\log n)$.",
+          "animaciones": [
+            {
+              "id": "anim_potencia_reduccion",
+              "tipo": "traza",
+              "formato": "mermaid",
+              "descripcion": "Colapso del árbol binario redundante a una cadena lineal logarítmica",
+              "pasos": [
+                "graph TD\n  subgraph Ineficiente_O_n\n    A[P n] --> B1[P n/2]\n    A --> B2[P n/2]\n    B1 --> C1[P n/4]\n    B1 --> C2[P n/4]\n  end\n  subgraph Eficiente_O_log_n\n    X[P n] -->|1 llamada| Y[P n/2]\n    Y -->|1 llamada| Z[P n/4]\n    Z -->|cuadrado directo| RES[quad * quad]\n  end"
+              ]
+            }
+          ],
+          "pseudocodigo": "ALGORITMO Potencia_2 (a: entero, n: entero)\n    si n == 2 entonces\n        devolver a * a\n    sino\n        quad <- Potencia_2(a, n / 2)\n        devolver quad * quad\n    fin si",
+          "codigo": {
+            "lenguaje": "Java",
+            "codigo": "public static long potenciaOptimizada(long a, int n) {\n    if (n == 1) return a;\n    if (n == 2) return a * a;\n    long quad = potenciaOptimizada(a, n / 2);\n    long res = quad * quad;\n    if (n % 2 != 0) {\n        res *= a;\n    }\n    return res;\n}",
+            "correcciones_aplicadas": "Se generalizó el caso base para contemplar exponentes impares y se emplearon tipos primitivos `long` para mitigar desbordamientos aritméticos."
+          },
+          "analisis_complejidad": {
+            "ecuacion_recurrencia": "T(n) = 1 \\cdot T(n/2) + c",
+            "metodo_resolucion": "Teorema Maestro con a=1, b=2, k=0 (a = b^k)",
+            "temporal_peor_caso": "O(\\log n)",
+            "temporal_mejor_caso": "O(1)",
+            "espacial": "O(\\log n) en stack de recursión",
+            "justificacion": "Al ejecutarse una única llamada por nivel sobre la mitad del exponente, la profundidad máxima del árbol de llamadas es $\\lfloor \\log_2 n \\rfloor$."
+          }
+        }
+      ]
+    },
+    {
+      "id": "busqueda_y_ordenamiento",
+      "titulo": "2. Algoritmos Clásicos de Búsqueda y Ordenamiento",
+      "subtemas": [
+        {
+          "id": "busqueda_binaria",
+          "titulo": "Búsqueda Binaria",
+          "teoria": "Dado un vector ordenado ascendentemente $S[0..n-1]$ y un valor buscado $x$, se evalúa el elemento en la posición central $mid = (ini + fin)/2$. Si coincide, el algoritmo finaliza exitosamente; si $x < S[mid]$, se descarta la mitad derecha y se procede recursivamente sobre $[ini..mid-1]$; en caso contrario, se procesa $[mid+1..fin]$. La reducción a la mitad en cada paso sin trabajo de recombinación asegura una búsqueda de tiempo logarítmico.",
+          "animaciones": [
+            {
+              "id": "anim_busqueda_binaria_traza",
+              "tipo": "particion",
+              "formato": "mermaid",
+              "descripcion": "Traza de partición sobre arreglo ordenado buscando x = 3",
+              "pasos": [
+                "graph TD\n  N0[\"[1, 3, 7, 10, 25, 106, 121, 130, 145] -> mid=25 (x < 25)\"] --> N1[\"[1, 3, 7, 10] -> mid=3 (Match x == 3)\"]\n  N1 --> SUCCESS[Retorna Verdadero / Índice 1]"
+              ]
+            }
+          ],
+          "pseudocodigo": "ALGORITMO BUSQUEDABIN (S: Vector<entero>, ini: entero, fin: entero, x: entero)\n    si ini > fin entonces\n        devolver -1\n    fin si\n    mid <- (ini + fin) / 2\n    si x == S[mid] entonces\n        devolver mid\n    sino si x < S[mid] entonces\n        devolver BUSQUEDABIN(S, ini, mid - 1, x)\n    sino\n        devolver BUSQUEDABIN(S, mid + 1, fin, x)\n    fin si",
+          "codigo": {
+            "lenguaje": "Java",
+            "codigo": "public static int busquedaBinaria(VectorTDA<Integer> valores, int inicio, int fin, int valor) throws Exception {\n    if (inicio > fin) {\n        return -1;\n    }\n    int mitad = inicio + (fin - inicio) / 2;\n    int elemento = valores.recuperarElemento(mitad);\n    if (elemento == valor) {\n        return mitad;\n    } else if (valor < elemento) {\n        return busquedaBinaria(valores, inicio, mitad - 1, valor);\n    } else {\n        return busquedaBinaria(valores, mitad + 1, fin, valor);\n    }\n}",
+            "correcciones_aplicadas": "Se corrigió el cálculo de la posición media a `inicio + (fin - inicio) / 2` para evitar potenciales desbordamientos enteros y se ajustaron las cotas de recursión para descartar estrictamente el pivote evaluado."
+          },
+          "analisis_complejidad": {
+            "ecuacion_recurrencia": "T(n) = 1 \\cdot T(n/2) + c",
+            "metodo_resolucion": "Teorema Maestro: a=1, b=2, k=0 \\implies a = b^k",
+            "temporal_peor_caso": "O(\\log n)",
+            "temporal_mejor_caso": "O(1) (si el elemento buscado reside en el punto medio inicial)",
+            "espacial": "O(\\log n) en versión recursiva por frames de stack; O(1) en versión iterativa",
+            "justificacion": "El espacio de búsqueda se reduce a la mitad en cada paso ($n, n/2, n/4, \\dots, 1$), lo que insume $\\log_2 n$ comparaciones."
+          }
+        },
+        {
+          "id": "mergesort",
+          "titulo": "MergeSort (Ordenamiento por Mezcla)",
+          "teoria": "MergeSort divide el vector en dos mitades simétricas de tamaño $n/2$, invoca recursivamente el ordenamiento sobre cada una y conquista el problema combinando ambas secuencias ya ordenadas mediante el procedimiento lineal `Merge`. Dado que toda la sobrecarga de ordenación reside en la fase de mezcla e involucra un recorrido balanceado constante, su comportamiento temporal es estrictamente insensible a la disposición previa de los datos de entrada.",
+          "animaciones": [
+            {
+              "id": "anim_mergesort_traza",
+              "tipo": "particion",
+              "formato": "mermaid",
+              "descripcion": "Descomposición y mezcla balanceada del arreglo [7, 1, 8, 5, 3, 6, 2, 9, 0, 4]",
+              "pasos": [
+                "graph TD\n  A[\"[7, 1, 8, 5, 3, 6, 2, 9, 0, 4]\"] --> B1[\"[7, 1, 8, 5, 3]\"]\n  A --> B2[\"[6, 2, 9, 0, 4]\"]\n  B1 --> C1[\"[7, 1, 8]\"]\n  B1 --> C2[\"[5, 3]\"]\n  B2 --> C3[\"[6, 2, 9]\"]\n  B2 --> C4[\"[0, 4]\"]\n  C1 --> D1[\"[1, 7, 8]\"]\n  C2 --> D2[\"[3, 5]\"]\n  C3 --> D3[\"[2, 6, 9]\"]\n  C4 --> D4[\"[0, 4]\"]\n  D1 & D2 -->|Merge| E1[\"[1, 3, 5, 7, 8]\"]\n  D3 & D4 -->|Merge| E2[\"[0, 2, 4, 6, 9]\"]\n  E1 & E2 -->|Merge Final| F[\"[0, 1, 2, 3, 4, 5, 6, 7, 8, 9]\"]"
+              ]
+            }
+          ],
+          "pseudocodigo": "ALGORITMO MergeSort (S: Vector<entero>, ini: entero, fin: entero)\n    si ini < fin entonces\n        mid <- (ini + fin) / 2\n        MergeSort(S, ini, mid)\n        MergeSort(S, mid + 1, fin)\n        Merge(S, ini, mid, fin)\n    fin si\n\nALGORITMO Merge (S: Vector<entero>, ini: entero, mid: entero, fin: entero)\n    R <- inicializarVector(fin - ini + 1)\n    i <- ini; j <- mid + 1; k <- 0\n    mientras i <= mid Y j <= fin hacer\n        si S[i] <= S[j] entonces\n            R[k++] <- S[i++]\n        sino\n            R[k++] <- S[j++]\n        fin si\n    fin mientras\n    mientras i <= mid hacer R[k++] <- S[i++] fin mientras\n    mientras j <= fin hacer R[k++] <- S[j++] fin mientras\n    para p <- 0 hasta fin - ini hacer\n        S[ini + p] <- R[p]\n    fin para",
+          "codigo": {
+            "lenguaje": "Java",
+            "codigo": "public static void mergeSort(VectorTDA<Integer> valores, int inicio, int fin) throws Exception {\n    if (inicio < fin) {\n        int medio = inicio + (fin - inicio) / 2;\n        mergeSort(valores, inicio, medio);\n        mergeSort(valores, medio + 1, fin);\n        merge(valores, inicio, medio, fin);\n    }\n}\n\nprivate static void merge(VectorTDA<Integer> valores, int inicio, int medio, int fin) throws Exception {\n    int n = fin - inicio + 1;\n    int[] aux = new int[n];\n    int i = inicio;\n    int j = medio + 1;\n    int k = 0;\n    while (i <= medio && j <= fin) {\n        if (valores.recuperarElemento(i) <= valores.recuperarElemento(j)) {\n            aux[k++] = valores.recuperarElemento(i++);\n        } else {\n            aux[k++] = valores.recuperarElemento(j++);\n        }\n    }\n    while (i <= medio) {\n        aux[k++] = valores.recuperarElemento(i++);\n    }\n    while (j <= fin) {\n        aux[k++] = valores.recuperarElemento(j++);\n    }\n    for (k = 0; k < n; k++) {\n        valores.agregarElemento(inicio + k, aux[k]);\n    }\n}",
+            "correcciones_aplicadas": "Se simplificaron las condiciones de borde en `merge`, reemplazando el operador lógico disyuntivo complejo con centinelas unificados por bucles de vaciado directo de ramas restantes."
+          },
+          "analisis_complejidad": {
+            "ecuacion_recurrencia": "T(n) = 2 \\cdot T(n/2) + O(n)",
+            "metodo_resolucion": "Teorema Maestro: a=2, b=2, k=1 \\implies a = b^k (2 = 2^1)",
+            "temporal_peor_caso": "O(n \\log n)",
+            "temporal_mejor_caso": "O(n \\log n)",
+            "espacial": "O(n) memoria auxiliar requerida por el buffer de mezcla + O(\\log n) en stack",
+            "justificacion": "El árbol de recursión posee exactamente $\\log_2 n$ niveles, en cada uno de los cuales la suma de mezclas insume tiempo lineal $O(n)$."
+          }
+        },
+        {
+          "id": "quicksort",
+          "titulo": "QuickSort (Ordenamiento Rápido por Partición)",
+          "teoria": "QuickSort opera seleccionando un elemento pivote $p$, reordenando in-place los elementos del subvector de modo que todos los menores o iguales queden a su izquierda y los mayores a su derecha, posicionando a $p$ en su índice definitivo. Luego aplica recursión sobre las particiones resultantes $[ini..p-1]$ y $[p+1..fin]$. A diferencia de MergeSort, el esfuerzo computacional recae íntegramente en la partición previa y no requiere recombinación posterior. Su rendimiento está condicionado por la calidad de centrado del pivote.",
+          "animaciones": [
+            {
+              "id": "anim_quicksort_pivoteo",
+              "tipo": "particion",
+              "formato": "mermaid",
+              "descripcion": "Partición y convergencia de punteros alrededor del pivote",
+              "pasos": [
+                "graph TD\n  P0[\"[7, 1, 8, 5, 3, 6, 2, 9, 0, 4] | Pivote p = 7\"]\n  P0 --> P1[\"Puntero i avanza buscando > 7 (se detiene en 8)\\nPuntero j retrocede buscando <= 7 (se detiene en 4)\\nSwap(8, 4)\"]\n  P1 --> P2[\"Punteros convergen en cruce i >= j\"]\n  P2 --> P3[\"Swap(pivote, S[j]) -> 7 colocado en posición definitiva\"]\n  P3 --> P4[\"Partición Izquierda: [0..j-1] | Partición Derecha: [j+1..fin]\"]"
+              ]
+            }
+          ],
+          "pseudocodigo": "ALGORITMO QuickSort (S: Vector<entero>, ini: entero, fin: entero)\n    si ini < fin entonces\n        p <- Pivot(S, ini, fin)\n        QuickSort(S, ini, p - 1)\n        QuickSort(S, p + 1, fin)\n    fin si\n\nALGORITMO Pivot (S: Vector<entero>, ini: entero, fin: entero)\n    p <- S[ini]\n    i <- ini + 1\n    j <- fin\n    repetir\n        mientras i <= fin Y S[i] <= p hacer i <- i + 1 fin mientras\n        mientras S[j] > p hacer j <- j - 1 fin mientras\n        si i < j entonces\n            swap(S[i], S[j])\n        fin si\n    hasta que i >= j\n    swap(S[ini], S[j])\n    devolver j",
+          "codigo": {
+            "lenguaje": "Java",
+            "codigo": "public static void quickSort(VectorTDA<Integer> valores, int inicio, int fin) throws Exception {\n    if (inicio < fin) {\n        int p = particionar(valores, inicio, fin);\n        quickSort(valores, inicio, p - 1);\n        quickSort(valores, p + 1, fin);\n    }\n}\n\nprivate static int particionar(VectorTDA<Integer> valores, int inicio, int fin) throws Exception {\n    int pivote = valores.recuperarElemento(inicio);\n    int i = inicio + 1;\n    int j = fin;\n    while (true) {\n        while (i <= fin && valores.recuperarElemento(i) <= pivote) {\n            i++;\n        }\n        while (j >= inicio && valores.recuperarElemento(j) > pivote) {\n            j--;\n        }\n        if (i < j) {\n            int aux = valores.recuperarElemento(i);\n            valores.agregarElemento(i, valores.recuperarElemento(j));\n            valores.agregarElemento(j, aux);\n        } else {\n            break;\n        }\n    }\n    int aux = valores.recuperarElemento(inicio);\n    valores.agregarElemento(inicio, valores.recuperarElemento(j));\n    valores.agregarElemento(j, aux);\n    return j;\n}",
+            "correcciones_aplicadas": "Se corrigió la guarda de decremento del puntero derecho a `j >= inicio` para evitar índices negativos si todos los elementos fuesen mayores al pivote, y se consolidó el intercambio final seguro."
+          },
+          "analisis_complejidad": {
+            "ecuacion_recurrencia": "Mejor Caso: T(n) = 2T(n/2) + O(n); \\quad Peor Caso: T(n) = T(n-1) + O(n)",
+            "metodo_resolucion": "División para Caso Promedio / Mejor Caso; Sustracción para Peor Caso",
+            "temporal_peor_caso": "O(n^2) (pivote sistemáticamente en extremos con subvectores de 0 y n-1 elementos)",
+            "temporal_mejor_caso": "O(n \\log n) (pivote divide siempre en mitades simétricas)",
+            "espacial": "O(\\log n) en stack (caso promedio); O(n) stack en el peor caso sin optimización de recursión de cola",
+            "justificacion": "En el caso promedio las constantes ocultas son menores que en MergeSort debido a la ausencia de buffers auxiliares y alta localidad de referencia en caché."
+          }
+        }
+      ]
+    },
+    {
+      "id": "problemas_avanzados_dyc",
+      "titulo": "3. Problemas Avanzados de Divide & Conquer",
+      "subtemas": [
+        {
+          "id": "elemento_mayoritario",
+          "titulo": "Elemento Mayoritario (Algoritmo D&C y Pseudo-M)",
+          "teoria": "Un elemento $x$ es mayoritario en un arreglo $A[0..n-1]$ si aparece estrictamente más de $n/2$ veces. La técnica D&C descompone el vector en dos mitades: si un elemento es mayoritario global, obligatoriamente debe ser candidato mayoritario en al menos una de las dos mitades. El algoritmo `Pseudo-M` devuelve una tupla $(r, n, c_x, x)$ combinando los resultados de subproblemas mediante un análisis exhaustivo de casos (sin candidatos, un candidato, candidatos idénticos, o candidatos en conflicto ponderados por frecuencias y tamaños). Tras obtener el candidato final en $\\Theta(n)$, una pasada de verificación lineal valida si su frecuencia supera $n/2$.",
+          "animaciones": [
+            {
+              "id": "anim_pseudo_m_hoja_ruta",
+              "tipo": "traza",
+              "formato": "mermaid",
+              "descripcion": "Árbol de decisión para combinación de candidatos en Pseudo-M",
+              "pasos": [
+                "graph TD\n  ROOT[Combinar u1 y u2] --> C1{r1 y r2?}\n  C1 -->|r1=F, r2=F| R_NO[Caso 1: Retorna false]\n  C1 -->|r1 != r2| R_UNIQ[Caso 2: Retorna candidato único]\n  C1 -->|r1=T, r2=T| C2{x1 == x2?}\n  C2 -->|Sí| R_SAME[Caso 3: Suma frecuencias c1 + c2]\n  C2 -->|No| C3{c1 vs c2}\n  C3 -->|c1 != c2| R_DIFF[Caso 4: Gana el de mayor c]\n  C3 -->|c1 == c2| C4{n1 vs n2}\n  C4 -->|n1 != n2| R_SIZE[Caso 5a: Gana el de subarreglo menor]\n  C4 -->|n1 == n2| R_EMP[Caso 5b: Empate total -> Retorna false]"
+              ]
+            }
+          ],
+          "pseudocodigo": "ALGORITMO Pseudo-M (u: Vector<entero>, i: entero, j: entero) -> Tupla(r, n, c, x)\n    si i == j entonces\n        devolver (true, 1, 1, u[i])\n    fin si\n    mid <- (i + j) / 2\n    o1 <- Pseudo-M(u, i, mid)\n    o2 <- Pseudo-M(u, mid + 1, j)\n    \n    si !o1.r Y !o2.r entonces devolver (false, o1.n + o2.n, 0, 0)\n    si o1.r Y !o2.r entonces devolver (true, o1.n + o2.n, o1.c + o2.n / 2, o1.x)\n    si !o1.r Y o2.r entonces devolver (true, o1.n + o2.n, o2.c + o1.n / 2, o2.x)\n    si o1.x == o2.x entonces devolver (true, o1.n + o2.n, o1.c + o2.c, o1.x)\n    si o1.c > o2.c entonces devolver (true, o1.n + o2.n, o1.c - o2.c, o1.x)\n    si o2.c > o1.c entonces devolver (true, o1.n + o2.n, o2.c - o1.c, o2.x)\n    si o1.n < o2.n entonces devolver (true, o1.n + o2.n, o1.c + o2.n / 2, o1.x)\n    si o2.n < o1.n entonces devolver (true, o1.n + o2.n, o2.c + o1.n / 2, o2.x)\n    devolver (false, o1.n + o2.n, 0, 0)",
+          "codigo": {
+            "lenguaje": "Java",
+            "codigo": "public static class Candidato {\n    public boolean r;\n    public int n;\n    public int c;\n    public int x;\n    public Candidato(boolean r, int n, int c, int x) {\n        this.r = r; this.n = n; this.c = c; this.x = x;\n    }\n}\n\npublic static Candidato pseudoM(int[] u, int i, int j) {\n    if (i == j) return new Candidato(true, 1, 1, u[i]);\n    int mid = i + (j - i) / 2;\n    Candidato o1 = pseudoM(u, i, mid);\n    Candidato o2 = pseudoM(u, mid + 1, j);\n    int nTotal = o1.n + o2.n;\n    if (!o1.r && !o2.r) return new Candidato(false, nTotal, 0, 0);\n    if (o1.r && !o2.r) return new Candidato(true, nTotal, o1.c + o2.n / 2, o1.x);\n    if (!o1.r && o2.r) return new Candidato(true, nTotal, o2.c + o1.n / 2, o2.x);\n    if (o1.x == o2.x) return new Candidato(true, nTotal, o1.c + o2.c, o1.x);\n    if (o1.c > o2.c) return new Candidato(true, nTotal, o1.c - o2.c, o1.x);\n    if (o2.c > o1.c) return new Candidato(true, nTotal, o2.c - o1.c, o2.x);\n    if (o1.n < o2.n) return new Candidato(true, nTotal, o1.c + o2.n / 2, o1.x);\n    if (o2.n < o1.n) return new Candidato(true, nTotal, o2.c + o1.n / 2, o2.x);\n    return new Candidato(false, nTotal, 0, 0);\n}\n\npublic static Integer elementoMayoritaro(int[] u) {\n    if (u == null || u.length == 0) return null;\n    Candidato cand = pseudoM(u, 0, u.length - 1);\n    if (!cand.r) return null;\n    int cuenta = 0;\n    for (int num : u) {\n        if (num == cand.x) cuenta++;\n    }\n    return (cuenta > u.length / 2) ? cand.x : null;\n}",
+            "correcciones_aplicadas": "Se implementó clase contenedora estática `Candidato` y se subsanaron las condiciones simétricas de los subcasos 5a para evaluar correctamente la cardinalidad cuando $c_1 = c_2$."
+          },
+          "analisis_complejidad": {
+            "ecuacion_recurrencia": "T(n) = 2T(n/2) + c \\quad \\text{(para Pseudo-M)}",
+            "metodo_resolucion": "Teorema Maestro: a=2, b=2, k=0 \\implies a > b^k \\implies \\Theta(n^{\\log_2 2}) = \\Theta(n)",
+            "temporal_peor_caso": "O(n) (Suma de Pseudo-M lineal + verificación de conteo lineal)",
+            "temporal_mejor_caso": "O(n)",
+            "espacial": "O(\\log n) en stack de recursión",
+            "justificacion": "La obtención del candidato se resuelve en tiempo estrictamente lineal $\\Theta(n)$ y la verificación insume una pasada de $\\Theta(n)$, logrando una cota global $\\Theta(n)$ frente al $O(n \\log n)$ del ordenamiento previo."
+          }
+        },
+        {
+          "id": "torneo_bridge_fixture",
+          "titulo": "Torneo de Bridge (Fixture Round-Robin)",
+          "teoria": "Dado un conjunto de $n = 2^k$ parejas, se debe generar un fixture donde cada pareja compita exactamente una vez con las restantes en $n-1$ fechas sin descansos. El problema se modela en una matriz $T[1..n, 1..n-1]$. D&C divide a las parejas en dos bloques disjuntos de tamaño $n/2$, resuelve recursivamente el calendario interno de cada bloque en $(n/2)-1$ días y recombina cruzando inter-bloques en los restantes $n/2$ días mediante el procedimiento `CompletarT`, que despliega una rotación cíclica de adversarios.",
+          "animaciones": [
+            {
+              "id": "anim_fixture_matriz",
+              "tipo": "particion",
+              "formato": "mermaid",
+              "descripcion": "Estructura de bloques de la matriz de fixture para n=8 parejas",
+              "pasos": [
+                "graph TD\n  subgraph Matriz_Fixture_T\n    TL[\"T[1..4, 1..3]: Torneo Grupo 1\"]\n    TR[\"T[1..4, 4..7]: Cruzamiento G1 vs G2\"]\n    BL[\"T[5..8, 1..3]: Torneo Grupo 2\"]\n    BR[\"T[5..8, 4..7]: Cruzamiento G2 vs G1\"]\n  end"
+              ]
+            }
+          ],
+          "pseudocodigo": "ALGORITMO Fixture (T: Matriz, inf: entero, sup: entero)\n    si inf == sup - 1 entonces\n        T[inf, 1] <- sup\n        T[sup, 1] <- inf\n    sino\n        mid <- (inf + sup) / 2\n        Fixture(T, inf, mid)\n        Fixture(T, mid + 1, sup)\n        CompletarT(T, inf, sup)\n    fin si",
+          "codigo": {
+            "lenguaje": "Java",
+            "codigo": "public static void fixture(int[][] T, int first, int last) {\n    if (first == last - 1) {\n        T[first][0] = last + 1;\n        T[last][0] = first + 1;\n    } else {\n        int mid = first + (last - first) / 2;\n        fixture(T, first, mid);\n        fixture(T, mid + 1, last);\n        completarT(T, first, last);\n    }\n}\n\nprivate static void completarT(int[][] T, int first, int last) {\n    int len = (last - first + 1) / 2;\n    int firstAdversary = first + len + 1;\n    int secondAdversary = first + 1;\n    int firstDay = len - 1;\n    int lastDay = firstDay + len;\n    for (int j = firstDay; j < lastDay; j++) {\n        T[first][j] = firstAdversary++;\n        T[first + len][j] = secondAdversary++;\n    }\n    for (int i = first + 1; i <= first + len - 1; i++) {\n        for (int j = firstDay; j < lastDay; j++) {\n            if (j == firstDay) {\n                T[i][j] = T[i - 1][lastDay - 1];\n                T[i + len][j] = T[i + len - 1][lastDay - 1];\n            } else {\n                T[i][j] = T[i - 1][j - 1];\n                T[i + len][j] = T[i + len - 1][j - 1];\n            }\n        }\n    }\n}",
+            "correcciones_aplicadas": "Se normalizaron los índices a base 0 para adecuación al estándar de Java y se ajustaron los límites de asignación de columnas en el desplazamiento circular de adversarios."
+          },
+          "analisis_complejidad": {
+            "ecuacion_recurrencia": "T(n) = 2T(n/2) + \\Theta(n^2)",
+            "metodo_resolucion": "Teorema Maestro: a=2, b=2, k=2 \\implies a < b^k (2 < 4)",
+            "temporal_peor_caso": "O(n^2)",
+            "temporal_mejor_caso": "O(n^2)",
+            "espacial": "O(n^2) para almacenar la matriz de dimensiones n x (n-1)",
+            "justificacion": "El costo de recombinación `CompletarT` domina el proceso requiriendo $\\Theta(n^2)$ operaciones para completar las celdas cruzadas de la matriz."
+          }
+        },
+        {
+          "id": "suma_parcial_maxima_mps",
+          "titulo": "Suma Parcial Máxima (Maximum Partial Subarray - MPS)",
+          "teoria": "Dado un arreglo $A[0..n-1]$, el problema MPS consiste en hallar los índices $i$ y $j$ que maximizan $\\sum_{k=i}^j A[k]$. Una partición Divide & Conquer divide el vector en dos mitades en $mid$. El subarreglo de suma máxima puede: 1) estar contenido íntegramente en la mitad izquierda, 2) estar contenido en la mitad derecha, o 3) cruzar el punto medio. Para evaluar el caso de cruce en tiempo lineal, se resuelven los subproblemas auxiliares $LMPS$ (sufijo máximo desde $mid$ hacia la izquierda) y $RMPS$ (prefijo máximo desde $mid+1$ hacia la derecha), sumando ambos extremos.",
+          "animaciones": [
+            {
+              "id": "anim_mps_cruce",
+              "tipo": "particion",
+              "formato": "mermaid",
+              "descripcion": "Descomposición tripartita de la Suma Parcial Máxima con cruce central",
+              "pasos": [
+                "graph TD\n  ARR[\"[3, -5, 5, 9, 7, -10, 4] | mid = 2\"]\n  ARR --> LEFT[\"MPS Izquierda: [3..2]\"]\n  ARR --> RIGHT[\"MPS Derecha: [3..6]\"]\n  ARR --> CROSS[\"Cruce Central: LMPS + RMPS\"]\n  CROSS --> L_MAX[\"LMPS hacia izquierda desde mid\"]\n  CROSS --> R_MAX[\"RMPS hacia derecha desde mid+1\"]\n  LEFT & RIGHT & CROSS --> MAX_SEL[\"Resultado = Max(Izq, Der, Cruce)\"]"
+              ]
+            }
+          ],
+          "pseudocodigo": "ALGORITMO MPS (A: Vector<entero>, ini: entero, fin: entero) -> entero\n    si ini == fin entonces\n        devolver A[ini]\n    fin si\n    mid <- (ini + fin) / 2\n    maxIzq <- MPS(A, ini, mid)\n    maxDer <- MPS(A, mid + 1, fin)\n    \n    suma <- 0; sumLMPS <- -inf\n    para i <- mid hasta ini decrementando 1 hacer\n        suma <- suma + A[i]\n        si suma > sumLMPS entonces sumLMPS <- suma fin si\n    fin para\n    \n    suma <- 0; sumRMPS <- -inf\n    para j <- mid + 1 hasta fin hacer\n        suma <- suma + A[j]\n        si suma > sumRMPS entonces sumRMPS <- suma fin si\n    fin para\n    \n    devolver max(maxIzq, maxDer, sumLMPS + sumRMPS)",
+          "codigo": {
+            "lenguaje": "Java",
+            "codigo": "public static int mpsDivideAndConquer(int[] A, int ini, int fin) {\n    if (ini == fin) {\n        return A[ini];\n    }\n    int mid = ini + (fin - ini) / 2;\n    int maxIzq = mpsDivideAndConquer(A, ini, mid);\n    int maxDer = mpsDivideAndConquer(A, mid + 1, fin);\n\n    int suma = 0;\n    int sumLMPS = Integer.MIN_VALUE;\n    for (int i = mid; i >= ini; i--) {\n        suma += A[i];\n        if (suma > sumLMPS) sumLMPS = suma;\n    }\n\n    suma = 0;\n    int sumRMPS = Integer.MIN_VALUE;\n    for (int j = mid + 1; j <= fin; j++) {\n        suma += A[j];\n        if (suma > sumRMPS) sumRMPS = suma;\n    }\n\n    int maxCruce = sumLMPS + sumRMPS;\n    return Math.max(Math.max(maxIzq, maxDer), maxCruce);\n}",
+            "correcciones_aplicadas": "Formalización del algoritmo D&C en $O(n \\log n)$ completando la recombinación que en el material teórico quedaba planteada como ejercicio conceptual."
+          },
+          "analisis_complejidad": {
+            "ecuacion_recurrencia": "T(n) = 2T(n/2) + \\Theta(n)",
+            "metodo_resolucion": "Teorema Maestro: a=2, b=2, k=1 \\implies a = b^k",
+            "temporal_peor_caso": "O(n \\log n)",
+            "temporal_mejor_caso": "O(n \\log n)",
+            "espacial": "O(\\log n) en frames de stack",
+            "justificacion": "La combinación lineal $O(n)$ generada por los barridos de $LMPS$ y $RMPS$ en cada nivel de partición produce la recurrencia clásica de tipo MergeSort."
+          }
+        },
+        {
+          "id": "multiplicacion_strassen",
+          "titulo": "Multiplicación de Matrices de Strassen",
+          "teoria": "Multiplicar dos matrices de $N \\times N$ bajo la definición algebraica tradicional demanda $N^3$ productos escalares ($O(N^3)$). Volker Strassen propuso subdividir cada matriz en 4 bloques de tamaño $(N/2) \\times (N/2)$ y calcular 7 multiplicaciones ingeniosas ($m_1$ a $m_7$) en lugar de las 8 habituales, a expensas de 18 adiciones y sustracciones de submatrices. Para matrices suficientemente grandes ($N > 18$), el ahorro en productos compensa con creces las sumas adicionales.",
+          "animaciones": [
+            {
+              "id": "anim_strassen_descomposicion",
+              "tipo": "particion",
+              "formato": "katex",
+              "descripcion": "Ecuaciones fundamentales de Strassen para 7 productos de submatrices",
+              "pasos": [
+                "$$\\begin{aligned} m_1 &= (A_{11} + A_{22})(B_{11} + B_{22}) \\\\ m_2 &= (A_{21} + A_{22})B_{11} \\\\ m_3 &= A_{11}(B_{12} - B_{22}) \\\\ m_4 &= A_{22}(B_{21} - B_{11}) \\\\ m_5 &= (A_{11} + A_{12})B_{22} \\\\ m_6 &= (A_{21} - A_{11})(B_{11} + B_{12}) \\\\ m_7 &= (A_{12} - A_{22})(B_{21} + B_{22}) \\end{aligned}$$",
+                "$$\\begin{aligned} C_{11} &= m_1 + m_4 - m_5 + m_7 \\\\ C_{12} &= m_3 + m_5 \\\\ C_{21} &= m_2 + m_4 \\\\ C_{22} &= m_1 + m_3 - m_2 + m_6 \\end{aligned}$$"
+              ]
+            }
+          ],
+          "pseudocodigo": "ALGORITMO PRODUCTOMATRICES (A: Matriz, B: Matriz, N: entero)\n    si N == 2 entonces\n        devolver Producto2x2(A, B)\n    sino\n        Dividir A en A11, A12, A21, A22\n        Dividir B en B11, B12, B21, B22\n        Calcular M1 hasta M7 mediante 7 llamadas recursivas\n        C11 <- M1 + M4 - M5 + M7\n        C12 <- M3 + M5\n        C21 <- M2 + M4\n        C22 <- M1 + M3 - M2 + M6\n        devolver Componer(C11, C12, C21, C22)\n    fin si",
+          "codigo": {
+            "lenguaje": "Java",
+            "codigo": "public static MatrizTDA<Integer> strassen(MatrizTDA<Integer> A, MatrizTDA<Integer> B, int ai, int aj, int bi, int bj, int n) throws Exception {\n    if (n <= 2) {\n        return producto2x2(A, B, ai, aj, bi, bj);\n    }\n    int k = n / 2;\n    MatrizTDA<Integer> m1 = strassen(suma(A, A, ai, aj, ai + k, aj + k, k), suma(B, B, bi, bj, bi + k, bj + k, k), 0, 0, 0, 0, k);\n    MatrizTDA<Integer> m2 = strassen(suma(A, A, ai + k, aj, ai + k, aj + k, k), B, 0, 0, bi, bj, k);\n    MatrizTDA<Integer> m3 = strassen(A, resta(B, B, bi, bj + k, bi + k, bj + k, k), ai, aj, 0, 0, k);\n    MatrizTDA<Integer> m4 = strassen(A, resta(B, B, bi + k, bj, bi, bj, k), ai + k, aj + k, 0, 0, k);\n    MatrizTDA<Integer> m5 = strassen(suma(A, A, ai, aj, ai, aj + k, k), B, 0, 0, bi + k, bj + k, k);\n    MatrizTDA<Integer> m6 = strassen(resta(A, A, ai + k, aj, ai, aj, k), suma(B, B, bi, bj, bi, bj + k, k), 0, 0, 0, 0, k);\n    MatrizTDA<Integer> m7 = strassen(resta(A, A, ai, aj + k, ai + k, aj + k, k), suma(B, B, bi + k, bj, bi + k, bj + k, k), 0, 0, 0, 0, k);\n\n    MatrizTDA<Integer> C = new Matriz<Integer>();\n    C.inicializarMatriz(n);\n    for (int i = 0; i < k; i++) {\n        for (int j = 0; j < k; j++) {\n            C.setearValor(i, j, m1.obtenerValor(i, j) + m4.obtenerValor(i, j) - m5.obtenerValor(i, j) + m7.obtenerValor(i, j));\n            C.setearValor(i, j + k, m3.obtenerValor(i, j) + m5.obtenerValor(i, j));\n            C.setearValor(i + k, j, m2.obtenerValor(i, j) + m4.obtenerValor(i, j));\n            C.setearValor(i + k, j + k, m1.obtenerValor(i, j) + m3.obtenerValor(i, j) - m2.obtenerValor(i, j) + m6.obtenerValor(i, j));\n        }\n    }\n    return C;\n}",
+            "correcciones_aplicadas": "Se corrigieron las firmas e indexaciones de bloque para evitar instanciar submatrices innecesarias en cada nivel, preservando memoria espacial mediante desplazamientos de subíndices."
+          },
+          "analisis_complejidad": {
+            "ecuacion_recurrencia": "T(n) = 7T(n/2) + \\Theta(n^2)",
+            "metodo_resolucion": "Teorema Maestro: a=7, b=2, k=2 \\implies a > b^k (7 > 4)",
+            "temporal_peor_caso": "O(n^{\\log_2 7}) \\approx O(n^{2.807})",
+            "temporal_mejor_caso": "O(n^{\\log_2 7})",
+            "espacial": "O(n^2) debido al almacenamiento de submatrices intermedias",
+            "justificacion": "La reducción de 8 a 7 productos reduce asintóticamente el grado polinómico de $3$ a aproximadamente $2.807$."
+          }
+        }
+      ]
+    },
+    {
+      "id": "tecnica_subtract_and_conquer",
+      "titulo": "4. Técnica Subtract & Conquer y Patologías Recursivas",
+      "subtemas": [
+        {
+          "id": "palindromos_sac",
+          "titulo": "Detección de Palíndromos (Subtract & Conquer)",
+          "teoria": "En Subtract & Conquer, la reducción del problema se efectúa mediante una resta constante $b$ sobre el tamaño de la entrada: $T(n-b)$. Determinar si un vector $u[ini..fin]$ es palíndromo compara los elementos extremos $u[ini] == u[fin]$. De ser iguales, se efectúa una única llamada recursiva sobre el subvector interior $[ini+1..fin-1]$, reduciendo la instancia en $b=2$ unidades hasta alcanzar un tamaño menor o igual a 1.",
+          "animaciones": [
+            {
+              "id": "anim_palindromo_reduccion",
+              "tipo": "traza",
+              "formato": "mermaid",
+              "descripcion": "Contracción simétrica de extremos en la validación de palíndromo",
+              "pasos": [
+                "graph LR\n  P1[\"[1, 2, 3, 2, 1] | 1 == 1\"] --> P2[\"[2, 3, 2] | 2 == 2\"]\n  P2 --> P3[\"[3] | ini >= fin -> Caso Base: True\"]"
+              ]
+            }
+          ],
+          "pseudocodigo": "ALGORITMO Palindrome (u: Vector<entero>, ini: entero, fin: entero) -> booleano\n    si ini >= fin entonces\n        devolver true\n    sino si u[ini] != u[fin] entonces\n        devolver false\n    sino\n        devolver Palindrome(u, ini + 1, fin - 1)\n    fin si",
+          "codigo": {
+            "lenguaje": "Java",
+            "codigo": "public static boolean esPalindromo(int[] u, int ini, int fin) {\n    if (ini >= fin) return true;\n    if (u[ini] != u[fin]) return false;\n    return esPalindromo(u, ini + 1, fin - 1);\n}",
+            "correcciones_aplicadas": "Implementación fiel en Java con mínimo cambio."
+          },
+          "analisis_complejidad": {
+            "ecuacion_recurrencia": "T(n) = 1 \\cdot T(n - 2) + c",
+            "metodo_resolucion": "Teorema Maestro por Sustracción: a=1, b=2, k=0 \\implies \\Theta(n^{k+1})",
+            "temporal_peor_caso": "O(n)",
+            "temporal_mejor_caso": "O(1) (si los elementos extremos difieren en la primera comparación)",
+            "espacial": "O(n) en stack de recursión",
+            "justificacion": "Al decrementar el tamaño en 2 unidades por llamada con $a=1$, se efectúan a lo sumo $n/2$ llamadas recursivas de costo elemental."
+          }
+        },
+        {
+          "id": "torres_de_hanoi",
+          "titulo": "Las Torres de Hanoi",
+          "teoria": "El traslado de $n$ discos desde la clavija origen $A$ hacia la clavija destino $C$ utilizando la auxiliar $B$ requiere: 1) mover $n-1$ discos de $A$ a $B$, 2) desplazar el disco mayor directamente de $A$ a $C$, y 3) trasladar los $n-1$ discos desde $B$ a $C$. Constituye un caso estricto de Subtract & Conquer con bifurcación ($a=2, b=1$), lo cual genera una explosión combinatoria intrínsecamente exponencial de $2^n - 1$ movimientos obligatorios.",
+          "animaciones": [
+            {
+              "id": "anim_hanoi_callstack",
+              "tipo": "arbol_recursion",
+              "formato": "mermaid",
+              "descripcion": "Árbol de recurrencia y bifurcación para Torres de Hanoi con n=3",
+              "pasos": [
+                "graph TD\n  H3[\"Hanoi(3, A, C, B)\"] --> H2_1[\"Hanoi(2, A, B, C)\"]\n  H3 --> M3[\"Mover 3: A -> C\"]\n  H3 --> H2_2[\"Hanoi(2, B, C, A)\"]\n  H2_1 --> H1_1[\"Hanoi(1, A, C, B)\"]\n  H2_1 --> M2_1[\"Mover 2: A -> B\"]\n  H2_1 --> H1_2[\"Hanoi(1, C, B, A)\"]\n  H2_2 --> H1_3[\"Hanoi(1, B, A, C)\"]\n  H2_2 --> M2_2[\"Mover 2: B -> C\"]\n  H2_2 --> H1_4[\"Hanoi(1, A, C, B)\"]"
+              ]
+            }
+          ],
+          "pseudocodigo": "ALGORITMO Hanoi (n: entero, A: poste, B: poste, C: poste)\n    si n == 1 entonces\n        mover A -> C\n    sino\n        Hanoi(n - 1, A, C, B)\n        mover A -> C\n        Hanoi(n - 1, B, A, C)\n    fin si",
+          "codigo": {
+            "lenguaje": "Java",
+            "codigo": "public static void resolverHanoi(int n, char origen, char auxiliar, char destino) {\n    if (n == 1) {\n        System.out.println(\"Mover disco 1 de \" + origen + \" a \" + destino);\n        return;\n    }\n    resolverHanoi(n - 1, origen, destino, auxiliar);\n    System.out.println(\"Mover disco \" + n + \" de \" + origen + \" a \" + destino);\n    resolverHanoi(n - 1, auxiliar, origen, destino);\n}",
+            "correcciones_aplicadas": "Implementación ejecutable estándar en Java respetando nombres mnemónicos para los postes de transición."
+          },
+          "analisis_complejidad": {
+            "ecuacion_recurrencia": "T(n) = 2T(n - 1) + c",
+            "metodo_resolucion": "Teorema Maestro por Sustracción: a=2, b=1, k=0 \\implies a > 1 \\implies \\Theta(a^{n/b})",
+            "temporal_peor_caso": "O(2^n)",
+            "temporal_mejor_caso": "O(2^n)",
+            "espacial": "O(n) en stack de ejecución",
+            "justificacion": "La cantidad exacta de movimientos elementales es $2^n - 1$. Al duplicarse el trabajo por cada disco agregado, la cota es estrictamente $\\Theta(2^n)$."
+          }
+        },
+        {
+          "id": "fibonacci_redundante_patologia",
+          "titulo": "Fibonacci Recursivo: Ineficiencia por Solapamiento",
+          "teoria": "La implementación recursiva ingenua de Fibonacci $F(n) = F(n-1) + F(n-2)$ viola el requisito fundamental de Divide & Conquer: la independencia de los subproblemas. Se generan ramas idénticas repetidas a lo largo de todo el árbol (por ejemplo, al evaluar $F(7)$, el subárbol $F(5)$ se recalcula 2 veces, $F(4)$ 3 veces, $F(3)$ 5 veces y los casos base decenas de veces). Esto degrada la recurrencia por sustracción a $\\Theta(2^n)$, sirviendo como contraejemplo pedagógico que justifica la transición hacia la técnica de Programación Dinámica.",
+          "animaciones": [
+            {
+              "id": "anim_fibonacci_arbol_redundante",
+              "tipo": "arbol_recursion",
+              "formato": "mermaid",
+              "descripcion": "Árbol de recurrencia con nodos recalculados para F(7)",
+              "pasos": [
+                "graph TD\n  F7((F7)) --> F6((F6))\n  F7 --> F5_1((F5 RECALCULADO))\n  F6 --> F5_2((F5))\n  F6 --> F4_1((F4 RECALCULADO))\n  F5_2 --> F4_2((F4))\n  F5_2 --> F3_1((F3 RECALCULADO))\n  F5_1 --> F4_3((F4 RECALCULADO))\n  F5_1 --> F3_2((F3 RECALCULADO))\n  classDef recalc fill:#ff9999,stroke:#cc0000,stroke-width:2px;\n  class F5_1,F4_1,F3_1,F4_3,F3_2 recalc;"
+              ]
+            }
+          ],
+          "pseudocodigo": "ALGORITMO Fib (n: entero) -> entero\n    si n <= 1 entonces\n        devolver n\n    sino\n        devolver Fib(n - 1) + Fib(n - 2)\n    fin si",
+          "codigo": {
+            "lenguaje": "Java",
+            "codigo": "public static int fibonacciRecursivo(int n) {\n    if (n <= 1) {\n        return n;\n    }\n    return fibonacciRecursivo(n - 1) + fibonacciRecursivo(n - 2);\n}",
+            "correcciones_aplicadas": "Código base canónico del apunte/slides para ejemplificar ineficiencia algorítmica."
+          },
+          "analisis_complejidad": {
+            "ecuacion_recurrencia": "T(n) = T(n - 1) + T(n - 2) + c",
+            "metodo_resolucion": "Aproximación por Sustracción: a=2, b=1, k=0 \\implies \\Theta(2^n) \\quad [Exacto: \\Theta(\\phi^n)]",
+            "temporal_peor_caso": "O(2^n)",
+            "temporal_mejor_caso": "O(2^n)",
+            "espacial": "O(n) en stack de ejecución",
+            "justificacion": "La falta de memorización de subproblemas compartidos genera un árbol binario completo de profundidad $n$, acotado asintóticamente por $\\Theta(1.618^n) \\subset O(2^n)$."
+          }
+        }
+      ]
+    }
+  ],
+  "conceptos": [
+    {
+      "id": "dnc-general-structure",
+      "title": "Esquema General de Divide & Conquer",
+      "badgeText": "Estructura Algorítmica",
+      "summary": "Todo algoritmo de División y Conquista se compone de tres etapas bien delimitadas precedidas por una condición de corte o caso base.",
+      "bulletPoints": [
+        "Dividir: Particionar el problema original de tamaño n en a subproblemas independientes de tamaño n/b.",
+        "Conquistar: Resolver recursivamente cada subproblema hasta alcanzar un tamaño suficientemente pequeño que se resuelve de forma directa.",
+        "Combinar: Integrar las soluciones parciales de los subproblemas para construir la solución del problema general."
+      ],
+      "formulas": [
+        {
+          "label": "Ecuación General de Costo",
+          "latex": "T(n) = a \\cdot T(n/b) + T_{\\text{dividir}}(n) + T_{\\text{combinar}}(n)",
+          "description": "La independencia entre subproblemas evita recalcular estados repetidos."
+        }
+      ]
+    }
+  ],
+  "algoritmos": [
+    {
+      "id": "binary-search",
+      "name": "Búsqueda Binaria",
+      "paradigmTag": "Subtract & Conquer / División",
+      "bestCaseComplexityLatex": "\\Theta(1)",
+      "averageCaseComplexityLatex": "\\Theta(\\log n)",
+      "worstCaseComplexityLatex": "\\Theta(\\log n)",
+      "spaceComplexityLatex": "\\Theta(1) \\text{ iterativo} / \\Theta(\\log n) \\text{ recursivo}",
+      "recurrenceOrEquationLatex": "T(n) = 1 \\cdot T(n/2) + \\Theta(1) \\implies \\Theta(\\log n)",
+      "keyInsight": "Aprovecha la monotonía de un arreglo ordenado para descartar exactamente la mitad del espacio de búsqueda con una sola comparación en el punto medio.",
+      "stepByStepSummary": [
+        "Calcular el índice central medio = inicio + (fin - inicio) / 2 para evitar desbordamiento.",
+        "Si el elemento central coincide con el buscado, retornar su posición inmediatamente.",
+        "Si el objetivo es menor al elemento central, buscar en la mitad izquierda; de lo contrario, buscar en la mitad derecha."
+      ],
+      "codeSnippets": {
+        "pseudocode": "Funcion BusquedaBinaria(arreglo[0..n-1], inicio, fin, objetivo) : Entero\nInicio\n    Si inicio > fin Entonces\n        Devolver -1\n    FinSi\n    medio <- (inicio + fin) DIV 2\n    Si arreglo[medio] = objetivo Entonces\n        Devolver medio\n    Sino Si objetivo < arreglo[medio] Entonces\n        Devolver BusquedaBinaria(arreglo, inicio, medio - 1, objetivo)\n    Sino\n        Devolver BusquedaBinaria(arreglo, medio + 1, fin, objetivo)\n    FinSi\nFin",
+        "java": "public class BinarySearch {\n    public static int search(int[] sortedArray, int leftIndex, int rightIndex, int targetValue) {\n        if (leftIndex > rightIndex) {\n            return -1;\n        }\n        int middleIndex = leftIndex + (rightIndex - leftIndex) / 2;\n        if (sortedArray[middleIndex] == targetValue) {\n            return middleIndex;\n        }\n        if (targetValue < sortedArray[middleIndex]) {\n            return search(sortedArray, leftIndex, middleIndex - 1, targetValue);\n        }\n        return search(sortedArray, middleIndex + 1, rightIndex, targetValue);\n    }\n}",
+        "python": "def binary_search(sorted_array: list[int], left_index: int, right_index: int, target_value: int) -> int:\n    if left_index > right_index:\n        return -1\n    middle_index = left_index + (right_index - left_index) // 2\n    if sorted_array[middle_index] == target_value:\n        return middle_index\n    if target_value < sorted_array[middle_index]:\n        return binary_search(sorted_array, left_index, middle_index - 1, target_value)\n    return binary_search(sorted_array, middle_index + 1, right_index, target_value)"
+      }
+    },
+    {
+      "id": "merge-sort",
+      "name": "MergeSort (Ordenamiento por Mezcla)",
+      "paradigmTag": "Divide & Conquer Clásico",
+      "bestCaseComplexityLatex": "\\Theta(n \\log n)",
+      "averageCaseComplexityLatex": "\\Theta(n \\log n)",
+      "worstCaseComplexityLatex": "\\Theta(n \\log n)",
+      "spaceComplexityLatex": "\\Theta(n)",
+      "recurrenceOrEquationLatex": "T(n) = 2T(n/2) + \\Theta(n) \\implies \\Theta(n \\log n)",
+      "keyInsight": "La división es trivial (calcular el punto medio en O(1)) y todo el trabajo pesado ocurre en la etapa de combinación mediante el intercalado lineal de dos mitades ya ordenadas.",
+      "stepByStepSummary": [
+        "Dividir el segmento actual a la mitad hasta llegar a subarreglos de 1 elemento.",
+        "Ordenar recursivamente la mitad izquierda y la mitad derecha.",
+        "Intercalar (Merge) ambas mitades ordenadas utilizando dos punteros en tiempo lineal Θ(n)."
+      ],
+      "codeSnippets": {
+        "pseudocode": "Procedimiento MergeSort(arreglo, inicio, fin)\nInicio\n    Si inicio < fin Entonces\n        medio <- (inicio + fin) DIV 2\n        MergeSort(arreglo, inicio, medio)\n        MergeSort(arreglo, medio + 1, fin)\n        Mezclar(arreglo, inicio, medio, fin)\n    FinSi\nFin",
+        "java": "public class MergeSort {\n    public static void sort(int[] elements, int leftIndex, int rightIndex) {\n        if (leftIndex >= rightIndex) {\n            return;\n        }\n        int middleIndex = leftIndex + (rightIndex - leftIndex) / 2;\n        sort(elements, leftIndex, middleIndex);\n        sort(elements, middleIndex + 1, rightIndex);\n        mergeHalves(elements, leftIndex, middleIndex, rightIndex);\n    }\n\n    private static void mergeHalves(int[] elements, int leftIndex, int middleIndex, int rightIndex) {\n        int[] mergedBuffer = new int[rightIndex - leftIndex + 1];\n        int leftCursor = leftIndex;\n        int rightCursor = middleIndex + 1;\n        int writeCursor = 0;\n\n        while (leftCursor <= middleIndex && rightCursor <= rightIndex) {\n            if (elements[leftCursor] <= elements[rightCursor]) {\n                mergedBuffer[writeCursor++] = elements[leftCursor++];\n            } else {\n                mergedBuffer[writeCursor++] = elements[rightCursor++];\n            }\n        }\n        while (leftCursor <= middleIndex) {\n            mergedBuffer[writeCursor++] = elements[leftCursor++];\n        }\n        while (rightCursor <= rightIndex) {\n            mergedBuffer[writeCursor++] = elements[rightCursor++];\n        }\n        System.arraycopy(mergedBuffer, 0, elements, leftIndex, mergedBuffer.length);\n    }\n}",
+        "python": "def merge_sort(elements: list[int]) -> list[int]:\n    if len(elements) <= 1:\n        return elements\n    middle_index = len(elements) // 2\n    left_sorted = merge_sort(elements[:middle_index])\n    right_sorted = merge_sort(elements[middle_index:])\n    return merge_sorted_lists(left_sorted, right_sorted)\n\ndef merge_sorted_lists(left_list: list[int], right_list: list[int]) -> list[int]:\n    merged_result: list[int] = []\n    left_cursor = 0\n    right_cursor = 0\n    while left_cursor < len(left_list) and right_cursor < len(right_list):\n        if left_list[left_cursor] <= right_list[right_cursor]:\n            merged_result.append(left_list[left_cursor])\n            left_cursor += 1\n        else:\n            merged_result.append(right_list[right_cursor])\n            right_cursor += 1\n    merged_result.extend(left_list[left_cursor:])\n    merged_result.extend(right_list[right_cursor:])\n    return merged_result"
+      }
+    },
+    {
+      "id": "quick-sort",
+      "name": "QuickSort (Ordenamiento Rápido por Partición)",
+      "paradigmTag": "Divide & Conquer In-Place",
+      "bestCaseComplexityLatex": "\\Theta(n \\log n)",
+      "averageCaseComplexityLatex": "\\Theta(n \\log n)",
+      "worstCaseComplexityLatex": "\\Theta(n^2)",
+      "spaceComplexityLatex": "\\Theta(\\log n)",
+      "recurrenceOrEquationLatex": "T_{\\text{prom}}(n) = 2T(n/2) + \\Theta(n), \\quad T_{\\text{peor}}(n) = T(n-1) + \\Theta(n)",
+      "keyInsight": "Invierte la filosofía de MergeSort: realiza todo el trabajo en la etapa de división ubicando un pivote en su posición definitiva (Partición), por lo que la combinación es nula.",
+      "stepByStepSummary": [
+        "Elegir un elemento pivote dentro del rango activo.",
+        "Reordenar in-place el subarreglo de modo que los menores o iguales al pivote queden a su izquierda y los mayores a su derecha.",
+        "Invocar recursivamente sobre las subparticiones izquierda y derecha excluyendo al pivote."
+      ],
+      "codeSnippets": {
+        "pseudocode": "Procedimiento QuickSort(arreglo, inicio, fin)\nInicio\n    Si inicio < fin Entonces\n        indicePivote <- Particionar(arreglo, inicio, fin)\n        QuickSort(arreglo, inicio, indicePivote - 1)\n        QuickSort(arreglo, indicePivote + 1, fin)\n    FinSi\nFin",
+        "java": "public class QuickSort {\n    public static void sort(int[] elements, int lowIndex, int highIndex) {\n        if (lowIndex < highIndex) {\n            int pivotIndex = partition(elements, lowIndex, highIndex);\n            sort(elements, lowIndex, pivotIndex - 1);\n            sort(elements, pivotIndex + 1, highIndex);\n        }\n    }\n\n    private static int partition(int[] elements, int lowIndex, int highIndex) {\n        int pivotValue = elements[highIndex];\n        int smallerBoundary = lowIndex - 1;\n        for (int scanIndex = lowIndex; scanIndex < highIndex; scanIndex++) {\n            if (elements[scanIndex] <= pivotValue) {\n                smallerBoundary++;\n                int temporary = elements[smallerBoundary];\n                elements[smallerBoundary] = elements[scanIndex];\n                elements[scanIndex] = temporary;\n            }\n        }\n        int temporary = elements[smallerBoundary + 1];\n        elements[smallerBoundary + 1] = elements[highIndex];\n        elements[highIndex] = temporary;\n        return smallerBoundary + 1;\n    }\n}",
+        "python": "def quick_sort_in_place(elements: list[int], low_index: int, high_index: int) -> None:\n    if low_index < high_index:\n        pivot_index = partition_segment(elements, low_index, high_index)\n        quick_sort_in_place(elements, low_index, pivot_index - 1)\n        quick_sort_in_place(elements, pivot_index + 1, high_index)\n\ndef partition_segment(elements: list[int], low_index: int, high_index: int) -> int:\n    pivot_value = elements[high_index]\n    smaller_boundary = low_index - 1\n    for scan_index in range(low_index, high_index):\n        if elements[scan_index] <= pivot_value:\n            smaller_boundary += 1\n            elements[smaller_boundary], elements[scan_index] = elements[scan_index], elements[smaller_boundary]\n    elements[smaller_boundary + 1], elements[high_index] = elements[high_index], elements[smaller_boundary + 1]\n    return smaller_boundary + 1"
+      }
+    },
+    {
+      "id": "majority-element-pseudo-m",
+      "name": "Elemento Mayoritario (Pseudo-M)",
+      "paradigmTag": "Reducción en Tiempo Lineal",
+      "bestCaseComplexityLatex": "\\Theta(n)",
+      "averageCaseComplexityLatex": "\\Theta(n)",
+      "worstCaseComplexityLatex": "\\Theta(n)",
+      "spaceComplexityLatex": "\\Theta(n)",
+      "recurrenceOrEquationLatex": "T(n) = T(n/2) + \\Theta(n) = \\Theta(n)",
+      "keyInsight": "Empareja elementos contiguos conservando solo los pares idénticos para reducir el arreglo a lo sumo a la mitad en cada nivel, logrando encontrar el único candidato posible en tiempo lineal.",
+      "stepByStepSummary": [
+        "Recorrer el arreglo de a pares (2i, 2i+1): si ambos valores son iguales, agregar uno al vector reducido.",
+        "Si la longitud actual es impar, preservar el último elemento como candidato de respaldo.",
+        "Obtener recursivamente el candidato del vector reducido y verificar en O(n) si aparece más de n/2 veces."
+      ],
+      "codeSnippets": {
+        "pseudocode": "Funcion ElementoMayoritario(arreglo[0..n-1]) : Entero\nInicio\n    candidato <- BuscarCandidatoPseudoM(arreglo, n)\n    apariciones <- ContarOcurrencias(arreglo, n, candidato)\n    Si apariciones > n DIV 2 Entonces\n        Devolver candidato\n    Sino\n        Devolver -1\n    FinSi\nFin",
+        "java": "import java.util.ArrayList;\nimport java.util.List;\n\npublic class MajorityElementFinder {\n    public static int findMajorityElement(int[] elements) {\n        Integer candidate = findPseudoMajorityCandidate(elements);\n        if (candidate == null) {\n            return -1;\n        }\n        int occurrences = 0;\n        for (int value : elements) {\n            if (value == candidate) {\n                occurrences++;\n            }\n        }\n        return occurrences > elements.length / 2 ? candidate : -1;\n    }\n\n    private static Integer findPseudoMajorityCandidate(int[] currentElements) {\n        if (currentElements.length == 0) {\n            return null;\n        }\n        if (currentElements.length == 1) {\n            return currentElements[0];\n        }\n        List<Integer> survivors = new ArrayList<>();\n        for (int index = 0; index + 1 < currentElements.length; index += 2) {\n            if (currentElements[index] == currentElements[index + 1]) {\n                survivors.add(currentElements[index]);\n            }\n        }\n        int[] nextLevel = survivors.stream().mapToInt(Integer::intValue).toArray();\n        Integer recursiveCandidate = findPseudoMajorityCandidate(nextLevel);\n        if (recursiveCandidate != null) {\n            return recursiveCandidate;\n        }\n        if (currentElements.length % 2 == 1) {\n            return currentElements[currentElements.length - 1];\n        }\n        return null;\n    }\n}",
+        "python": "def find_majority_element(elements: list[int]) -> int:\n    candidate = find_pseudo_majority_candidate(elements)\n    if candidate is None:\n        return -1\n    if elements.count(candidate) > len(elements) // 2:\n        return candidate\n    return -1\n\ndef find_pseudo_majority_candidate(current_elements: list[int]) -> int | None:\n    if not current_elements:\n        return None\n    if len(current_elements) == 1:\n        return current_elements[0]\n    survivors = [\n        current_elements[index]\n        for index in range(0, len(current_elements) - 1, 2)\n        if current_elements[index] == current_elements[index + 1]\n    ]\n    recursive_candidate = find_pseudo_majority_candidate(survivors)\n    if recursive_candidate is not None:\n        return recursive_candidate\n    if len(current_elements) % 2 == 1:\n        return current_elements[-1]\n    return None"
+      }
+    }
+  ]
+}

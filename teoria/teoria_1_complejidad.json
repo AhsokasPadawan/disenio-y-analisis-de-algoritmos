@@ -1,0 +1,470 @@
+{
+  "modulo": "01_complejidad",
+  "titulo_general": "Diseño y Análisis de Algoritmos - Eficiencia y Complejidad Temporal",
+  "institucion": "UADE - Facultad de Ingeniería y Ciencias Exactas",
+  "catedra": "Diseño y Análisis de Algoritmos / Programación III",
+  "profesor": "Ricardo Wehbe",
+  "autores_apunte": [
+    "María Fernanda Cuadrado Estrebou",
+    "Guillermo Hernán Trutner"
+  ],
+  "fecha_referencia": "Segundo Cuatrimestre 2026",
+  "descripcion": "Estructura teórica completa de complejidad temporal y formalización algorítmica: principio de invarianza, conteo de operaciones, recursión y pila, notaciones asintóticas (O, Omega, Theta), resolución de recurrencias (sustracción y división) y clases de complejidad (P, NP, NPC, NP-Hard).",
+  "secciones": [
+    {
+      "id": "fundamentos_algoritmos",
+      "tipo": "teoria_formal",
+      "titulo": "Concepto Formal de Algoritmo, Instancia y Eficacia",
+      "subtemas": [
+        {
+          "id": "definicion_algoritmo",
+          "titulo": "Definición Formal de Algoritmo e Instancia",
+          "teoria": "- **Origen histórico**: Primer intento riguroso de formalización por David Hilbert a inicios del siglo XX ('ein Verfahren', un procedimiento mecánico).\n- **Definición**: Un algoritmo es una secuencia ordenada y finita de acciones no ambiguas que transforman un conjunto de datos de entrada en datos de salida para resolver un problema específico.\n- **Propiedades requeridas**:\n  1. *Entrada*: Cero o más datos válidos.\n  2. *Salida*: Al menos una salida observable o retorno.\n  3. *Determinismo*: Cada paso debe estar unívocamente determinado a partir del estado actual (salvo algoritmos probabilistas/randomizados).\n  4. *Finitud*: Debe terminar obligatoriamente tras un número finito de operaciones.\n- **Programa vs Algoritmo**: Un programa es la concreción/traducción de un algoritmo a un lenguaje de programación específico (Java, C, Python) para su ejecución en una máquina física.\n- **Instancia**: Una combinación válida particular de los datos de entrada posibles (ej. si el problema es multiplicar dos enteros, la tupla (38, 47) es una instancia). Un problema define habitualmente infinitas instancias.",
+          "animaciones": null,
+          "pseudocodigo": null,
+          "codigo": null,
+          "analisis_complejidad": null
+        },
+        {
+          "id": "correccion_y_contraejemplo_euler",
+          "titulo": "Corrección vs Eficiencia: El Contraejemplo de Euler",
+          "teoria": "- **Corrección (Eficacia)**: Un algoritmo es correcto si produce la salida especificada para **todas** las instancias posibles de su dominio. La verificación en unos pocos casos nunca constituye una demostración de correctitud.\n- **El polinomio generador de primos de Euler**: Consideremos la función que intenta generar números primos: $P(n) = n^2 + n + 41$.\n  - Para $n = 0 \\implies 41$ (primo)\n  - Para $n = 1 \\implies 43$ (primo)\n  - Para $n = 2 \\implies 47$ (primo)\n  - Funciona ininterrumpidamente para los primeros 40 números naturales ($n = 0, 1, ..., 39$).\n  - Sin embargo, para $n = 40$: $40^2 + 40 + 41 = 40(40 + 1) + 41 = 40(41) + 41 = 41 \\times 41 = 1681 = 41^2$ (compuesto, divisible por 41).\n  - Y para $n = 41$: $41^2 + 41 + 41 = 41(41 + 1 + 1) = 41 \\times 43 = 1763$ (compuesto).\n- **Conclusión pedagógica**: El algoritmo no es correcto porque falla en al menos una instancia del dominio, ilustrando por qué la correctitud exige demostración analítica o invariante y no meras pruebas empíricas.",
+          "animaciones": null,
+          "pseudocodigo": "algoritmo EsPrimoEuler(n : entero) -> booleano\n    valor <- n^2 + n + 41\n    devolver esPrimo(valor)",
+          "codigo": {
+            "lenguaje": "java",
+            "codigo_fuente": "public static int polinomioEuler(int n) {\n    // Produce primos para n entre 0 y 39, pero falla en n = 40 y n = 41\n    return n * n + n + 41;\n}",
+            "correcciones_realizadas": "Ninguna errata en el código matemático; se documenta el contraejemplo estricto para n = 40."
+          },
+          "analisis_complejidad": {
+            "temporal": "O(1)",
+            "espacial": "O(1)",
+            "desglose_asintotico": [
+              {
+                "linea": "Evaluación algebraica n*n + n + 41",
+                "costo": "O(1)"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "eficiencia_temporal",
+      "tipo": "teoria_formal",
+      "titulo": "Eficiencia Temporal, Invarianza y Clases de Análisis",
+      "subtemas": [
+        {
+          "id": "principio_invarianza",
+          "titulo": "Principio de Invarianza de la Máquina",
+          "teoria": "- **Motivación**: Medir el tiempo en segundos de un algoritmo depende de la CPU, velocidad del bus, compilador y carga del sistema. Necesitamos una métrica independiente del hardware.\n- **Conjetura (Principio de Invarianza)**: Dado un algoritmo $A$ y dos implementaciones del mismo $I_1$ e $I_2$ (en dos lenguajes distintos o ejecutándose en dos computadoras distintas), donde para una entrada de tamaño $n$ la primera tarda $T_1(n)$ unidades y la segunda $T_2(n)$ unidades, entonces existen una constante real $c > 0$ y un entero $n_0$ tales que:\n  $$T_1(n) \\leq c \\cdot T_2(n) \\quad \\forall n > n_0$$\n- **Consecuencia práctica**: Dos implementaciones distintas de un mismo algoritmo no difieren en más de una constante multiplicativa. Por lo tanto, la tecnología (comprar una máquina 10 veces más rápida) no puede compensar jamás la ineficiencia asintótica de un mal algoritmo cuando $n$ crece suficientemente.",
+          "animaciones": null,
+          "pseudocodigo": null,
+          "codigo": null,
+          "analisis_complejidad": null
+        },
+        {
+          "id": "operaciones_elementales",
+          "titulo": "Reglas para el Conteo de Operaciones Elementales",
+          "teoria": "Una **operación elemental** es aquella cuyo tiempo de ejecución máximo está acotado por una constante fija independiente del tamaño de los datos.\nReglas de cálculo:\n1. **Asignaciones, comparaciones y operaciones aritmético-lógicas básicas**: Costo $1$ unidad ($O(1)$).\n2. **Secuencia de instrucciones**: La suma de las operaciones de cada instrucción: $T(S_1; S_2) = T(S_1) + T(S_2)$.\n3. **Sentencias condicionales (`if-else`)**: Costo de evaluar la condición más el máximo entre las ramas: $T(\\text{if } C \\text{ then } B_1 \\text{ else } B_2) = T(C) + \\max(T(B_1), T(B_2))$.\n4. **Bucles iterativos (`for`, `while`)**: Sumatoria del costo del cuerpo por cada iteración más el control de condición: si se repite $N$ veces con cuerpo de costo $K$, el tiempo es $N \\cdot K + (N+1) \\cdot T(condición)$.\n5. **Llamadas a métodos no recursivos**: 1 operación elemental para la invocación más el tiempo de ejecución del cuerpo del método invocado.",
+          "animaciones": null,
+          "pseudocodigo": null,
+          "codigo": null,
+          "analisis_complejidad": null
+        },
+        {
+          "id": "casos_analisis_busqueda_lineal",
+          "titulo": "Tipos de Análisis: Mejor Caso, Peor Caso y Caso Promedio",
+          "teoria": "Dado un algoritmo, el tiempo de cómputo depende frecuentemente no sólo de $n$, sino de la configuración específica de los datos de entrada:\n- **Mejor caso**: El menor costo entre todas las instancias posibles de tamaño $n$.\n- **Peor caso**: El mayor costo entre todas las instancias de tamaño $n$. Es la métrica estándar en algoritmia porque garantiza una cota superior inviolable.\n- **Caso promedio**: La media ponderada del costo sobre todas las instancias, asumiendo una distribución de probabilidad (usualmente uniforme).\n\n**Ejemplo clásico de Búsqueda Lineal no ordenada** (`Buscar(T, x)`):\n- *Mejor caso*: El elemento buscado está en la primera posición $T[0]$. Se ejecuta $1$ sola comparación $\\implies O(1)$.\n- *Peor caso*: El elemento no está en el arreglo o se encuentra en la última posición $T[n-1]$. Se realizan $n$ comparaciones $\\implies O(n)$.\n- *Caso promedio*: Asumiendo equiprobabilidad de que $x$ esté en cualquier índice $0 \\leq i < n$, la posición esperada es $(n-1)/2 \\implies n/2$ comparaciones $\\implies O(n)$.",
+          "animaciones": null,
+          "pseudocodigo": "algoritmo Buscar(T : array[0..n-1] de enteros, x : entero) -> entero\n    i <- 0\n    mientras (i < n y T[i] != x)\n        i <- i + 1\n    fin mientras\n    si (i < n)\n        devolver i\n    sino\n        devolver -1\n    fin si",
+          "codigo": {
+            "lenguaje": "java",
+            "codigo_fuente": "public static int buscar(int[] T, int x) {\n    int i = 0;\n    while (i < T.length && T[i] != x) {\n        i++;\n    }\n    if (i < T.length) {\n        return i;\n    } else {\n        return -1;\n    }\n}",
+            "correcciones_realizadas": "En las diapositivas originales los números de línea tenían un error tipográfico duplicando las líneas 5 y 6 (else/return). Se normalizó la estructura condicional."
+          },
+          "analisis_complejidad": {
+            "temporal": "Mejor caso: O(1); Peor caso: O(n); Caso promedio: O(n)",
+            "espacial": "O(1)",
+            "desglose_asintotico": [
+              {
+                "linea": "Inicialización i = 0",
+                "costo": "O(1)"
+              },
+              {
+                "linea": "Bucle while de escaneo",
+                "costo": "Mejor: 1 iteración; Peor: n iteraciones"
+              },
+              {
+                "linea": "Retorno de índice o centinela -1",
+                "costo": "O(1)"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "recursion_y_pila",
+      "tipo": "animacion_y_teoria",
+      "titulo": "Algoritmos Recursivos y Funcionamiento de la Pila de Ejecución",
+      "subtemas": [
+        {
+          "id": "estructura_algoritmo_recursivo",
+          "titulo": "Propiedades Esenciales de la Recursión",
+          "teoria": "Un algoritmo recursivo se define a sí mismo en términos de instancias más pequeñas:\n1. **Caso base**: Al menos una condición terminal que se resuelve en tiempo directo sin realizar nuevos llamados recursivos.\n2. **Progreso hacia el caso base**: En cada paso recursivo, la distancia métrica al caso base debe disminuir estrictamente.\n3. **Cálculo de la función Factorial**:\n   $$n! = \\begin{cases} 1 & \\text{si } n = 0 \\lor n = 1 \\\\ n \\cdot (n-1)! & \\text{si } n > 1 \\end{cases}$$",
+          "animaciones": [
+            {
+              "id": "anim_call_stack_factorial",
+              "tipo": "secuencia_estados",
+              "formato": "mermaid",
+              "descripcion": "Evolución paso a paso del Call Stack (Pila del Sistema) para factorial(5). Muestra la fase de apilado (wind-up) hasta alcanzar el caso base y la fase de desapilado (unwind) propagando los valores de retorno hasta 120.",
+              "pasos": [
+                {
+                  "paso": 1,
+                  "fase": "Llamada inicial",
+                  "descripcion": "Se invoca factorial(5). Requiere evaluar 5 * factorial(4).",
+                  "codigo": "graph TD\n    subgraph Pila[\"Pila del Sistema (Call Stack)\"]\n        F5[\"factorial(5) [pendiente: 5 * ?]\"]\n    end"
+                },
+                {
+                  "paso": 2,
+                  "fase": "Apilado",
+                  "descripcion": "Se invoca factorial(4). Se apila sobre factorial(5). Requiere 4 * factorial(3).",
+                  "codigo": "graph TD\n    subgraph Pila[\"Pila del Sistema\"]\n        F4[\"factorial(4) [pendiente: 4 * ?]\"] --> F5[\"factorial(5)\"]\n    end"
+                },
+                {
+                  "paso": 3,
+                  "fase": "Apilado",
+                  "descripcion": "Se invoca factorial(3). Se apila. Requiere 3 * factorial(2).",
+                  "codigo": "graph TD\n    subgraph Pila[\"Pila del Sistema\"]\n        F3[\"factorial(3) [pendiente: 3 * ?]\"] --> F4[\"factorial(4)\"] --> F5[\"factorial(5)\"]\n    end"
+                },
+                {
+                  "paso": 4,
+                  "fase": "Apilado",
+                  "descripcion": "Se invoca factorial(2). Se apila. Requiere 2 * factorial(1).",
+                  "codigo": "graph TD\n    subgraph Pila[\"Pila del Sistema\"]\n        F2[\"factorial(2) [pendiente: 2 * ?]\"] --> F3[\"factorial(3)\"] --> F4[\"factorial(4)\"] --> F5[\"factorial(5)\"]\n    end"
+                },
+                {
+                  "paso": 5,
+                  "fase": "Caso Base",
+                  "descripcion": "Se invoca factorial(1). Cumple condición base (n <= 1). Retorna 1 sin apilar más llamadas.",
+                  "codigo": "graph TD\n    subgraph Pila[\"Pila del Sistema\"]\n        F1[\"factorial(1) -> RETORNA 1\"] --> F2[\"factorial(2)\"] --> F3[\"factorial(3)\"] --> F4[\"factorial(4)\"] --> F5[\"factorial(5)\"]\n    end"
+                },
+                {
+                  "paso": 6,
+                  "fase": "Desapilado (Unwind)",
+                  "descripcion": "factorial(2) recibe 1. Calcula 2 * 1 = 2 y retorna 2.",
+                  "codigo": "graph TD\n    subgraph Pila[\"Pila del Sistema\"]\n        F2[\"factorial(2) = 2 * 1 -> RETORNA 2\"] --> F3[\"factorial(3)\"] --> F4[\"factorial(4)\"] --> F5[\"factorial(5)\"]\n    end"
+                },
+                {
+                  "paso": 7,
+                  "fase": "Desapilado",
+                  "descripcion": "factorial(3) recibe 2. Calcula 3 * 2 = 6 y retorna 6.",
+                  "codigo": "graph TD\n    subgraph Pila[\"Pila del Sistema\"]\n        F3[\"factorial(3) = 3 * 2 -> RETORNA 6\"] --> F4[\"factorial(4)\"] --> F5[\"factorial(5)\"]\n    end"
+                },
+                {
+                  "paso": 8,
+                  "fase": "Desapilado",
+                  "descripcion": "factorial(4) recibe 6. Calcula 4 * 6 = 24 y retorna 24.",
+                  "codigo": "graph TD\n    subgraph Pila[\"Pila del Sistema\"]\n        F4[\"factorial(4) = 4 * 6 -> RETORNA 24\"] --> F5[\"factorial(5)\"]\n    end"
+                },
+                {
+                  "paso": 9,
+                  "fase": "Resolución Final",
+                  "descripcion": "factorial(5) recibe 24. Calcula 5 * 24 = 120. Pila queda vacía y se obtiene el resultado final.",
+                  "codigo": "graph TD\n    subgraph Pila[\"Pila del Sistema (Retorno Final)\"]\n        F5[\"factorial(5) = 5 * 24 -> 120\"]\n    end"
+                }
+              ]
+            }
+          ],
+          "pseudocodigo": "algoritmo factorial(n : entero) -> entero\n    si (n == 0 o n == 1)\n        devolver 1\n    sino\n        devolver n * factorial(n - 1)\n    fin si",
+          "codigo": {
+            "lenguaje": "java",
+            "codigo_fuente": "public static int factorial(int n) {\n    if (n == 0 || n == 1) {\n        return 1;\n    } else {\n        return n * factorial(n - 1);\n    }\n}",
+            "correcciones_realizadas": "En el apunte de cátedra pág. 10 figuraba 'factoral(n-1)' (falta de la letra i). Se corrigió a 'factorial'."
+          },
+          "analisis_complejidad": {
+            "temporal": "O(n)",
+            "espacial": "O(n) en la pila de llamadas (call stack depth)",
+            "desglose_asintotico": [
+              {
+                "linea": "Condición base if (n <= 1)",
+                "costo": "O(1)"
+              },
+              {
+                "linea": "Llamada recursiva factorial(n - 1)",
+                "costo": "T(n - 1)"
+              },
+              {
+                "linea": "Multiplicación n * retorno",
+                "costo": "O(1)"
+              },
+              {
+                "linea": "Ecuación de recurrencia",
+                "costo": "T(n) = T(n - 1) + c => Theta(n)"
+              }
+            ]
+          }
+        },
+        {
+          "id": "busqueda_binaria_recursiva",
+          "titulo": "Búsqueda Binaria Recursiva (Reducción por División)",
+          "teoria": "Algoritmo modelo para resolución recursiva por división ($n/2$):\n- En cada paso se compara el elemento central `T[mid]` con `x`.\n- Si coinciden, se devuelve la posición.\n- Si `x < T[mid]`, se busca recursivamente en la mitad izquierda `[ini, mid - 1]`.\n- Si `x > T[mid]`, se busca en la mitad derecha `[mid + 1, fin]`.\n- En cada llamada recursiva el espacio de búsqueda se reduce a la mitad exacta, lo que produce un comportamiento logarítmico.",
+          "animaciones": null,
+          "pseudocodigo": "algoritmo binrec(T : array[0..n-1] de enteros, ini, fin, x : entero) -> entero\n    si (ini > fin)\n        devolver -1\n    sino\n        mid <- (ini + fin) / 2\n        si (x == T[mid])\n            devolver mid\n        sino si (x < T[mid])\n            devolver binrec(T, ini, mid - 1, x)\n        sino\n            devolver binrec(T, mid + 1, fin, x)\n        fin si\n    fin si",
+          "codigo": {
+            "lenguaje": "java",
+            "codigo_fuente": "public static int binrec(int[] T, int ini, int fin, int x) {\n    if (ini > fin) {\n        return -1;\n    }\n    int mid = (ini + fin) / 2;\n    if (x == T[mid]) {\n        return mid;\n    } else if (x < T[mid]) {\n        return binrec(T, ini, mid - 1, x);\n    } else {\n        return binrec(T, mid + 1, fin, x);\n    }\n}",
+            "correcciones_realizadas": "Sintaxis estándar de Java con tipos y delimitadores correctos."
+          },
+          "analisis_complejidad": {
+            "temporal": "O(log n)",
+            "espacial": "O(log n) en la pila de llamadas",
+            "desglose_asintotico": [
+              {
+                "linea": "Cálculo de índice medio mid",
+                "costo": "O(1)"
+              },
+              {
+                "linea": "Comparaciones de valor",
+                "costo": "O(1)"
+              },
+              {
+                "linea": "Llamada recursiva a una sola mitad",
+                "costo": "T(n/2)"
+              },
+              {
+                "linea": "Recurrencia por división",
+                "costo": "T(n) = T(n/2) + c => a=1, b=2, k=0 => Theta(log n)"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "notaciones_asintoticas",
+      "tipo": "teoria_formal_y_grafica",
+      "titulo": "Notaciones Asintóticas (O, Omega, Theta) y Familias de Crecimiento",
+      "subtemas": [
+        {
+          "id": "definiciones_o_omega_theta",
+          "titulo": "Definiciones Matemáticas Formales",
+          "teoria": "Sean $f, g : \\mathbb{N} \\to \\mathbb{R}^+$:\n1. **Cota Superior Asintótica - Notación $\\mathcal{O}(g(n))$**:\n   $$f(n) \\in \\mathcal{O}(g(n)) \\iff \\exists c > 0, n_0 \\in \\mathbb{N} \\text{ tales que } 0 \\leq f(n) \\leq c \\cdot g(n) \\quad \\forall n \\geq n_0$$\n   Indica que $f$ no crece más rápido que $g$ a partir del umbral $n_0$.\n\n2. **Cota Inferior Asintótica - Notación $\\Omega(g(n))$**:\n   $$f(n) \\in \\Omega(g(n)) \\iff \\exists c > 0, n_0 \\in \\mathbb{N} \\text{ tales que } 0 \\leq c \\cdot g(n) \\leq f(n) \\quad \\forall n \\geq n_0$$\n   Propiedad dual: $f(n) \\in \\mathcal{O}(g(n)) \\iff g(n) \\in \\Omega(f(n))$.\n\n3. **Orden Exacto - Notación $\\Theta(g(n))$**:\n   $$f(n) \\in \\Theta(g(n)) \\iff \\exists c_1, c_2 > 0, n_0 \\in \\mathbb{N} \\text{ tales que } c_2 \\cdot g(n) \\leq f(n) \\leq c_1 \\cdot g(n) \\quad \\forall n \\geq n_0$$\n   Teorema de equivalencia: $f(n) \\in \\Theta(g(n)) \\iff f(n) \\in \\mathcal{O}(g(n)) \\land f(n) \\in \\Omega(g(n))$.",
+          "animaciones": null,
+          "pseudocodigo": null,
+          "codigo": null,
+          "analisis_complejidad": null
+        },
+        {
+          "id": "ejemplo_demostracion_acotamiento",
+          "titulo": "Ejemplo Gráfico de Demostración: f(n) = 3n^3 + 5n^2 + 7",
+          "teoria": "Demostrar formalmente que $f(n) = 3n^3 + 5n^2 + 7 \\in \\Theta(n^3)$:\n- Debemos encontrar constantes $c_1, c_2 > 0$ y $n_0$ tales que:\n  $$c_2 n^3 \\leq 3n^3 + 5n^2 + 7 \\leq c_1 n^3 \\quad \\forall n \\geq n_0$$\n- **Cota inferior ($c_2$)**: Para todo $n \\geq 1$, $3n^3 + 5n^2 + 7 > 3n^3 \\geq 1 \\cdot n^3 \\implies c_2 = 1$.\n- **Cota superior ($c_1$)**: Para $n \\geq 3$:\n  $5n^2 \\leq 5n^2 \\cdot (n/3) < 1.67 n^3$ y $7 \\leq 7 \\cdot (n^3/27) < 0.26 n^3$.\n  Sumando: $3n^3 + 1.67 n^3 + 0.26 n^3 \\leq 5 n^3 \\implies c_1 = 5, n_0 = 3$.\n- En el gráfico cartesiano, la función real queda estrictamente 'atrapada' entre la curva inferior $n^3$ y la superior $5n^3$ a partir de $n=3$.",
+          "animaciones": [
+            {
+              "id": "anim_grafico_acotamiento_theta",
+              "tipo": "grafico_cartesiano_svg",
+              "formato": "svg",
+              "codigo": "<svg viewBox=\"0 0 500 300\" xmlns=\"http://www.w3.org/2000/svg\">\n  <rect width=\"500\" height=\"300\" fill=\"#f8fafc\" rx=\"8\"/>\n  <!-- Grid lines -->\n  <line x1=\"60\" y1=\"30\" x2=\"60\" y2=\"250\" stroke=\"#94a3b8\" stroke-width=\"2\"/>\n  <line x1=\"60\" y1=\"250\" x2=\"470\" y2=\"250\" stroke=\"#94a3b8\" stroke-width=\"2\"/>\n  <!-- Axis labels -->\n  <text x=\"475\" y=\"255\" font-family=\"sans-serif\" font-size=\"13\" fill=\"#334155\">n</text>\n  <text x=\"60\" y=\"20\" font-family=\"sans-serif\" font-size=\"13\" fill=\"#334155\" text-anchor=\"middle\">T(n)</text>\n  <!-- Threshold n0 = 3 vertical dash -->\n  <line x1=\"120\" y1=\"30\" x2=\"120\" y2=\"250\" stroke=\"#64748b\" stroke-dasharray=\"4 4\" stroke-width=\"1.5\"/>\n  <text x=\"120\" y=\"268\" font-family=\"sans-serif\" font-size=\"12\" fill=\"#475569\" text-anchor=\"middle\">n0 = 3</text>\n  <!-- Curves -->\n  <!-- Cota superior 5*n^3 (rojo) -->\n  <path d=\"M 60 250 Q 200 230 450 40\" fill=\"none\" stroke=\"#ef4444\" stroke-width=\"2.5\"/>\n  <text x=\"455\" y=\"45\" font-family=\"sans-serif\" font-size=\"12\" font-weight=\"bold\" fill=\"#ef4444\">c1·n³ (5n³)</text>\n  <!-- Funcion real 3n^3 + 5n^2 + 7 (azul) -->\n  <path d=\"M 60 248 Q 230 235 450 110\" fill=\"none\" stroke=\"#2563eb\" stroke-width=\"3\"/>\n  <text x=\"455\" y=\"115\" font-family=\"sans-serif\" font-size=\"12\" font-weight=\"bold\" fill=\"#2563eb\">f(n) = 3n³+5n²+7</text>\n  <!-- Cota inferior 1*n^3 (verde) -->\n  <path d=\"M 60 250 Q 270 245 450 180\" fill=\"none\" stroke=\"#16a34a\" stroke-width=\"2.5\"/>\n  <text x=\"455\" y=\"185\" font-family=\"sans-serif\" font-size=\"12\" font-weight=\"bold\" fill=\"#16a34a\">c2·n³ (n³)</text>\n</svg>"
+            }
+          ],
+          "pseudocodigo": null,
+          "codigo": null,
+          "analisis_complejidad": null
+        },
+        {
+          "id": "comparacion_familias_crecimiento",
+          "titulo": "Curvas Comparativas de Familias de Crecimiento",
+          "teoria": "Jerarquía asintótica fundamental:\n$$\\mathcal{O}(1) \\subset \\mathcal{O}(\\log n) \\subset \\mathcal{O}(n) \\subset \\mathcal{O}(n \\log n) \\subset \\mathcal{O}(n^2) \\subset \\mathcal{O}(n^3) \\subset \\mathcal{O}(2^n) \\subset \\mathcal{O}(n!) \\subset \\mathcal{O}(n^n)$$\n\nComportamiento para valores grandes de $n$:\n- $\\log n$ es prácticamente plano.\n- $n$ y $n \\log n$ crecen de forma moderada y manejable.\n- $n^2$ y $n^3$ crecen con rapidez polinómica.\n- $2^n$ se convierte en una pared vertical inmanejable.",
+          "animaciones": [
+            {
+              "id": "anim_curvas_funciones_crecimiento",
+              "tipo": "grafico_cartesiano_svg",
+              "formato": "svg",
+              "codigo": "<svg viewBox=\"0 0 520 320\" xmlns=\"http://www.w3.org/2000/svg\">\n  <rect width=\"520\" height=\"320\" fill=\"#f8fafc\" rx=\"8\"/>\n  <!-- Grid -->\n  <g stroke=\"#e2e8f0\" stroke-width=\"1\">\n    <line x1=\"60\" y1=\"50\" x2=\"480\" y2=\"50\"/><line x1=\"60\" y1=\"100\" x2=\"480\" y2=\"100\"/><line x1=\"60\" y1=\"150\" x2=\"480\" y2=\"150\"/><line x1=\"60\" y1=\"200\" x2=\"480\" y2=\"200\"/>\n    <line x1=\"144\" y1=\"30\" x2=\"144\" y2=\"260\"/><line x1=\"228\" y1=\"30\" x2=\"228\" y2=\"260\"/><line x1=\"312\" y1=\"30\" x2=\"312\" y2=\"260\"/><line x1=\"396\" y1=\"30\" x2=\"396\" y2=\"260\"/>\n  </g>\n  <!-- Axes -->\n  <line x1=\"60\" y1=\"30\" x2=\"60\" y2=\"260\" stroke=\"#475569\" stroke-width=\"2\"/>\n  <line x1=\"60\" y1=\"260\" x2=\"490\" y2=\"260\" stroke=\"#475569\" stroke-width=\"2\"/>\n  <!-- Ticks -->\n  <text x=\"50\" y=\"264\" font-size=\"11\" font-family=\"monospace\" fill=\"#64748b\" text-anchor=\"end\">0</text>\n  <text x=\"50\" y=\"204\" font-size=\"11\" font-family=\"monospace\" fill=\"#64748b\" text-anchor=\"end\">300</text>\n  <text x=\"50\" y=\"154\" font-size=\"11\" font-family=\"monospace\" fill=\"#64748b\" text-anchor=\"end\">600</text>\n  <text x=\"50\" y=\"104\" font-size=\"11\" font-family=\"monospace\" fill=\"#64748b\" text-anchor=\"end\">900</text>\n  <text x=\"50\" y=\"54\" font-size=\"11\" font-family=\"monospace\" fill=\"#64748b\" text-anchor=\"end\">1200</text>\n  <text x=\"60\" y=\"278\" font-size=\"11\" font-family=\"monospace\" fill=\"#64748b\" text-anchor=\"middle\">0</text>\n  <text x=\"144\" y=\"278\" font-size=\"11\" font-family=\"monospace\" fill=\"#64748b\" text-anchor=\"middle\">25</text>\n  <text x=\"228\" y=\"278\" font-size=\"11\" font-family=\"monospace\" fill=\"#64748b\" text-anchor=\"middle\">50</text>\n  <text x=\"312\" y=\"278\" font-size=\"11\" font-family=\"monospace\" fill=\"#64748b\" text-anchor=\"middle\">75</text>\n  <text x=\"396\" y=\"278\" font-size=\"11\" font-family=\"monospace\" fill=\"#64748b\" text-anchor=\"middle\">100</text>\n  <!-- Curves -->\n  <!-- log n (azul) -->\n  <path d=\"M 60 260 Q 150 252 480 250\" fill=\"none\" stroke=\"#1d4ed8\" stroke-width=\"2.5\"/>\n  <text x=\"485\" y=\"253\" font-size=\"11\" font-family=\"sans-serif\" fill=\"#1d4ed8\">log n</text>\n  <!-- n (verde) -->\n  <line x1=\"60\" y1=\"260\" x2=\"480\" y2=\"235\" stroke=\"#059669\" stroke-width=\"2.5\"/>\n  <text x=\"485\" y=\"238\" font-size=\"11\" font-family=\"sans-serif\" fill=\"#059669\">n</text>\n  <!-- n log n (magenta) -->\n  <path d=\"M 60 260 Q 250 220 480 140\" fill=\"none\" stroke=\"#d946ef\" stroke-width=\"2.5\"/>\n  <text x=\"485\" y=\"143\" font-size=\"11\" font-family=\"sans-serif\" fill=\"#d946ef\">n log n</text>\n  <!-- n^2 (rojo) -->\n  <path d=\"M 60 260 Q 150 240 220 40\" fill=\"none\" stroke=\"#dc2626\" stroke-width=\"2.5\"/>\n  <text x=\"225\" y=\"45\" font-size=\"11\" font-family=\"sans-serif\" fill=\"#dc2626\">n²</text>\n  <!-- 2^n (naranja) -->\n  <path d=\"M 60 260 Q 80 250 100 40\" fill=\"none\" stroke=\"#ea580c\" stroke-width=\"3\" stroke-dasharray=\"2 2\"/>\n  <text x=\"105\" y=\"45\" font-size=\"11\" font-family=\"sans-serif\" fill=\"#ea580c\">2ⁿ</text>\n</svg>"
+            }
+          ],
+          "pseudocodigo": null,
+          "codigo": null,
+          "analisis_complejidad": null
+        }
+      ]
+    },
+    {
+      "id": "resolucion_de_recurrencias",
+      "tipo": "teoria_formal_y_metodos",
+      "titulo": "Resolución de Ecuaciones de Recurrencia",
+      "subtemas": [
+        {
+          "id": "recurrencias_sustraccion",
+          "titulo": "Método de Sustracción (Decremento Fijo n - b)",
+          "teoria": "Aplica a algoritmos recursivos donde el tamaño de la entrada disminuye en una constante fija $b$:\n$$T(n) = \\begin{cases} c & \\text{si } 0 \\leq n < b \\\\ a \\cdot T(n - b) + p(n) & \\text{si } n \\geq b \\end{cases}$$\nDonde:\n- $a$: Cantidad de llamadas recursivas efectivas en el peor caso.\n- $b$: Cantidad de unidades en que decrece la entrada ($n - b$).\n- $k$: Grado del polinomio $p(n)$ ejecutado fuera de la recursión ($p(n) \\in \\Theta(n^k)$).\n\n**Solución cerrada según el valor de $a$**:\n$$T(n) \\in \\begin{cases} \\Theta(n^k) & \\text{si } a < 1 \\\\ \\Theta(n^{k+1}) & \\text{si } a = 1 \\\\ \\Theta(n^k \\cdot a^{n/b}) = \\Theta(a^{n/b}) & \\text{si } a > 1 \\end{cases}$$\n\n*Ejemplo*: Factorial $T(n) = T(n-1) + c$. Aquí $a=1, b=1, k=0$. Como $a=1 \\implies \\Theta(n^{0+1}) = \\Theta(n)$.",
+          "animaciones": null,
+          "pseudocodigo": null,
+          "codigo": null,
+          "analisis_complejidad": null
+        },
+        {
+          "id": "recurrencias_division_teorema_maestro",
+          "titulo": "Método de División (Teorema Maestro n / b)",
+          "teoria": "Aplica a algoritmos que dividen la entrada en subproblemas de tamaño fraccionario $n/b$:\n$$T(n) = \\begin{cases} c & \\text{si } 0 \\leq n < b \\\\ a \\cdot T(n/b) + f(n) & \\text{si } n \\geq b \\end{cases}$$\nDonde:\n- $a$: Cantidad de subproblemas recursivos generados ($a \\geq 1$).\n- $b$: Factor de reducción de la entrada ($b > 1$).\n- $k$: Grado del costo de dividir y combinar soluciones fuera de la recursión ($f(n) \\in \\Theta(n^k)$).\n\n**Solución cerrada según la comparación entre $a$ y $b^k$**:\n$$T(n) \\in \\begin{cases} \\Theta(n^k) & \\text{si } a < b^k \\quad (\\text{Domina el trabajo no recursivo}) \\\\ \\Theta(n^k \\log n) & \\text{si } a = b^k \\quad (\\text{Trabajo balanceado en todos los niveles}) \\\\ \\Theta(n^{\\log_b a}) & \\text{si } a > b^k \\quad (\\text{Domina la cantidad de hojas del árbol de recursión}) \\end{cases}$$\n\n*Ejemplos*:\n1. Búsqueda binaria: $T(n) = T(n/2) + c \\implies a=1, b=2, k=0$. $b^k = 2^0 = 1 = a \\implies \\Theta(n^0 \\log n) = \\Theta(\\log n)$.\n2. MergeSort: $T(n) = 2T(n/2) + cn \\implies a=2, b=2, k=1$. $b^k = 2^1 = 2 = a \\implies \\Theta(n \\log n)$.\n3. Multiplicación de Strassen: $T(n) = 7T(n/2) + 12n^2 \\implies a=7, b=2, k=2$. $b^k = 2^2 = 4 < 7 = a \\implies \\Theta(n^{\\log_2 7}) \\approx \\Theta(n^{2.807})$.",
+          "animaciones": null,
+          "pseudocodigo": null,
+          "codigo": null,
+          "analisis_complejidad": null
+        }
+      ]
+    },
+    {
+      "id": "complejidad_computacional_p_np",
+      "tipo": "teoria_formal_y_diagramas",
+      "titulo": "Tratabilidad, Clases P, NP, NP-Completo y NP-Hard",
+      "subtemas": [
+        {
+          "id": "tratabilidad_tiempo_polinomial",
+          "titulo": "Problemas Tratables vs Intratables",
+          "teoria": "- **Tratabilidad**: Un problema se considera tratable si admite al menos un algoritmo de costo polinómico $\\mathcal{O}(n^k)$ para resolverlo en el peor caso.\n- **Intratabilidad**: Problemas para los cuales no existe (o no se conoce) ningún algoritmo polinómico, requiriendo tiempo superpolinómico (exponencial $\\mathcal{O}(2^n)$, factorial $\\mathcal{O}(n!)$ o superfactorial $\\mathcal{O}(n^n)$).\n- **Tabla de tiempos de ejecución** (asumiendo 1 microsegundo por operación elemental):\n  - Para $n = 50$:\n    - $n$: $0.00005$ seg\n    - $n^3$: $0.125$ seg\n    - $n^5$: $5.2$ minutos\n    - $2^n$: $35.7$ años de cómputo ininterrumpido\n    - $n!$: supera la edad estimada del universo.",
+          "animaciones": [
+            {
+              "id": "anim_jerarquia_tratabilidad",
+              "tipo": "diagrama_bloques",
+              "formato": "mermaid",
+              "codigo": "graph TD\n    subgraph Intratables[\"INTRATABLES (Complejidad Exponencial / Factorial)\"]\n        NN[\"O(nⁿ) - Combinatoria total\"]\n        NFACT[\"O(n!) - Permutaciones\"]\n        EXP[\"O(2ⁿ) - Subconjuntos / Fuerza bruta\"]\n    end\n    subgraph Tratables[\"TRATABLES (Complejidad Polinomial - Clase P)\"]\n        CUB[\"O(n³) - Floyd, Producto tradicional\"]\n        CUAD[\"O(n²) - SelectionSort, InsertionSort\"]\n        QLIN[\"O(n log n) - MergeSort, HeapSort\"]\n        LIN[\"O(n) - Búsqueda lineal, Recorridos\"]\n        LOG[\"O(log n) - Búsqueda binaria\"]\n        CONST[\"O(1) - Acceso a arreglos, Hash\"]\n    end\n    NN --- NFACT --- EXP --- CUB --- CUAD --- QLIN --- LIN --- LOG --- CONST"
+            }
+          ],
+          "pseudocodigo": null,
+          "codigo": null,
+          "analisis_complejidad": null
+        },
+        {
+          "id": "definicion_clases_p_np_npc",
+          "titulo": "Estructura de las Clases P, NP, NP-Completo y NP-Hard",
+          "teoria": "- **Clase P**: Problemas de decisión que pueden ser resueltos por una Máquina de Turing determinista en tiempo polinómico $\\mathcal{O}(n^k)$.\n- **Clase NP (Nondeterministic Polynomial)**: Problemas de decisión cuyas soluciones propuestas (certificados) pueden ser **verificadas** en tiempo polinómico por un algoritmo determinista.\n  - Relación inmediata: $\\mathcal{P} \\subseteq \\mathcal{NP}$.\n- **Reducción Polinómica**: Un problema $A$ se reduce en tiempo polinómico a $B$ ($A \\leq_p B$) si cualquier instancia de $A$ puede transformarse eficientemente en una instancia de $B$.\n- **Clase NP-Completo (NPC)**: Los problemas más difíciles dentro de $\\mathcal{NP}$. Un problema $L$ es NPC si:\n  1. $L \\in \\mathcal{NP}$.\n  2. Todo problema $X \\in \\mathcal{NP}$ es reducible en tiempo polinómico a $L$ ($X \\leq_p L$).\n  - Ejemplos emblemáticos: SAT (Teorema de Cook), Ciclo Hamiltoniano, Clique, Coloración de grafos con 3 colores, Subset Sum.\n- **Clase NP-Hard (NP-Difícil)**: Problemas que son al menos tan difíciles como cualquier problema en $\\mathcal{NP}$, pero que no necesariamente están en $\\mathcal{NP}$ (pueden ser problemas de optimización, como el TSP de optimización, o indecidibles como el Halting Problem).\n- **El problema del Milenio: $\\mathcal{P} \\stackrel{?}{=} \\mathcal{NP}$**:\n  - Si se encontrara un algoritmo polinómico para un solo problema NPC, entonces $\\mathcal{P} = \\mathcal{NP}$.\n  - El consenso científico conjetura fuertemente que $\\mathcal{P} \\neq \\mathcal{NP}$.",
+          "animaciones": [
+            {
+              "id": "anim_diagrama_venn_p_np",
+              "tipo": "diagrama_venn_svg",
+              "formato": "svg",
+              "codigo": "<svg viewBox=\"0 0 540 320\" xmlns=\"http://www.w3.org/2000/svg\">\n  <rect width=\"540\" height=\"320\" fill=\"#f8fafc\" rx=\"8\"/>\n  <!-- P-SPACE bounding box -->\n  <rect x=\"30\" y=\"20\" width=\"480\" height=\"280\" rx=\"14\" fill=\"#eff6ff\" stroke=\"#3b82f6\" stroke-width=\"2\" stroke-dasharray=\"4 4\"/>\n  <text x=\"50\" y=\"45\" font-family=\"sans-serif\" font-size=\"14\" font-weight=\"bold\" fill=\"#1e40af\">P-SPACE</text>\n  <!-- NP-Hard oval (red) -->\n  <ellipse cx=\"360\" cy=\"170\" rx=\"130\" ry=\"105\" fill=\"#fee2e2\" stroke=\"#dc2626\" stroke-width=\"2.5\" opacity=\"0.85\"/>\n  <text x=\"425\" y=\"110\" font-family=\"sans-serif\" font-size=\"14\" font-weight=\"bold\" fill=\"#b91c1c\">NP-Hard</text>\n  <!-- NP oval (yellow) -->\n  <ellipse cx=\"210\" cy=\"170\" rx=\"140\" ry=\"105\" fill=\"#fef9c3\" stroke=\"#ca8a04\" stroke-width=\"2.5\" opacity=\"0.85\"/>\n  <text x=\"190\" y=\"95\" font-family=\"sans-serif\" font-size=\"16\" font-weight=\"bold\" fill=\"#a16207\">NP</text>\n  <!-- NPC (Intersection of NP and NP-Hard) -->\n  <text x=\"285\" y=\"175\" font-family=\"sans-serif\" font-size=\"13\" font-weight=\"bold\" fill=\"#9a3412\" text-anchor=\"middle\">NP-Completo</text>\n  <text x=\"285\" y=\"195\" font-family=\"sans-serif\" font-size=\"10\" fill=\"#431407\" text-anchor=\"middle\">(SAT, Ciclo Ham.)</text>\n  <!-- P circle (green inside NP) -->\n  <ellipse cx=\"130\" cy=\"195\" rx=\"55\" ry=\"45\" fill=\"#dcfce7\" stroke=\"#16a34a\" stroke-width=\"2\"/>\n  <text x=\"130\" y=\"190\" font-family=\"sans-serif\" font-size=\"16\" font-weight=\"bold\" fill=\"#15803d\" text-anchor=\"middle\">P</text>\n  <text x=\"130\" y=\"210\" font-family=\"sans-serif\" font-size=\"10\" fill=\"#166534\" text-anchor=\"middle\">(MergeSort, Dijkstra)</text>\n  <!-- Examples in NP outside P -->\n  <text x=\"190\" y=\"245\" font-family=\"sans-serif\" font-size=\"10\" fill=\"#854d0e\">• Logaritmo discreto</text>\n  <!-- Examples in NP-Hard outside NP -->\n  <text x=\"435\" y=\"215\" font-family=\"sans-serif\" font-size=\"10\" fill=\"#991b1b\">• TSP Optimización</text>\n  <text x=\"435\" y=\"230\" font-family=\"sans-serif\" font-size=\"10\" fill=\"#991b1b\">• Halting Problem</text>\n</svg>"
+            }
+          ],
+          "pseudocodigo": null,
+          "codigo": null,
+          "analisis_complejidad": null
+        }
+      ]
+    }
+  ],
+  "conceptos": [
+    {
+      "id": "invariance-principle",
+      "title": "Principio de Invarianza y Tamaño de Entrada",
+      "badgeText": "Fundamento Teórico",
+      "summary": "Dos implementaciones distintas de un mismo algoritmo o ejecutadas en distintas máquinas difieren en su tiempo real a lo sumo en una constante multiplicativa positiva.",
+      "bulletPoints": [
+        "Permite estudiar la eficiencia teórica sin depender del lenguaje, compilador ni velocidad de reloj del procesador.",
+        "Se contabilizan operaciones elementales (asignaciones, comparaciones, accesos a memoria y operaciones aritméticas) en función de la talla n.",
+        "Distinguimos Peor Caso (cota garantizada para cualquier entrada de tamaño n), Mejor Caso y Caso Promedio."
+      ],
+      "formulas": [
+        {
+          "label": "Principio de Invarianza",
+          "latex": "T_1(n) \\le c \\cdot T_2(n) \\quad \\forall n > n_0",
+          "description": "Existe una constante real c > 0 y un umbral n_0 a partir del cual ambas implementaciones mantienen proporción acotada."
+        }
+      ]
+    },
+    {
+      "id": "asymptotic-notations",
+      "title": "Notaciones Asintóticas: O, Ω y Θ",
+      "badgeText": "Cotas Matemáticas",
+      "summary": "Formalizan el comportamiento límite de una función de costo T(n) acotándola superiormente, inferiormente o de forma ajustada.",
+      "bulletPoints": [
+        "O(g(n)) representa una cota asintótica superior: el algoritmo no crece más rápido que un múltiplo de g(n).",
+        "Ω(g(n)) representa una cota asintótica inferior: el algoritmo consume al menos un múltiplo de g(n) a partir de n_0.",
+        "Θ(g(n)) representa el orden exacto: se cumple simultáneamente que f(n) pertenece a O(g(n)) y a Ω(g(n))."
+      ],
+      "formulas": [
+        {
+          "label": "Cota Superior O(g(n))",
+          "latex": "0 \\le f(n) \\le c_1 \\cdot g(n) \\quad \\forall n \\ge n_0",
+          "description": "Garantiza que el costo en el peor escenario no supera la curva de referencia escalada."
+        },
+        {
+          "label": "Cota Inferior \\Omega(g(n))",
+          "latex": "0 \\le c_2 \\cdot g(n) \\le f(n) \\quad \\forall n \\ge n_0",
+          "description": "Establece el piso mínimo de operaciones requeridas para tamaños grandes."
+        },
+        {
+          "label": "Orden Exacto \\Theta(g(n))",
+          "latex": "c_2 \\cdot g(n) \\le f(n) \\le c_1 \\cdot g(n) \\quad \\forall n \\ge n_0",
+          "description": "Encierra el crecimiento de f(n) entre dos múltiplos constantes de la misma familia funcional."
+        }
+      ]
+    },
+    {
+      "id": "recurrence-theorems",
+      "title": "Teorema de Recurrencias: Sustracción y División",
+      "badgeText": "Análisis Recursivo",
+      "summary": "Permite obtener directamente el orden exacto Θ de algoritmos recursivos sin necesidad de expandir manualmente todo el árbol de llamadas.",
+      "bulletPoints": [
+        "En Sustracción T(n) = aT(n-b) + Θ(n^k), el parámetro crítico es la cantidad de llamadas recursivas a en comparación con 1.",
+        "En División T(n) = aT(n/b) + Θ(n^k) (Teorema Maestro), se compara el factor de ramificación a frente a la potencia crítica b^k.",
+        "Cuando a = b^k, todos los niveles del árbol recursivo realizan el mismo trabajo y el costo se multiplica por log_b(n)."
+      ],
+      "formulas": [
+        {
+          "label": "Recurrencia por Sustracción",
+          "latex": "T(n) = aT(n-b) + \\Theta(n^k) \\implies \\begin{cases} \\Theta(n^k) & \\text{si } a < 1 \\\\ \\Theta(n^{k+1}) & \\text{si } a = 1 \\\\ \\Theta(n^k a^{n/b}) & \\text{si } a > 1 \\end{cases}",
+          "description": "Modela algoritmos que reducen el problema en una cantidad constante b de elementos por paso."
+        },
+        {
+          "label": "Teorema Maestro (División)",
+          "latex": "T(n) = aT(n/b) + \\Theta(n^k) \\implies \\begin{cases} \\Theta(n^k) & \\text{si } a < b^k \\\\ \\Theta(n^k \\log n) & \\text{si } a = b^k \\\\ \\Theta(n^{\\log_b a}) & \\text{si } a > b^k \\end{cases}",
+          "description": "Modela algoritmos Divide & Conquer que parten la entrada en b fracciones iguales."
+        }
+      ]
+    },
+    {
+      "id": "complexity-classes-p-np",
+      "title": "Clases de Complejidad: P, NP y NP-Completos",
+      "badgeText": "Tratabilidad",
+      "summary": "Clasifican los problemas de decisión según la factibilidad de hallar o verificar una solución en tiempo polinómico determinista.",
+      "bulletPoints": [
+        "Clase P: Problemas resolubles en tiempo polinómico O(n^k) por un algoritmo determinista (tratables).",
+        "Clase NP: Problemas cuya solución candidata (certificado) puede ser verificada en tiempo polinómico determinista.",
+        "Clase NPC (NP-Completos): Los problemas más difíciles dentro de NP; todo problema de NP puede reducirse polinómicamente a ellos (ej. SAT, TSP de decisión, Mochila, Clique)."
+      ],
+      "formulas": [
+        {
+          "label": "Relación de Inclusión y Reducción Polinómica",
+          "latex": "\\mathcal{P} \\subseteq \\mathcal{NP}, \\quad L \\in \\mathcal{NPC} \\iff L \\in \\mathcal{NP} \\land \\forall L' \\in \\mathcal{NP},\\; L' \\le_p L",
+          "description": "Si un único problema NP-Completo tuviera solución en tiempo polinómico, entonces se demostraría que P = NP."
+        }
+      ]
+    }
+  ],
+  "algoritmos": [
+    {
+      "id": "asymptotic-comparison-example",
+      "name": "Verificación Polinómica de Certificado (NP) vs Fuerza Bruta",
+      "paradigmTag": "Complejidad y Verificación",
+      "bestCaseComplexityLatex": "O(n)",
+      "averageCaseComplexityLatex": "O(n)",
+      "worstCaseComplexityLatex": "O(n)",
+      "spaceComplexityLatex": "O(1)",
+      "recurrenceOrEquationLatex": "T_{\\text{verif}}(n) = O(n) \\quad \\text{vs} \\quad T_{\\text{fuerza\\_bruta}}(n) = O(2^n)",
+      "keyInsight": "Verificar si un certificado candidato suma el objetivo S toma tiempo lineal O(n) al acumular los índices seleccionados en una sola pasada. En contraste, hallar la solución explorando todos los subconjuntos por fuerza bruta toma tiempo exponencial O(2^n). Esta verificación en tiempo polinómico demuestra formalmente la pertenencia a la clase NP.",
+      "stepByStepSummary": [
+        "Recibir el conjunto de números, el valor objetivo S y el certificado booleano candidato.",
+        "Recorrer en un único ciclo lineal los índices seleccionados acumulando la suma en O(n).",
+        "Comparar la suma acumulada contra el objetivo S en tiempo constante O(1)."
+      ],
+      "codeSnippets": {
+        "pseudocode": "Funcion VerificarSumaSubconjunto(valores[1..n], candidato[1..n], objetivoS) : Booleano\nInicio\n    sumaAcumulada <- 0\n    Para i <- 1 Hasta n Hacer\n        Si candidato[i] = Verdadero Entonces\n            sumaAcumulada <- sumaAcumulada + valores[i]\n        FinSi\n    FinPara\n    Devolver sumaAcumulada = objetivoS\nFin",
+        "java": "public class SubsetSumVerifier {\n    public static boolean verifyCandidate(int[] values, boolean[] selectedMask, int targetSum) {\n        int accumulatedSum = 0;\n        for (int index = 0; index < values.length; index++) {\n            if (selectedMask[index]) {\n                accumulatedSum += values[index];\n            }\n        }\n        return accumulatedSum == targetSum;\n    }\n}",
+        "python": "def verify_subset_sum_candidate(values: list[int], selected_mask: list[bool], target_sum: int) -> bool:\n    accumulated_sum = 0\n    for index, value in enumerate(values):\n        if selected_mask[index]:\n            accumulated_sum += value\n    return accumulated_sum == target_sum"
+      }
+    }
+  ]
+}

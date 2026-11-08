@@ -1,0 +1,581 @@
+{
+  "modulo": "programacion_dinamica",
+  "titulo_general": "Técnica de Diseño: Programación Dinámica",
+  "frase_apertura": {
+    "texto": "Aquellos que no pueden recordar el pasado están condenados a repetirlo.",
+    "autor": "George Santayana",
+    "obra": "The Life of Reason: Reason in Common Sense (1905)",
+    "diapositiva_origen": 90,
+    "proposito": "Ilustra el principio fundacional de la Programación Dinámica: la memoización y reutilización de subproblemas ya resueltos para evitar el recalculo exponencial redundante característico de la recursión ingenua."
+  },
+  "secciones": [
+    {
+      "id": "fundamentos_programacion_dinamica",
+      "titulo": "Fundamentos y Principio de Optimalidad de Bellman",
+      "subtemas": [
+        {
+          "id": "principios_fundamentales_y_bellman",
+          "titulo": "Principios Teóricos: Subestructura Óptima, Superposición y Ecuación de Bellman",
+          "teoria": "La Programación Dinámica (Dynamic Programming, introducida por Richard Bellman en la década de 1950) es una técnica de diseño de algoritmos aplicable a problemas de optimización combinatoria y decisión que satisfacen dos propiedades esenciales:\n\n1. **Subestructura Óptima (Principio de Optimalidad de Bellman)**: Una solución óptima al problema global contiene en su interior soluciones óptimas a sus subproblemas componentes. Formalmente, en palabras de Bellman: *'Una política óptima tiene la propiedad de que, cualesquiera sean el estado inicial y las decisiones iniciales, las decisiones restantes deben constituir una política óptima con respecto al estado resultante de la primera decisión'*. Si una solución óptima pudiera construirse a partir de subsoluciones subóptimas, la técnica no es aplicable directamente.\n\n2. **Superposición de Subproblemas (Overlapping Subproblems)**: A diferencia del paradigma Divide & Conquer (donde los subproblemas son independientes y disjuntos, como en MergeSort o QuickSort), en Programación Dinámica el espacio de subproblemas es pequeño (polinomial), pero una descomposición recursiva ingenua resuelve los mismos subproblemas una y otra vez de forma exponencial. Al almacenar los resultados ya calculados en una estructura de datos accesible en $O(1)$ (tabla, matriz o vector), se reduce el costo de exponencial a polinomial.\n\n**Estrategias de Implementación**:\n- **Top-Down con Memoización**: Mantiene la estructura del algoritmo recursivo natural. Antes de calcular la solución para un estado, verifica si ya existe en una tabla hash o vector de caché (`memo`). Si existe, la retorna en $O(1)$; si no, la calcula recursivamente y la almacena. Ventaja: solo evalúa los estados estrictamente alcanzables desde el estado inicial. Desventaja: sobrecarga de llamadas a funciones en la pila de ejecución (overhead de recursión y riesgo de stack overflow para instancias profundas).\n- **Bottom-Up con Tabulación**: Elimina por completo la recursión. Define un orden topológico en el grafo de dependencias de subproblemas (generalmente de menor tamaño a mayor tamaño) e inicializa una tabla con los casos base triviales. Luego, mediante bucles iterativos sistemáticos, llena las celdas asegurando que cuando se calcula una celda, todas sus celdas dependientes ya han sido computadas. Ventaja: máxima eficiencia de ejecución, libre de sobrecarga de pila y permite optimizaciones de espacio (por ejemplo, reducir matrices a vectores cuando solo se necesita la fila anterior).",
+          "ecuacion_recurrencia": "$$OPT(s) = \\begin{cases} \\text{CasoBase}(s) & \\text{si } s \\in \\mathcal{S}_{base} \\\\ \\min_{a \\in \\mathcal{A}(s)} / \\max_{a \\in \\mathcal{A}(s)} \\{ \\text{costo}(s, a) \\oplus OPT(\\text{transicion}(s, a)) \\} & \\text{si } s \\notin \\mathcal{S}_{base} \\end{cases}$$",
+          "estructura_tabla": {
+            "dimensiones": "Varía según el número de variables de estado que caracterizan el subproblema (típicamente 1D para recurrencias lineales, 2D para pares de secuencias o recursos acotados, 3D o bitmask para subconjuntos).",
+            "significado_celda": "La celda de estado almacena el valor de la métrica objetivo óptima (costo mínimo, beneficio máximo, conteo o probabilidad) para la subinstancia definida por los índices de la celda.",
+            "orden_llenado": "Orden topológico estricto según el Directed Acyclic Graph (DAG) de dependencias de subproblemas, usualmente orden creciente de tamaño de subproblema o índices lexicográficos."
+          },
+          "reconstruccion_solucion": "Para recuperar los elementos o decisiones que componen la solución óptima (y no únicamente el valor numérico óptimo), se aplica backtracking sobre la tabla ya completada. En cada celda, se evalúa cuál de las alternativas de transición produjo el valor óptimo almacenado, o bien se consulta una matriz auxiliar de decisiones (`decision` o `predecesor`) guardada durante el llenado bottom-up.",
+          "animaciones": [
+            {
+              "id": "anim_fundamentos_comparativa_paradigmas",
+              "tipo": "dependencia",
+              "formato": "mermaid",
+              "descripcion": "Comparación estructural entre la descomposición en Divide & Conquer (subproblemas disjuntos) y Programación Dinámica (subproblemas superpuestos y compartidos).",
+              "pasos": [
+                "graph TD\n  subgraph DyC [Divide & Conquer: Subproblemas Disjuntos]\n    P1[Problema P] --> S1[Subproblema A]\n    P1 --> S2[Subproblema B]\n    S1 --> S11[Sub A1]\n    S1 --> S12[Sub A2]\n    S2 --> S21[Sub B1]\n    S2 --> S22[Sub B2]\n  end\n  subgraph DP [Programación Dinámica: Subproblemas Superpuestos]\n    P2[Problema P] --> D1[Subproblema A]\n    P2 --> D2[Subproblema B]\n    D1 --> D_shared[Subproblema Compartido C]\n    D2 --> D_shared\n    D_shared --> Base[Caso Base Evaluado 1 Sola Vez]\n  end"
+              ]
+            },
+            {
+              "id": "anim_fundamentos_flujo_dp",
+              "tipo": "flujo_reconstruccion",
+              "formato": "svg",
+              "descripcion": "Diagrama de flujo del ciclo de vida de la Programación Dinámica: Definición de subproblemas, recurrencia, tabulación bottom-up y reconstrucción de la solución.",
+              "pasos": [
+                "<svg viewBox=\"0 0 800 220\" xmlns=\"http://www.w3.org/2000/svg\">\n  <rect width=\"800\" height=\"220\" fill=\"#1e1e2e\" rx=\"10\"/>\n  <g fill=\"#cdd6f4\" font-family=\"sans-serif\" font-size=\"13\" text-anchor=\"middle\">\n    <rect x=\"30\" y=\"40\" width=\"150\" height=\"60\" rx=\"8\" fill=\"#313244\" stroke=\"#89b4fa\" stroke-width=\"2\"/>\n    <text x=\"105\" y=\"65\" font-weight=\"bold\">1. Caracterizar</text>\n    <text x=\"105\" y=\"85\">Estructura Óptima</text>\n    \n    <path d=\"M 180 70 L 220 70\" stroke=\"#89b4fa\" stroke-width=\"2\" marker-end=\"url(#arrow)\"/>\n    \n    <rect x=\"220\" y=\"40\" width=\"160\" height=\"60\" rx=\"8\" fill=\"#313244\" stroke=\"#a6e3a1\" stroke-width=\"2\"/>\n    <text x=\"300\" y=\"65\" font-weight=\"bold\">2. Definir</text>\n    <text x=\"300\" y=\"85\">Ecuación Bellman</text>\n    \n    <path d=\"M 380 70 L 420 70\" stroke=\"#a6e3a1\" stroke-width=\"2\"/>\n    \n    <rect x=\"420\" y=\"40\" width=\"160\" height=\"60\" rx=\"8\" fill=\"#313244\" stroke=\"#f9e2af\" stroke-width=\"2\"/>\n    <text x=\"500\" y=\"65\" font-weight=\"bold\">3. Computar</text>\n    <text x=\"500\" y=\"85\">Llenado Bottom-Up</text>\n    \n    <path d=\"M 580 70 L 620 70\" stroke=\"#f9e2af\" stroke-width=\"2\"/>\n    \n    <rect x=\"620\" y=\"40\" width=\"150\" height=\"60\" rx=\"8\" fill=\"#313244\" stroke=\"#f38ba8\" stroke-width=\"2\"/>\n    <text x=\"695\" y=\"65\" font-weight=\"bold\">4. Reconstruir</text>\n    <text x=\"695\" y=\"85\">Solución Óptima</text>\n    \n    <rect x=\"180\" y=\"140\" width=\"440\" height=\"50\" rx=\"6\" fill=\"#181825\" stroke=\"#fab387\" stroke-width=\"1\" stroke-dasharray=\"4\"/>\n    <text x=\"400\" y=\"160\" fill=\"#fab387\" font-weight=\"bold\">Principio de George Santayana</text>\n    <text x=\"400\" y=\"178\" fill=\"#bac2de\" font-size=\"12\">Almacenar en memoria para no repetir el cálculo del pasado</text>\n  </g>\n</svg>"
+              ]
+            }
+          ],
+          "pseudocodigo": "Esquema Abstracto de Programación Dinámica Bottom-Up:\n\nAlgoritmo ProgramacionDinamicaGenerica(Instancia I):\n    Entrada: Parámetros del problema de tamaño n\n    Salida: Valor óptimo y estructura de la solución\n    \n    1. Identificar espacio de estados S y dimensiones de la tabla T\n    2. Inicializar tabla T con casos base triviales\n    3. Para cada estado s en orden topológico estricto de dependencias:\n         T[s] = Combinar( { T[transicion(s, a)] + costo(s, a) para cada decision valida a } )\n         Decision[s] = a_optima\n    4. ValorOptimo = T[estado_objetivo]\n    5. Solucion = ReconstruirSolucion(Decision, estado_objetivo)\n    6. Retornar (ValorOptimo, Solucion)",
+          "codigo": {
+            "lenguaje": "Java",
+            "codigo": "public class ProgramacionDinamicaEsquema {\n    // Ilustración conceptual de la estructura Top-Down vs Bottom-Up en Java\n    \n    // Top-Down con Memoización (Cache genérica)\n    public static int resolverTopDown(int estado, Integer[] memo) {\n        if (esCasoBase(estado)) {\n            return valorCasoBase(estado);\n        }\n        if (memo[estado] != null) {\n            return memo[estado]; // Retorno en O(1) de subproblema superpuesto\n        }\n        int mejor = Integer.MAX_VALUE;\n        for (int transicion : obtenerTransiciones(estado)) {\n            int actual = costo(estado, transicion) + resolverTopDown(transicion, memo);\n            if (actual < mejor) mejor = actual;\n        }\n        memo[estado] = mejor;\n        return mejor;\n    }\n    \n    private static boolean esCasoBase(int e) { return e <= 0; }\n    private static int valorCasoBase(int e) { return 0; }\n    private static int[] obtenerTransiciones(int e) { return new int[]{e - 1}; }\n    private static int costo(int e, int t) { return 1; }\n}",
+            "correcciones_aplicadas": "Estructura formal pura de referencia para el motor Antigravity sin dependencias rotas."
+          },
+          "analisis_complejidad": {
+            "temporal_peor_caso": "O(|Estados| * GradoDeTransición)",
+            "temporal_mejor_caso": "O(|Estados| * GradoDeTransición)",
+            "espacial": "O(|Estados|)",
+            "justificacion": "La complejidad temporal es el producto del número total de subproblemas únicos (cardinalidad del espacio de estados) multiplicado por la cantidad de decisiones o transiciones consideradas por cada subproblema. La complejidad espacial corresponde a la cantidad de celdas reservadas en la tabla de memoización o tabulación."
+          }
+        },
+        {
+          "id": "fibonacci_estudio_comparativo",
+          "titulo": "Caso de Estudio Fundacional: Fibonacci (Recursión vs Memoización vs Tabulación)",
+          "teoria": "La sucesión de Fibonacci ilustra de forma transparente la patología de la recursión ingenua y la transformación radical que introduce la Programación Dinámica.\n\nLa definición matemática es $F(0)=0, F(1)=1$ y $F(n) = F(n-1) + F(n-2)$ para $n \\ge 2$.\n\n1. **Recursión Ingenua (Divide & Conquer defectuoso)**:\nAl expandir la llamada $F(n)$, se genera un árbol binario de llamadas recursivas de profundidad $n$. El número de hojas del árbol es exactamente $F(n+1) \\approx \\phi^n$ donde $\\phi = \\frac{1+\\sqrt{5}}{2} \\approx 1.618$. El costo temporal es exponencial $\\Theta(\\phi^n) = O(2^n)$. Por ejemplo, para calcular $F(5)$, la llamada $F(3)$ se evalúa 2 veces, $F(2)$ se evalúa 3 veces, $F(1)$ se evalúa 5 veces y $F(0)$ 3 veces.\n\n2. **Top-Down con Memoización**:\nSe añade un vector de tamaño $n+1$ inicializado en nulo o $-1$. Cada vez que se computa $F(k)$, se guarda en la celda $k$. Cualquier llamada subsecuente a $F(k)$ se resuelve en tiempo $O(1)$. El árbol se poda drásticamente a una línea de llamadas primarias con un costo total de $\\Theta(n)$ en tiempo y $\\Theta(n)$ en espacio de memoria (pila de recursión + vector).\n\n3. **Bottom-Up Tabulado (Cátedra UADE)**:\nUtiliza la estructura `VectorTDA<Integer>` de la cátedra para almacenar iterativamente desde $i=2$ hasta $n$. La inicialización toma $\\Theta(n)$ y el bucle ejecuta $n-1$ pasos elementales. Costo temporal: $\\Theta(n)$, Costo espacial: $\\Theta(n)$.\n\n4. **Optimización Espacial a Memoria Constante $O(1)$**:\nDado que para calcular $F(i)$ solo se requieren los dos valores inmediatamente anteriores ($F(i-1)$ y $F(i-2)$), no es necesario retener todo el vector en memoria. Manteniendo dos variables auxiliares (`prev1` y `prev2`), el costo espacial se reduce a $\\Theta(1)$ manteniendo el tiempo en $\\Theta(n)$.",
+          "ecuacion_recurrencia": "$$F(n) = \\begin{cases} 0 & \\text{si } n = 0 \\\\ 1 & \\text{si } n = 1 \\\\ F(n-1) + F(n-2) & \\text{si } n \\ge 2 \\end{cases}$$",
+          "estructura_tabla": {
+            "dimensiones": "Vector unidimensional de longitud n + 1 (o 2 variables en versión optimizada).",
+            "significado_celda": "tabla[i] almacena el i-ésimo número de Fibonacci ya consolidado.",
+            "orden_llenado": "Lineal ascendente estricto: i = 2, 3, 4, ..., n."
+          },
+          "reconstruccion_solucion": "En problemas de valor numérico único no hay selección combinatoria; el valor en la última celda tabla[n] es directamente la solución final.",
+          "animaciones": [
+            {
+              "id": "anim_fibonacci_arbol_superposicion",
+              "tipo": "dependencia",
+              "formato": "mermaid",
+              "descripcion": "Árbol de llamadas recursivas para Fibonacci(5), destacando las ramas duplicadas que la Programación Dinámica poda en tiempo O(1).",
+              "pasos": [
+                "graph TD\n  F5[\"F(5)\"] --> F4[\"F(4)\"]\n  F5 --> F3_1[\"F(3) [Duplicado]\"]\n  F4 --> F3_2[\"F(3)\"]\n  F4 --> F2_1[\"F(2) [Duplicado]\"]\n  F3_2 --> F2_2[\"F(2)\"]\n  F3_2 --> F1_1[\"F(1)\"]\n  F2_2 --> F1_2[\"F(1)\"]\n  F2_2 --> F0_1[\"F(0)\"]\n  F3_1 --> F2_3[\"F(2) [Duplicado]\"]\n  F3_1 --> F1_3[\"F(1) [Duplicado]\"]\n  style F3_1 fill:#f38ba8,stroke:#d20f39,color:#11111b\n  style F2_1 fill:#f38ba8,stroke:#d20f39,color:#11111b\n  style F2_3 fill:#f38ba8,stroke:#d20f39,color:#11111b\n  style F1_3 fill:#f38ba8,stroke:#d20f39,color:#11111b"
+              ]
+            },
+            {
+              "id": "anim_fibonacci_tabla_pasos",
+              "tipo": "tabla_dp",
+              "formato": "katex",
+              "descripcion": "Evolución de la tabla bottom-up de Fibonacci para n = 7 paso a paso.",
+              "pasos": [
+                "\\begin{array}{|c|c|c|c|c|c|c|c|c|}\\hline i & 0 & 1 & 2 & 3 & 4 & 5 & 6 & 7 \\\\ \\hline F(i) & 0 & 1 & 1 & 2 & 3 & 5 & 8 & 13 \\\\ \\hline \\end{array}"
+              ]
+            }
+          ],
+          "pseudocodigo": "Algoritmo Fibonacci_Tabulado(n: entero) -> entero:\n    Entrada: Entero no negativo n\n    Salida: El n-ésimo número de Fibonacci\n    \n    Si n = 0 entonces retornar 0\n    Si n = 1 entonces retornar 1\n    \n    tabla = inicializarVector(n + 1)\n    tabla[0] = 0\n    tabla[1] = 1\n    \n    Para i desde 2 hasta n hacer:\n        tabla[i] = tabla[i - 1] + tabla[i - 2]\n    Fin Para\n    \n    Retornar tabla[n]",
+          "codigo": {
+            "lenguaje": "Java",
+            "codigo": "public static int fibonacci(int n) {\n    if (n <= 0) return 0;\n    if (n == 1) return 1;\n    \n    // Implementación fiel sobre la interfaz VectorTDA de la cátedra UADE\n    VectorTDA<Integer> aux = new Vector<Integer>();\n    aux.inicializarVector(n + 1);\n    aux.agregarElemento(0, 0);\n    aux.agregarElemento(1, 1);\n    \n    for (int i = 2; i <= n; i++) {\n        int f_prev1 = aux.recuperarElemento(i - 1);\n        int f_prev2 = aux.recuperarElemento(i - 2);\n        aux.agregarElemento(i, f_prev1 + f_prev2);\n    }\n    \n    return aux.recuperarElemento(n);\n}\n\n// Versión con optimización espacial O(1) de memoria\npublic static int fibonacciOptimizado(int n) {\n    if (n <= 0) return 0;\n    if (n == 1) return 1;\n    int a = 0, b = 1;\n    for (int i = 2; i <= n; i++) {\n        int c = a + b;\n        a = b;\n        b = c;\n    }\n    return b;\n}",
+            "correcciones_aplicadas": "Se corrigió la base de Fibonacci respecto a la errata común del apunte (donde tabla[0]=1 y tabla[1]=1 calcula la sucesión desplazada), ajustándolo a la definición canónica F(0)=0, F(1)=1. Se adaptaron las llamadas a los métodos oficiales de la cátedra: inicializarVector, agregarElemento y recuperarElemento."
+          },
+          "analisis_complejidad": {
+            "temporal_peor_caso": "O(n)",
+            "temporal_mejor_caso": "O(1) para n <= 1; O(n) general",
+            "espacial": "O(n) en versión con VectorTDA; O(1) en versión con acumuladores de dos variables",
+            "justificacion": "El bucle se ejecuta exactamente n - 1 veces, realizando sumas y accesos vectoriales en tiempo constante O(1). Se sustituye el árbol exponencial O(2^n) por una trayectoria lineal O(n)."
+          }
+        }
+      ]
+    },
+    {
+      "id": "optimizacion_recursos_clasicos",
+      "titulo": "Problemas Clásicos de Optimización de Recursos: Cambio y Mochila 0-1",
+      "subtemas": [
+        {
+          "id": "problema_del_cambio_dp",
+          "titulo": "El Problema del Cambio de Monedas (Coin Change Problem)",
+          "teoria": "El Problema del Cambio consiste en devolver una cantidad entera de dinero $V$ empleando la menor cantidad posible de monedas, seleccionado entre un conjunto de $n$ denominaciones disponibles $D = \\{d_0, d_1, \\dots, d_{n-1}\\}$.\n\n**Insuficiencia del Enfoque Greedy**: Como se demostró en el módulo anterior, la estrategia voraz (seleccionar reiteradamente la moneda de mayor valor que no exceda el remanente) solo garantiza optimalidad para sistemas monetarios canónicos. Frente a sistemas arbitrarios como $D = (6, 4, 1)$ y un valor $V = 8$, Greedy selecciona $6 + 1 + 1$ (3 monedas), mientras que la solución global óptima es $4 + 4$ (2 monedas). Para garantizar optimalidad sin backtracking ciego, se aplica Programación Dinámica.\n\n**Subestructura Óptima y Transiciones**:\nPara devolver un valor $j$ ($0 \\le j \\le V$) utilizando un subconjunto de las primeras $i+1$ denominaciones ($0 \\le i < n$), la cantidad mínima de monedas $C[i, j]$ surge de comparar dos alternativas excluyentes:\n1. **No utilizar la denominación $d_i$**: Se entrega el valor exacto $j$ recurriendo únicamente a las primeras $i$ denominaciones ($d_0, \\dots, d_{i-1}$). El costo es $C[i-1, j]$.\n2. **Utilizar al menos una moneda de denominación $d_i$** (válido solo si $d_i \\le j$): Se descuenta el valor $d_i$ de la deuda, pasando a deber $j - d_i$. Como las monedas están disponibles en cantidad ilimitada (suministro infinito), el subproblema resultante todavía puede continuar utilizando la denominación $d_i$. Por lo tanto, el costo es $1 + C[i, j - d_i]$ (¡misma fila $i$!).\n\nEl valor óptimo es el mínimo entre ambas opciones: $C[i, j] = \\min(C[i-1, j], 1 + C[i, j - d_i])$.\n\n**Casos Base**:\n- Para valor $j = 0$: Se requieren 0 monedas ($C[i, 0] = 0$ para todo $i$).\n- Para la primera denominación $i = 0$ ($d_0$): Si $d_0 > j$, no se puede pagar (costo $+\\infty$). Si $d_0 \\le j$, el costo es $1 + C[0, j - d_0]$ (o $j / d_0$ si $j$ es múltiplo de $d_0$, de lo contrario $+\\infty$).",
+          "ecuacion_recurrencia": "$$C[i, j] = \\begin{cases} 0 & \\text{si } j = 0 \\\\ +\\infty & \\text{si } i = 0 \\land d_0 > j \\\\ 1 + C[0, j - d_0] & \\text{si } i = 0 \\land d_0 \\le j \\\\ C[i-1, j] & \\text{si } i > 0 \\land d_i > j \\\\ \\min(C[i-1, j],\\, 1 + C[i, j - d_i]) & \\text{si } i > 0 \\land d_i \\le j \\end{cases}$$",
+          "estructura_tabla": {
+            "dimensiones": "Matriz de dimensiones n x (V + 1), donde n es la cantidad de denominaciones y V es el monto total a pagar.",
+            "significado_celda": "C[i, j] representa el número mínimo de monedas necesarias para devolver el monto exacto j considerando únicamente las denominaciones desde el índice 0 hasta el índice i.",
+            "orden_llenado": "Por filas de arriba hacia abajo (índice i de 0 a n-1), y dentro de cada fila, por columnas de izquierda a derecha (índice j de 1 a V)."
+          },
+          "reconstruccion_solucion": "Para recuperar el conjunto exacto de monedas utilizadas, se parte de la celda de destino (n-1, V) y se realiza un camino de retroceso (backtracking determinista):\n1. Si i > 0 y C[i, j] == C[i-1, j], significa que la moneda d_i no fue necesaria para alcanzar el óptimo; por lo tanto, se sube a la fila anterior: i = i - 1.\n2. De lo contrario, la moneda d_i fue seleccionada. Se agrega d_i a la lista de monedas resultante, se resta su valor de la deuda actual: j = j - d_i (permaneciendo en la misma fila i).\n3. El proceso se detiene cuando j == 0. Si se llega a una celda con valor infinito, no existe combinación válida para devolver el cambio exacto.",
+          "animaciones": [
+            {
+              "id": "anim_cambio_tabla_completa",
+              "tipo": "tabla_dp",
+              "formato": "katex",
+              "descripcion": "Tabla completa de Programación Dinámica para D = (6, 4, 1) y V = 8 (según diapositivas de cátedra).",
+              "pasos": [
+                "\\begin{array}{|c|c|c|c|c|c|c|c|c|c|}\\hline d_i \\setminus j & 0 & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 \\\\ \\hline d_0 = 6 & 0 & \\infty & \\infty & \\infty & \\infty & \\infty & 1 & \\infty & \\infty \\\\ \\hline d_1 = 4 & 0 & \\infty & \\infty & \\infty & 1 & \\infty & 1 & \\infty & 2 \\\\ \\hline d_2 = 1 & 0 & 1 & 2 & 3 & 1 & 2 & 1 & 2 & 2 \\\\ \\hline \\end{array}"
+              ]
+            },
+            {
+              "id": "anim_cambio_dependencias",
+              "tipo": "dependencia",
+              "formato": "mermaid",
+              "descripcion": "Grafo de dependencia en el Problema del Cambio: celda C[i,j] depende de la celda superior C[i-1,j] y de la celda en la misma fila a la izquierda C[i, j - d[i]].",
+              "pasos": [
+                "graph TD\n  Up[\"C[i-1, j] (Excluir moneda d_i)\"] --> Current[\"C[i, j] = min(Up, Left + 1)\"]\n  Left[\"C[i, j - d_i] (Incluir moneda d_i, misma fila)\"] --> Current\n  style Current fill:#89b4fa,stroke:#1e66f5,color:#11111b\n  style Up fill:#f9e2af,stroke:#df8e1d,color:#11111b\n  style Left fill:#a6e3a1,stroke:#40a02b,color:#11111b"
+              ]
+            },
+            {
+              "id": "anim_cambio_reconstruccion_svg",
+              "tipo": "flujo_reconstruccion",
+              "formato": "svg",
+              "descripcion": "Ruta de reconstrucción en la tabla para D=(6,4,1) y V=8: de celda (2,8) salta hacia arriba porque C[2,8]=2 coincide con C[1,8]=2, y de (1,8) descuenta moneda de 4 pasando a (1,4), y de (1,4) descuenta 4 pasando a (1,0). Total: 2 monedas de 4.",
+              "pasos": [
+                "<svg viewBox=\"0 0 700 240\" xmlns=\"http://www.w3.org/2000/svg\">\n  <rect width=\"700\" height=\"240\" fill=\"#181825\" rx=\"10\"/>\n  <g fill=\"#cdd6f4\" font-family=\"monospace\" font-size=\"14\" text-anchor=\"middle\">\n    <text x=\"350\" y=\"30\" fill=\"#f9e2af\" font-size=\"16\" font-weight=\"bold\">Ruta de Reconstrucción de Monedas para V = 8 con D = (6, 4, 1)</text>\n    <rect x=\"500\" y=\"160\" width=\"120\" height=\"45\" rx=\"6\" fill=\"#313244\" stroke=\"#f38ba8\" stroke-width=\"2\"/>\n    <text x=\"560\" y=\"188\">C[2, 8] = 2</text>\n    <path d=\"M 560 160 L 560 115\" stroke=\"#fab387\" stroke-width=\"3\" marker-end=\"url(#arr)\"/>\n    <text x=\"630\" y=\"140\" fill=\"#fab387\" font-size=\"12\">C[2,8]==C[1,8] (No d_2)</text>\n    \n    <rect x=\"500\" y=\"70\" width=\"120\" height=\"45\" rx=\"6\" fill=\"#313244\" stroke=\"#a6e3a1\" stroke-width=\"2\"/>\n    <text x=\"560\" y=\"98\">C[1, 8] = 2</text>\n    <path d=\"M 500 92 L 390 92\" stroke=\"#a6e3a1\" stroke-width=\"3\" marker-end=\"url(#arr)\"/>\n    <text x=\"445\" y=\"80\" fill=\"#a6e3a1\" font-size=\"12\">Toma d_1 = 4</text>\n    \n    <rect x=\"270\" y=\"70\" width=\"120\" height=\"45\" rx=\"6\" fill=\"#313244\" stroke=\"#a6e3a1\" stroke-width=\"2\"/>\n    <text x=\"330\" y=\"98\">C[1, 4] = 1</text>\n    <path d=\"M 270 92 L 160 92\" stroke=\"#a6e3a1\" stroke-width=\"3\" marker-end=\"url(#arr)\"/>\n    <text x=\"215\" y=\"80\" fill=\"#a6e3a1\" font-size=\"12\">Toma d_1 = 4</text>\n    \n    <rect x=\"40\" y=\"70\" width=\"120\" height=\"45\" rx=\"6\" fill=\"#45475a\" stroke=\"#89b4fa\" stroke-width=\"2\"/>\n    <text x=\"100\" y=\"98\">C[1, 0] = 0 (Fin)</text>\n    <text x=\"350\" y=\"225\" fill=\"#a6e3a1\" font-size=\"15\" font-weight=\"bold\">Monedas Seleccionadas: { 4, 4 } (Total: 2 monedas)</text>\n  </g>\n</svg>"
+              ]
+            }
+          ],
+          "pseudocodigo": "Algoritmo Cambio_DP(D: Vector<entero>, V: entero) -> Matriz<entero>:\n    Entrada: D vector de n denominaciones ordenadas, V monto objetivo a pagar\n    Salida: Matriz C de tamaño n x (V + 1) con la cantidad mínima de monedas\n    \n    n = longitud(D)\n    C = inicializarMatriz(n, V + 1)\n    \n    // Caso base: valor 0 requiere 0 monedas\n    Para i desde 0 hasta n - 1 hacer:\n        C[i, 0] = 0\n    Fin Para\n    \n    // Llenado primera fila (denominación D[0])\n    Para j desde 1 hasta V hacer:\n        Si D[0] > j entonces:\n            C[0, j] = +INFINITO\n        Sino:\n            Si C[0, j - D[0]] != +INFINITO entonces:\n                C[0, j] = 1 + C[0, j - D[0]]\n            Sino:\n                C[0, j] = +INFINITO\n            Fin Si\n        Fin Si\n    Fin Para\n    \n    // Llenado inductivo por filas y columnas\n    Para i desde 1 hasta n - 1 hacer:\n        Para j desde 1 hasta V hacer:\n            Si D[i] > j entonces:\n                C[i, j] = C[i - 1, j]\n            Sino:\n                C[i, j] = Min(C[i - 1, j], 1 + C[i, j - D[i]])\n            Fin Si\n        Fin Para\n    Fin Para\n    \n    Retornar C",
+          "codigo": {
+            "lenguaje": "Java",
+            "codigo": "public static int cambio(VectorTDA<Integer> monedas, int v) throws Exception {\n    int cantidadMonedas = monedas.capacidadVector();\n    int INF = 9999999; // Representación de infinito compatible con aritmética\n    \n    // Dimensiones requeridas: n filas x (v + 1) columnas\n    int dimensionMatriz = Math.max(cantidadMonedas, v + 1);\n    MatrizTDA<Integer> m = new Matriz<Integer>();\n    m.inicializarMatriz(dimensionMatriz);\n    \n    // Inicializar toda la matriz con infinito y columna 0 con 0\n    for (int i = 0; i < cantidadMonedas; i++) {\n        for (int j = 0; j <= v; j++) {\n            m.setearValor(i, j, (j == 0) ? 0 : INF);\n        }\n    }\n    \n    // Primera fila: moneda de índice 0\n    int d0 = monedas.recuperarElemento(0);\n    for (int j = 1; j <= v; j++) {\n        if (d0 <= j) {\n            int previo = m.obtenerValor(0, j - d0);\n            if (previo != INF) {\n                m.setearValor(0, j, 1 + previo);\n            }\n        }\n    }\n    \n    // Filas subsiguientes\n    for (int i = 1; i < cantidadMonedas; i++) {\n        int di = monedas.recuperarElemento(i);\n        for (int j = 1; j <= v; j++) {\n            int opcionSinMoneda = m.obtenerValor(i - 1, j);\n            int opcionConMoneda = INF;\n            \n            if (di <= j) {\n                int previo = m.obtenerValor(i, j - di);\n                if (previo != INF) {\n                    opcionConMoneda = 1 + previo;\n                }\n            }\n            m.setearValor(i, j, Math.min(opcionSinMoneda, opcionConMoneda));\n        }\n    }\n    \n    return m.obtenerValor(cantidadMonedas - 1, v);\n}\n\n// Reconstrucción de la solución óptima\npublic static VectorTDA<Integer> reconstruirCambio(VectorTDA<Integer> monedas, MatrizTDA<Integer> m, int v) {\n    int i = monedas.capacidadVector() - 1;\n    int j = v;\n    VectorTDA<Integer> seleccionadas = new Vector<Integer>();\n    seleccionadas.inicializarVector(v + 1); // Capacidad holgada\n    int pos = 0;\n    \n    while (j > 0 && i >= 0) {\n        if (i > 0 && m.obtenerValor(i, j).equals(m.obtenerValor(i - 1, j))) {\n            i--;\n        } else {\n            int di = monedas.recuperarElemento(i);\n            seleccionadas.agregarElemento(pos++, di);\n            j = j - di;\n        }\n    }\n    return seleccionadas;\n}",
+            "correcciones_aplicadas": "1. Corrección de inicialización de matriz: MatrizTDA en el apunte es cuadrada fija con inicializarMatriz(n); se utilizó Math.max(cantidadMonedas, v + 1) para evitar excepciones de índice fuera de rango. 2. Tratamiento riguroso de +INFINITO: en lugar de dejar celdas vacías o nulas, se utilizó un valor centinela acotado (9999999) para evitar desbordamientos aritméticos (overflow) al sumar 1. 3. Reconstrucción formal de la solución desacoplada."
+          },
+          "analisis_complejidad": {
+            "temporal_peor_caso": "O(n * V)",
+            "temporal_mejor_caso": "O(n * V)",
+            "espacial": "O(n * V) con MatrizTDA; reducible a O(V) con vector unidimensional",
+            "justificacion": "La matriz contiene n * (V + 1) celdas. Cada celda se computa exactamente una vez en tiempo O(1) mediante una comparación de mínimo. La complejidad es pseudo-polinomial, pues depende del valor numérico entero V y no de la longitud en bits de la entrada."
+          }
+        },
+        {
+          "id": "mochila_01_dp",
+          "titulo": "El Problema de la Mochila 0-1 (0-1 Knapsack Problem)",
+          "teoria": "El Problema de la Mochila 0-1 (0-1 Knapsack) consiste en seleccionar un subconjunto de entre $n$ objetos indivisibles, cada uno con un peso entero positivo $p_i$ y un valor de utilidad $v_i$, con el fin de maximizar el valor total acumulado en una mochila de capacidad máxima entera $P$, sin sobrepasar dicho límite.\n\n**Diferencia Fundamental con la Mochila Fraccionaria (Greedy)**:\nEn la versión continua o fraccionaria (Greedy), los objetos pueden cortarse libremente, por lo que una simple ordenación por densidad de valor $\\frac{v_i}{p_i}$ garantiza el óptimo. En la versión 0-1, cada objeto se toma por entero o se descarta (variable binaria $x_i \\in \\{0, 1\\}$). El enfoque voraz falla porque tomar un objeto de alta densidad pero peso inadecuado puede dejar una capacidad residual inutilizable que impide albergar combinaciones de objetos de mayor valor acumulado.\n\n**Subestructura Óptima y Ecuación de Recurrencia**:\nSea $V[i, j]$ el valor máximo alcanzable considerando únicamente los primeros $i$ objetos (índices de $1$ a $i$) con una capacidad máxima de mochila $j$ ($0 \\le j \\le P$):\n1. **Excluir el objeto $i$**: La capacidad disponible sigue siendo $j$, y se optimiza sobre los primeros $i-1$ objetos. Valor: $V[i-1, j]$.\n2. **Incluir el objeto $i$** (factible solo si $p_i \\le j$): Se obtiene su beneficio $v_i$ y se consume $p_i$ de capacidad. El valor restante óptimo proviene de evaluar los primeros $i-1$ objetos con capacidad $j - p_i$. Valor: $v_i + V[i-1, j - p_i]$.\n\n**Comparación Crucial con el Problema del Cambio (Apunte y Slides Cátedra)**:\n- **Mochila 0-1**: Al incluir el objeto $i$, se consulta $V[i-1, j - p_i]$ (¡fila anterior $i-1$!). La razón es que el objeto $i$ es único y ya no está disponible para volver a ser seleccionado.\n- **Problema del Cambio**: Al incluir la moneda $d_i$, se consulta $C[i, j - d_i]$ (¡misma fila $i$!). La razón es que las monedas tienen stock infinito y pueden reutilizarse indefinidamente.\n\nEsta distinción de acceso a la tabla es uno de los conceptos teóricos y pedagógicos más evaluados en la materia.",
+          "ecuacion_recurrencia": "$$V[i, j] = \\begin{cases} 0 & \\text{si } i = 0 \\lor j = 0 \\\\ V[i-1, j] & \\text{si } p_i > j \\\\ \\max(V[i-1, j],\\, v_i + V[i-1, j - p_i]) & \\text{si } p_i \\le j \\end{cases}$$",
+          "estructura_tabla": {
+            "dimensiones": "Matriz de dimensiones (n + 1) x (P + 1), donde n es la cantidad de objetos disponibles y P es el peso máximo soportado por la mochila.",
+            "significado_celda": "V[i, j] almacena el valor máximo de utilidad que se puede empacar seleccionando entre los primeros i objetos disponiendo de una capacidad máxima de j.",
+            "orden_llenado": "Por filas crecientes de i = 1 hasta n, y para cada fila, por columnas de j = 0 hasta P."
+          },
+          "reconstruccion_solucion": "Para determinar exactamente qué objetos se introdujeron en la mochila óptima:\n1. Se comienza en la celda final (n, P).\n2. Si V[i, j] == V[i-1, j], el objeto i NO fue seleccionado. Se pasa a evaluar la fila anterior: i = i - 1.\n3. Si V[i, j] > V[i-1, j], el objeto i SÍ fue seleccionado. Se agrega el objeto a la solución, se reduce la capacidad disponible restando su peso: j = j - p_i, y se avanza a la fila anterior: i = i - 1.\n4. El proceso concluye cuando i == 0 o j == 0.",
+          "animaciones": [
+            {
+              "id": "anim_mochila_tabla_uade",
+              "tipo": "tabla_dp",
+              "formato": "katex",
+              "descripcion": "Tabla completa de Mochila 0-1 para 4 objetos: pesos = (3, 2, 6, 7), valores = (3, 8, 5, 7), P = 9 (Instancia oficial de diapositivas UADE).",
+              "pasos": [
+                "\\begin{array}{|c|c|c|c|c|c|c|c|c|c|c|}\\hline i \\setminus j & 0 & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 \\\\ \\hline 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\\\ \\hline 1 (p=3, v=3) & 0 & 0 & 0 & 3 & 3 & 3 & 3 & 3 & 3 & 3 \\\\ \\hline 2 (p=2, v=8) & 0 & 0 & 8 & 8 & 8 & 11 & 11 & 11 & 11 & 11 \\\\ \\hline 3 (p=6, v=5) & 0 & 0 & 8 & 8 & 8 & 11 & 11 & 11 & 13 & 13 \\\\ \\hline 4 (p=7, v=7) & 0 & 0 & 8 & 8 & 8 & 11 & 11 & 11 & 13 & 15 \\\\ \\hline \\end{array}"
+              ]
+            },
+            {
+              "id": "anim_mochila_vs_cambio_mermaid",
+              "tipo": "dependencia",
+              "formato": "mermaid",
+              "descripcion": "Contraste estructural de dependencias: Mochila 0-1 (toma de fila i-1 por unicidad) vs Problema del Cambio (toma de fila i por suministro infinito).",
+              "pasos": [
+                "graph TD\n  subgraph Mochila [Mochila 0-1: Objetos Únicos]\n    M_prev[\"V[i-1, j]\"] --> M_curr[\"V[i, j] = max(V[i-1, j], V[i-1, j-p_i] + v_i)\"]\n    M_left_prev[\"V[i-1, j - p_i] (Fila Anterior!)\"] --> M_curr\n  end\n  subgraph Cambio [Problema del Cambio: Monedas Ilimitadas]\n    C_prev[\"C[i-1, j]\"] --> C_curr[\"C[i, j] = min(C[i-1, j], C[i, j-d_i] + 1)\"]\n    C_left_same[\"C[i, j - d_i] (Misma Fila!)\"] --> C_curr\n  end\n  style M_left_prev fill:#f38ba8,stroke:#d20f39,color:#11111b\n  style C_left_same fill:#a6e3a1,stroke:#40a02b,color:#11111b"
+              ]
+            },
+            {
+              "id": "anim_mochila_reconstruccion_svg",
+              "tipo": "flujo_reconstruccion",
+              "formato": "svg",
+              "descripcion": "Traza de reconstrucción para la instancia de clase: desde V[4,9]=15, V[4,9]>V[3,9](13) -> selecciona Objeto 4 (p=7,v=7), resto j=2 en fila 3; V[3,2]==V[2,2](8) -> no obj 3; V[2,2]>V[1,2](0) -> selecciona Objeto 2 (p=2,v=8), resto j=0. Objetos: {4, 2}, Valor total = 15, Peso total = 9.",
+              "pasos": [
+                "<svg viewBox=\"0 0 720 250\" xmlns=\"http://www.w3.org/2000/svg\">\n  <rect width=\"720\" height=\"250\" fill=\"#1e1e2e\" rx=\"10\"/>\n  <g fill=\"#cdd6f4\" font-family=\"monospace\" font-size=\"13\" text-anchor=\"middle\">\n    <text x=\"360\" y=\"30\" fill=\"#f9e2af\" font-size=\"16\" font-weight=\"bold\">Backtracking en Tabla de Mochila 0-1 (P = 9)</text>\n    \n    <rect x=\"540\" y=\"180\" width=\"130\" height=\"45\" rx=\"6\" fill=\"#313244\" stroke=\"#a6e3a1\" stroke-width=\"2\"/>\n    <text x=\"605\" y=\"207\">V[4, 9] = 15</text>\n    \n    <path d=\"M 605 180 L 605 140\" stroke=\"#fab387\" stroke-width=\"2\" marker-end=\"url(#arr)\"/>\n    <text x=\"605\" y=\"160\" fill=\"#f38ba8\" font-size=\"11\">15 > 13 (Toma Obj 4: p=7, v=7)</text>\n    \n    <rect x=\"300\" y=\"100\" width=\"130\" height=\"45\" rx=\"6\" fill=\"#313244\" stroke=\"#89b4fa\" stroke-width=\"2\"/>\n    <text x=\"365\" y=\"127\">V[3, 2] = 8</text>\n    \n    <path d=\"M 540 200 L 430 135\" stroke=\"#a6e3a1\" stroke-width=\"3\" stroke-dasharray=\"4\"/>\n    \n    <path d=\"M 365 100 L 365 65\" stroke=\"#fab387\" stroke-width=\"2\"/>\n    <text x=\"425\" y=\"80\" fill=\"#fab387\" font-size=\"11\">8 == 8 (No Obj 3)</text>\n    \n    <rect x=\"300\" y=\"20\" width=\"130\" height=\"45\" rx=\"6\" fill=\"#313244\" stroke=\"#a6e3a1\" stroke-width=\"2\"/>\n    <text x=\"365\" y=\"47\">V[2, 2] = 8</text>\n    \n    <path d=\"M 300 42 L 180 42\" stroke=\"#a6e3a1\" stroke-width=\"3\"/>\n    <text x=\"240\" y=\"32\" fill=\"#a6e3a1\" font-size=\"11\">8 > 0 (Toma Obj 2: p=2, v=8)</text>\n    \n    <rect x=\"50\" y=\"20\" width=\"130\" height=\"45\" rx=\"6\" fill=\"#45475a\" stroke=\"#cdd6f4\" stroke-width=\"2\"/>\n    <text x=\"115\" y=\"47\">V[1, 0] = 0 (Capacidad Agotada)</text>\n    \n    <text x=\"360\" y=\"235\" fill=\"#a6e3a1\" font-size=\"14\" font-weight=\"bold\">Solución Reconstruida: Objetos { 2, 4 } | Peso = 2+7=9 | Valor = 8+7=15</text>\n  </g>\n</svg>"
+              ]
+            }
+          ],
+          "pseudocodigo": "Algoritmo Mochila01_DP(pesos: Vector<entero>, valores: Vector<entero>, P: entero) -> Matriz<entero>:\n    Entrada: pesos y valores de n objetos (índices 0 a n-1), capacidad máxima P\n    Salida: Matriz V de tamaño (n + 1) x (P + 1) con los valores óptimos\n    \n    n = longitud(pesos)\n    V = inicializarMatriz(n + 1, P + 1)\n    \n    // Casos base: capacidad 0 o 0 objetos tienen valor 0\n    Para i desde 0 hasta n hacer:\n        V[i, 0] = 0\n    Fin Para\n    Para j desde 0 hasta P hacer:\n        V[0, j] = 0\n    Fin Para\n    \n    // Llenado inductivo\n    Para i desde 1 hasta n hacer:\n        p_i = pesos[i - 1]\n        v_i = valores[i - 1]\n        Para j desde 0 hasta P hacer:\n            Si p_i > j entonces:\n                V[i, j] = V[i - 1, j]\n            Sino:\n                V[i, j] = Max(V[i - 1, j], v_i + V[i - 1, j - p_i])\n            Fin Si\n        Fin Para\n    Fin Para\n    \n    Retornar V",
+          "codigo": {
+            "lenguaje": "Java",
+            "codigo": "public static int mochila(VectorTDA<Integer> pesos, VectorTDA<Integer> valores, int p) throws Exception {\n    int n = pesos.capacidadVector();\n    \n    // Corrección para soportar índices n y p con MatrizTDA de cátedra\n    int dim = Math.max(n + 1, p + 1);\n    MatrizTDA<Integer> m = new Matriz<Integer>();\n    m.inicializarMatriz(dim);\n    \n    // Inicializar fila 0 y columna 0 en 0\n    for (int i = 0; i <= n; i++) {\n        m.setearValor(i, 0, 0);\n    }\n    for (int j = 0; j <= p; j++) {\n        m.setearValor(0, j, 0);\n    }\n    \n    // Llenado bottom-up\n    for (int i = 1; i <= n; i++) {\n        int pesoObj = pesos.recuperarElemento(i - 1);\n        int valorObj = valores.recuperarElemento(i - 1);\n        \n        for (int j = 0; j <= p; j++) {\n            int sinObjeto = m.obtenerValor(i - 1, j);\n            if (pesoObj > j) {\n                m.setearValor(i, j, sinObjeto);\n            } else {\n                int conObjeto = valorObj + m.obtenerValor(i - 1, j - pesoObj);\n                m.setearValor(i, j, Math.max(sinObjeto, conObjeto));\n            }\n        }\n    }\n    \n    return m.obtenerValor(n, p);\n}\n\n// Reconstrucción de objetos seleccionados\npublic static VectorTDA<Integer> reconstruirMochila(VectorTDA<Integer> pesos, MatrizTDA<Integer> m, int p) {\n    int n = pesos.capacidadVector();\n    int i = n;\n    int j = p;\n    VectorTDA<Integer> elegidos = new Vector<Integer>();\n    elegidos.inicializarVector(n);\n    int pos = 0;\n    \n    while (i > 0 && j > 0) {\n        if (!m.obtenerValor(i, j).equals(m.obtenerValor(i - 1, j))) {\n            elegidos.agregarElemento(pos++, i - 1); // Guarda el índice del objeto seleccionado\n            j = j - pesos.recuperarElemento(i - 1);\n        }\n        i--;\n    }\n    return elegidos;\n}",
+            "correcciones_aplicadas": "1. Ajuste de dimensiones de MatrizTDA: se amplió a Math.max(n + 1, p + 1) para permitir indexación natural de 0 a n objetos y de 0 a p pesos sin index out of bounds. 2. Aislamiento del método de reconstrucción con retorno de VectorTDA oficial de cátedra. 3. Alineación del desfase de índices entre la matriz (1-based para objetos) y los vectores de pesos/valores (0-based)."
+          },
+          "analisis_complejidad": {
+            "temporal_peor_caso": "O(n * P)",
+            "temporal_mejor_caso": "O(n * P)",
+            "espacial": "O(n * P) en la tabla completa; optimizable a O(P) con un solo vector si se recorre de P descendiendo a 0",
+            "justificacion": "La matriz contiene (n + 1) * (P + 1) celdas. Cada celda se calcula en tiempo constante O(1). Es una complejidad pseudo-polinomial; si la capacidad P es exponencial respecto al tamaño de la entrada, el problema revela su pertenencia a la clase NP-Completo."
+          }
+        }
+      ]
+    },
+    {
+      "id": "secuencias_y_cadenas",
+      "titulo": "Algoritmos sobre Secuencias y Cadenas: LCS y LIS",
+      "subtemas": [
+        {
+          "id": "subsecuencia_comun_mas_larga_lcs",
+          "titulo": "Subsecuencia Común Más Larga (Longest Common Subsequence - LCS)",
+          "teoria": "Dadas dos secuencias de caracteres $X = (x_1, x_2, \\dots, x_n)$ e $Y = (y_1, y_2, \\dots, y_m)$, una secuencia $Z = (z_1, z_2, \\dots, z_k)$ es una **subsecuencia** de $X$ si puede derivarse eliminando cero o más elementos de $X$ sin alterar el orden relativo de los caracteres restantes. El problema de la Subsecuencia Común Más Larga consiste en hallar la máxima longitud $k$ y los caracteres de una secuencia $Z$ que sea simultáneamente subsecuencia de $X$ y de $Y$.\n\n**Diferencia Clave con Subcadena Común (Substring)**: Los caracteres de una subsecuencia no necesitan ser contiguos en las cadenas originales (por ejemplo, 'BCDB' es subsecuencia de 'ABCBDAB', pero no es una subcadena contigua).\n\n**Subestructura Óptima**:\nConsideremos los prefijos $X_i = (x_1, \\dots, x_i)$ e $Y_j = (y_1, \\dots, y_j)$. Sea $M[i, j]$ la longitud de la LCS entre $X_i$ e $Y_j$:\n1. **Si los últimos caracteres coinciden ($x_i == y_j$)**: Dicho carácter pertenece obligatoriamente a una subsecuencia común óptima. Por lo tanto, se extiende la solución del subproblema que excluye ambos caracteres en exactamente 1 unidad: $M[i, j] = 1 + M[i-1, j-1]$.\n2. **Si los últimos caracteres difieren ($x_i \\ne y_j$)**: El carácter $x_i$ y el carácter $y_j$ no pueden aportar juntos al mismo elemento final. Por el principio de optimalidad, la mejor solución es el máximo entre omitir $x_i$ ($M[i-1, j]$) u omitir $y_j$ ($M[i, j-1]$): $M[i, j] = \\max(M[i-1, j], M[i, j-1])$.\n\n**Casos Base**: Si cualquiera de las dos cadenas es vacía ($i = 0$ o $j = 0$), la subsecuencia común es la cadena vacía y su longitud es 0 ($M[0, j] = 0$ y $M[i, 0] = 0$).",
+          "ecuacion_recurrencia": "$$M[i, j] = \\begin{cases} 0 & \\text{si } i = 0 \\lor j = 0 \\\\ 1 + M[i-1, j-1] & \\text{si } i > 0 \\land j > 0 \\land x_i = y_j \\\\ \\max(M[i-1, j],\\, M[i, j-1]) & \\text{si } i > 0 \\land j > 0 \\land x_i \\ne y_j \\end{cases}$$",
+          "estructura_tabla": {
+            "dimensiones": "Matriz de dimensiones (n + 1) x (m + 1), donde n = |X| y m = |Y|.",
+            "significado_celda": "M[i, j] almacena la longitud de la subsecuencia común más larga entre el prefijo de longitud i de X y el prefijo de longitud j de Y.",
+            "orden_llenado": "Por filas de arriba hacia abajo (i de 1 a n), y dentro de cada fila, de izquierda a derecha (j de 1 a m)."
+          },
+          "reconstruccion_solucion": "Para recuperar la cadena de caracteres de la LCS:\n1. Se comienza en M[n, m].\n2. Si x_i == y_j, el carácter x_i forma parte de la LCS; se añade a la secuencia resultante y se avanza en diagonal: i = i - 1, j = j - 1.\n3. Si x_i != y_j, se sigue la dirección del vecino con mayor valor: si M[i-1, j] >= M[i, j-1], se sube a i = i - 1; de lo contrario, se desplaza a la izquierda: j = j - 1.\n4. Al llegar a i == 0 o j == 0, se invierte la lista de caracteres recuperados para obtener la secuencia en orden natural.",
+          "animaciones": [
+            {
+              "id": "anim_lcs_tabla_uade",
+              "tipo": "tabla_dp",
+              "formato": "katex",
+              "descripcion": "Tabla DP completa de LCS para X = ABCBDA e Y = ABACADAC (Instancia oficial de diapositivas UADE). Longitud óptima = 4 (Secuencia: A B D A o A B C A).",
+              "pasos": [
+                "\\begin{array}{|c|c|c|c|c|c|c|c|c|c|}\\hline & \\epsilon & A & B & A & C & A & D & A & C \\\\ \\hline \\epsilon & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\\\ \\hline A & 0 & 1 & 1 & 1 & 1 & 1 & 1 & 1 & 1 \\\\ \\hline B & 0 & 1 & 2 & 2 & 2 & 2 & 2 & 2 & 2 \\\\ \\hline C & 0 & 1 & 2 & 2 & 3 & 3 & 3 & 3 & 3 \\\\ \\hline B & 0 & 1 & 2 & 2 & 3 & 3 & 3 & 3 & 3 \\\\ \\hline D & 0 & 1 & 2 & 2 & 3 & 3 & 4 & 4 & 4 \\\\ \\hline A & 0 & 1 & 2 & 3 & 3 & 4 & 4 & 5 & 5 \\\\ \\hline \\end{array}"
+              ]
+            },
+            {
+              "id": "anim_lcs_flechas_mermaid",
+              "tipo": "dependencia",
+              "formato": "mermaid",
+              "descripcion": "Patrón de transiciones en LCS: diagonal cuando coinciden caracteres vs máximo entre celda superior e izquierda cuando difieren.",
+              "pasos": [
+                "graph TD\n  subgraph Match [Caracteres Coincidentes: X[i] == Y[j]]\n    Diag[\"M[i-1, j-1]\"] -->|Diagonal + 1| Curr1[\"M[i, j] = M[i-1, j-1] + 1\"]\n  end\n  subgraph MisMatch [Caracteres Distintos: X[i] != Y[j]]\n    Up[\"M[i-1, j]\"] --> Curr2[\"M[i, j] = max(Up, Left)\"]\n    Left[\"M[i, j-1]\"] --> Curr2\n  end\n  style Curr1 fill:#a6e3a1,stroke:#40a02b,color:#11111b\n  style Curr2 fill:#89b4fa,stroke:#1e66f5,color:#11111b"
+              ]
+            },
+            {
+              "id": "anim_lcs_reconstruccion_svg",
+              "tipo": "flujo_reconstruccion",
+              "formato": "svg",
+              "descripcion": "Alineamiento y reconstrucción de la subsecuencia común más larga: seguimiento diagonal de los aciertos de caracteres.",
+              "pasos": [
+                "<svg viewBox=\"0 0 700 200\" xmlns=\"http://www.w3.org/2000/svg\">\n  <rect width=\"700\" height=\"200\" fill=\"#181825\" rx=\"10\"/>\n  <g fill=\"#cdd6f4\" font-family=\"monospace\" font-size=\"14\" text-anchor=\"middle\">\n    <text x=\"350\" y=\"30\" fill=\"#f9e2af\" font-size=\"15\" font-weight=\"bold\">Extracción de LCS entre 'ABCBDA' y 'ABACADAC'</text>\n    \n    <rect x=\"50\" y=\"60\" width=\"120\" height=\"40\" rx=\"6\" fill=\"#313244\" stroke=\"#a6e3a1\" stroke-width=\"2\"/>\n    <text x=\"110\" y=\"85\">Paso 1: 'A'</text>\n    \n    <path d=\"M 170 80 L 220 80\" stroke=\"#89b4fa\" stroke-width=\"2\" marker-end=\"url(#arr)\"/>\n    \n    <rect x=\"220\" y=\"60\" width=\"120\" height=\"40\" rx=\"6\" fill=\"#313244\" stroke=\"#a6e3a1\" stroke-width=\"2\"/>\n    <text x=\"280\" y=\"85\">Paso 2: 'B'</text>\n    \n    <path d=\"M 340 80 L 390 80\" stroke=\"#89b4fa\" stroke-width=\"2\"/>\n    \n    <rect x=\"390\" y=\"60\" width=\"120\" height=\"40\" rx=\"6\" fill=\"#313244\" stroke=\"#a6e3a1\" stroke-width=\"2\"/>\n    <text x=\"450\" y=\"85\">Paso 3: 'D'</text>\n    \n    <path d=\"M 510 80 L 560 80\" stroke=\"#89b4fa\" stroke-width=\"2\"/>\n    \n    <rect x=\"560\" y=\"60\" width=\"120\" height=\"40\" rx=\"6\" fill=\"#313244\" stroke=\"#a6e3a1\" stroke-width=\"2\"/>\n    <text x=\"620\" y=\"85\">Paso 4: 'A'</text>\n    \n    <rect x=\"180\" y=\"135\" width=\"340\" height=\"45\" rx=\"8\" fill=\"#1e1e2e\" stroke=\"#fab387\" stroke-width=\"2\"/>\n    <text x=\"350\" y=\"163\" fill=\"#fab387\" font-size=\"16\" font-weight=\"bold\">LCS Resultante: \"ABDA\" (Longitud 4)</text>\n  </g>\n</svg>"
+              ]
+            }
+          ],
+          "pseudocodigo": "Algoritmo LCS_DP(X: Vector<Caracter>, Y: Vector<Caracter>) -> Matriz<entero>:\n    Entrada: X de tamaño n, Y de tamaño m\n    Salida: Matriz M de tamaño (n + 1) x (m + 1)\n    \n    n = longitud(X)\n    m = longitud(Y)\n    M = inicializarMatriz(n + 1, m + 1)\n    \n    Para i desde 0 hasta n hacer:\n        M[i, 0] = 0\n    Fin Para\n    Para j desde 0 hasta m hacer:\n        M[0, j] = 0\n    Fin Para\n    \n    Para i desde 1 hasta n hacer:\n        Para j desde 1 hasta m hacer:\n            Si X[i - 1] == Y[j - 1] entonces:\n                M[i, j] = 1 + M[i - 1, j - 1]\n            Sino:\n                M[i, j] = Max(M[i - 1, j], M[i, j - 1])\n            Fin Si\n        Fin Para\n    Fin Para\n    \n    Retornar M",
+          "codigo": {
+            "lenguaje": "Java",
+            "codigo": "public static int subsecuenciaMasLarga(VectorTDA<Character> s1, VectorTDA<Character> s2) throws Exception {\n    int l_s1 = s1.capacidadVector();\n    int l_s2 = s2.capacidadVector();\n    \n    int dim = Math.max(l_s1 + 1, l_s2 + 1);\n    MatrizTDA<Integer> m = new Matriz<Integer>();\n    m.inicializarMatriz(dim);\n    \n    // Inicializar fila 0 y columna 0 en 0\n    for (int i = 0; i <= l_s1; i++) {\n        m.setearValor(i, 0, 0);\n    }\n    for (int j = 0; j <= l_s2; j++) {\n        m.setearValor(0, j, 0);\n    }\n    \n    // Llenado por filas\n    for (int i = 1; i <= l_s1; i++) {\n        char c1 = s1.recuperarElemento(i - 1);\n        for (int j = 1; j <= l_s2; j++) {\n            char c2 = s2.recuperarElemento(j - 1);\n            if (c1 == c2) {\n                m.setearValor(i, j, 1 + m.obtenerValor(i - 1, j - 1));\n            } else {\n                int arriba = m.obtenerValor(i - 1, j);\n                int izquierda = m.obtenerValor(i, j - 1);\n                m.setearValor(i, j, Math.max(arriba, izquierda));\n            }\n        }\n    }\n    return m.obtenerValor(l_s1, l_s2);\n}\n\n// Reconstrucción de la cadena LCS\npublic static String reconstruirLCS(VectorTDA<Character> s1, VectorTDA<Character> s2, MatrizTDA<Integer> m) {\n    int i = s1.capacidadVector();\n    int j = s2.capacidadVector();\n    StringBuilder sb = new StringBuilder();\n    \n    while (i > 0 && j > 0) {\n        if (s1.recuperarElemento(i - 1).equals(s2.recuperarElemento(j - 1))) {\n            sb.append(s1.recuperarElemento(i - 1));\n            i--;\n            j--;\n        } else if (m.obtenerValor(i - 1, j) >= m.obtenerValor(i, j - 1)) {\n            i--;\n        } else {\n            j--;\n        }\n    }\n    return sb.reverse().toString();\n}",
+            "correcciones_aplicadas": "1. Errata de dimensiones de MatrizTDA corregida: en el apunte se pasaba l_s1 o l_s2 directo sin contemplar el +1 de los bordes base, provocando ArrayIndexOutOfBoundsException; se utilizó Math.max(l_s1 + 1, l_s2 + 1). 2. Desfase de índices 1-based en la matriz contra 0-based en VectorTDA resuelto con (i - 1) y (j - 1). 3. Adición del método de reconstrucción con StringBuilder reverse."
+          },
+          "analisis_complejidad": {
+            "temporal_peor_caso": "O(n * m)",
+            "temporal_mejor_caso": "O(n * m)",
+            "espacial": "O(n * m) en matriz completa; reducible a O(min(n, m)) si solo se calcula la longitud reteniendo dos filas",
+            "justificacion": "La matriz contiene (n + 1) * (m + 1) celdas y el cálculo de cada celda realiza comparaciones constantes O(1). La reconstrucción de la solución recorre a lo sumo n + m celdas, requiriendo tiempo O(n + m)."
+          }
+        },
+        {
+          "id": "subsecuencia_creciente_mas_larga_lis",
+          "titulo": "Subsecuencia Creciente Más Larga (Longest Increasing Subsequence - LIS)",
+          "teoria": "Dada una secuencia numérica $X = (x_0, x_1, \\dots, x_{n-1})$, una subsecuencia $Z = (z_0, z_1, \\dots, z_{k-1})$ es **creciente** (o no decreciente) si para todo par de índices $a < b$ se cumple que $z_a \\le z_b$. El problema consiste en hallar la máxima longitud $L$ y los elementos de dicha cadena.\n\n**Estructura de Datos Propuesta en Cátedra (Diapositivas 160-187)**:\nA diferencia de los problemas sobre pares de cadenas, la cátedra estructura la solución mediante una matriz compacta $D \\in \\mathbb{N}^{2 \\times n}$:\n- **Fila 0 ($D[0, i]$ o $|Z|$)**: Almacena la longitud de la subsecuencia creciente más larga que **termina obligatoriamente en el elemento $x_i$**.\n- **Fila 1 ($D[1, i]$ o $inx$)**: Almacena el **índice del predecesor** inmediato de $x_i$ en dicha cadena óptima (o $-1$ si $x_i$ es el primer elemento de la subsecuencia).\n\n**Subestructura Óptima**:\nPara determinar la mejor cadena que culmina en $x_i$, se evalúan todos los elementos previos $x_j$ ($0 \\le j < i$). Un elemento $x_j$ es un predecesor viable si y solo si $x_j \\le x_i$. Entre todos los predecesores viables, se elige aquel que maximice la longitud acumulada $D[0, j]$.\n\nPor tanto, la longitud óptima es:\n$$D[0, i] = 1 + \\max (\\{ D[0, j] : 0 \\le j < i \\land x_j \\le x_i \\} \\cup \\{0\\})$$\nSi se selecciona el predecesor $j^*$, se registra $D[1, i] = j^*$.\n\n**Búsqueda del Óptimo Global y Reconstrucción**:\nUna vez completada la tabla, la longitud máxima global no se encuentra necesariamente al final, sino en el máximo de la fila 0: $L = \\max_{0 \\le i < n} D[0, i]$. Sea $inx = \\arg\\max_i D[0, i]$. Se crea un vector $Z$ de longitud $L$ y se retrocede iterativamente colocando $Z[k] = X[inx]$ y actualizando $inx = D[1, inx]$ desde $k = L - 1$ descendiendo hasta $0$.",
+          "ecuacion_recurrencia": "$$\\begin{aligned} D[0, i] &= 1 + \\max_{0 \\le j < i, \\, X[j] \\le X[i]} D[0, j] \\quad (\\text{con } \\max \\emptyset = 0) \\\\ D[1, i] &= \\arg\\max_{0 \\le j < i, \\, X[j] \\le X[i]} D[0, j] \\quad (\\text{o } -1 \\text{ si no existe}) \\end{aligned}$$",
+          "estructura_tabla": {
+            "dimensiones": "Matriz D de dimensiones 2 x n, donde n es la longitud de la secuencia X de entrada.",
+            "significado_celda": "D[0, i] indica la longitud de la mayor subsecuencia creciente terminada en X[i]; D[1, i] guarda el índice del elemento predecesor en dicha subsecuencia.",
+            "orden_llenado": "Por columnas de izquierda a derecha (i de 0 a n-1); para cada columna i, se explora j desde 0 hasta i - 1."
+          },
+          "reconstruccion_solucion": "1. Identificar inx = argmax_{0 <= i < n} (D[0, i]) y longitud L = D[0, inx].\n2. Inicializar vector solución Z de longitud L.\n3. Asignar Z[L - 1] = X[inx].\n4. Para k desde L - 2 descendiendo hasta 0: inx = D[1, inx], y asignar Z[k] = X[inx].\n5. Retornar Z y su longitud L.",
+          "animaciones": [
+            {
+              "id": "anim_lis_ejemplo1_uade",
+              "tipo": "tabla_dp",
+              "formato": "katex",
+              "descripcion": "Ejemplo 1 de diapositivas UADE: X = [0, 4, 12, 2, 10, 6, 9, 13, 3, 11, 7, 15]. Longitud máxima L = 6. Cadena óptima: [0, 2, 6, 9, 11, 15] (o [0, 4, 6, 9, 11, 15]).",
+              "pasos": [
+                "\\begin{array}{|c|c|c|c|c|c|c|c|c|c|c|c|c|}\\hline i & 0 & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 & 11 \\\\ \\hline X[i] & 0 & 4 & 12 & 2 & 10 & 6 & 9 & 13 & 3 & 11 & 7 & 15 \\\\ \\hline D[0,i] (|Z|) & 1 & 2 & 3 & 2 & 3 & 3 & 4 & 5 & 3 & 5 & 4 & 6 \\\\ \\hline D[1,i] (inx) & -1 & 0 & 1 & 0 & 3 & 3 & 5 & 6 & 3 & 6 & 5 & 9 \\\\ \\hline \\end{array}"
+              ]
+            },
+            {
+              "id": "anim_lis_ejemplo2_uade",
+              "tipo": "tabla_dp",
+              "formato": "katex",
+              "descripcion": "Ejemplo 2 de diapositivas UADE: X = [2, 5, 11, 2, 4, 5, 7, 0, 4, 9, 3, 4]. Longitud máxima L = 6. Cadena óptima: [2, 2, 4, 5, 7, 9].",
+              "pasos": [
+                "\\begin{array}{|c|c|c|c|c|c|c|c|c|c|c|c|c|}\\hline i & 0 & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 & 11 \\\\ \\hline X[i] & 2 & 5 & 11 & 2 & 4 & 5 & 7 & 0 & 4 & 9 & 3 & 4 \\\\ \\hline D[0,i] (|Z|) & 1 & 2 & 3 & 2 & 3 & 4 & 5 & 1 & 3 & 6 & 3 & 4 \\\\ \\hline D[1,i] (inx) & -1 & 0 & 1 & 0 & 3 & 4 & 5 & -1 & 7 & 6 & 7 & 10 \\\\ \\hline \\end{array}"
+              ]
+            },
+            {
+              "id": "anim_lis_grafo_predecesores",
+              "tipo": "dependencia",
+              "formato": "mermaid",
+              "descripcion": "Grafo de punteros predecesores reconstruyendo la cadena del Ejemplo 2 desde inx = 9 (X[9]=9, L=6) hacia atrás: 9 -> 6 -> 5 -> 4 -> 3 -> 0.",
+              "pasos": [
+                "graph RL\n  N9[\"X[9]=9 (L=6)\"] -->|inx=6| N6[\"X[6]=7 (L=5)\"]\n  N6 -->|inx=5| N5[\"X[5]=5 (L=4)\"]\n  N5 -->|inx=4| N4[\"X[4]=4 (L=3)\"]\n  N4 -->|inx=3| N3[\"X[3]=2 (L=2)\"]\n  N3 -->|inx=0| N0[\"X[0]=2 (L=1)\"]\n  style N9 fill:#f38ba8,stroke:#d20f39,color:#11111b\n  style N0 fill:#a6e3a1,stroke:#40a02b,color:#11111b"
+              ]
+            }
+          ],
+          "pseudocodigo": "Algoritmo LIS_DP(X: Arreglo<entero>) -> (entero, Arreglo<entero>):\n    // Algoritmo textual extraído de diapositivas 186-187 de la cátedra UADE\n    Entrada: Arreglo X de enteros de tamaño n\n    Salida: Longitud L y subsecuencia creciente Z\n    \n    1. n = X.length\n    2. D = inicializarMatriz(2, n)\n    3. Para i = 0 hasta n - 1 hacer:\n    4.     D[0, i] = 1\n    5.     D[1, i] = -1\n    6. Fin Para\n    7. Para i = 1 hasta n - 1 hacer:\n    8.     Para j = 0 hasta i - 1 hacer:\n    9.         Si X[j] <= X[i] y D[0, j] + 1 >= D[0, i] entonces:\n   10.             D[0, i] = D[0, j] + 1\n   11.             D[1, i] = j\n   12.         Fin Si\n   13.     Fin Para\n   14. Fin Para\n   15. inx = indiceMaximo(D[0, i] para todo i)\n   16. L = D[0, inx]\n   17. Z = inicializarVector(L)\n   18. Z[L - 1] = X[inx]\n   19. curr = inx\n   20. Para i = L - 2 descendiendo hasta 0 hacer:\n   21.     curr = D[1, curr]\n   22.     Z[i] = X[curr]\n   23. Fin Para\n   24. Retornar (L, Z)",
+          "codigo": {
+            "lenguaje": "Java",
+            "codigo": "public static class ResultadoLIS {\n    public int longitud;\n    public VectorTDA<Integer> subsecuencia;\n    public ResultadoLIS(int l, VectorTDA<Integer> s) {\n        this.longitud = l;\n        this.subsecuencia = s;\n    }\n}\n\npublic static ResultadoLIS calcularLIS(VectorTDA<Integer> X) {\n    int n = X.capacidadVector();\n    int[][] D = new int[2][n];\n    \n    // Inicialización\n    for (int i = 0; i < n; i++) {\n        D[0][i] = 1;\n        D[1][i] = -1;\n    }\n    \n    // Llenado cuadrático\n    for (int i = 1; i < n; i++) {\n        int val_i = X.recuperarElemento(i);\n        for (int j = 0; j < i; j++) {\n            int val_j = X.recuperarElemento(j);\n            if (val_j <= val_i && D[0][j] + 1 >= D[0][i]) {\n                D[0][i] = D[0][j] + 1;\n                D[1][i] = j;\n            }\n        }\n    }\n    \n    // Hallar índice de longitud máxima\n    int inx = 0;\n    int maxL = D[0][0];\n    for (int i = 1; i < n; i++) {\n        if (D[0][i] > maxL) {\n            maxL = D[0][i];\n            inx = i;\n        }\n    }\n    \n    // Reconstrucción hacia atrás de Z\n    VectorTDA<Integer> Z = new Vector<Integer>();\n    Z.inicializarVector(maxL);\n    int curr = inx;\n    for (int i = maxL - 1; i >= 0; i--) {\n        Z.agregarElemento(i, X.recuperarElemento(curr));\n        curr = D[1][curr];\n    }\n    \n    return new ResultadoLIS(maxL, Z);\n}",
+            "correcciones_aplicadas": "1. Corrección en la reconstrucción del pseudocódigo original de cátedra: en el bucle 'for (i = L-2; i >= 0; i--)' de la diapositiva 186 decía 'Z[i] = X[D[1, inx]]; inx = D[1, inx]', lo que evalúa erróneamente el predecesor dos veces seguidas si no se actualiza secuencialmente la variable temporal; se corrigió asignando primero curr = D[1][curr] y luego Z[i] = X[curr]. 2. Se estructuró en una clase contenedor ResultadoLIS."
+          },
+          "analisis_complejidad": {
+            "temporal_peor_caso": "O(n^2)",
+            "temporal_mejor_caso": "O(n^2)",
+            "espacial": "O(n)",
+            "justificacion": "El bucle externo ejecuta n iteraciones y el interno realiza sum_{i=1}^{n-1} i = n(n-1)/2 comparaciones elementales, resultando en Theta(n^2). La matriz D ocupa exactamente 2n celdas, demandando espacio lineal O(n). (Nota: existe una optimización con búsqueda binaria / paciencia de O(n log n), pero el algoritmo canónico de cátedra examinado es O(n^2))."
+          }
+        }
+      ]
+    },
+    {
+      "id": "optimizacion_matricial_y_grafos",
+      "titulo": "Optimización Matricial y Algoritmos en Grafos: Matrices Encadenadas, Floyd-Warshall y TSP",
+      "subtemas": [
+        {
+          "id": "multiplicacion_encadenada_de_matrices_dp",
+          "titulo": "Multiplicación Encadenada de Matrices (Matrix Chain Multiplication)",
+          "teoria": "Dada una cadena de $n$ matrices $M_1 \\times M_2 \\times \\dots \\times M_n$, donde cada matriz $M_i$ tiene dimensiones $d_{i-1} \\times d_i$ (representadas por un vector de dimensiones $d$ de tamaño $n + 1$), el producto matricial es asociativo: cualquier orden de parentización produce exactamente el mismo resultado final. Sin embargo, el número de multiplicaciones escalares elementales varía drásticamente según la forma en que se agrupen las operaciones.\n\nPor ejemplo, para tres matrices de dimensiones $5 \\times 1$, $1 \\times 4$ y $4 \\times 3$:\n- $(M_1 \\times M_2) \\times M_3$: Requiere $(5 \\times 1 \\times 4) + (5 \\times 4 \\times 3) = 20 + 60 = 80$ multiplicaciones.\n- $M_1 \\times (M_2 \\times M_3)$: Requiere $(1 \\times 4 \\times 3) + (5 \\times 1 \\times 3) = 12 + 15 = 27$ multiplicaciones (¡casi un tercio del costo!).\n\n**Inviabilidad de la Fuerza Bruta**: La cantidad de parentizaciones posibles para $n$ matrices viene dada por el $(n-1)$-ésimo Número de Catalan:\n$$C_{n-1} = \\frac{1}{n} \\binom{2n-2}{n-1} = \\Omega\\left(\\frac{4^n}{n^{3/2}}\\right)$$\nUn enfoque por fuerza bruta resulta completamente exponencial e intratable.\n\n**Subestructura Óptima y Recurrencia**:\nPara multiplicar la subsecuencia de matrices $M_i \\times \\dots \\times M_j$ ($1 \\le i \\le j \\le n$), debe existir una última multiplicación entre dos bloques principales: $(M_i \\dots M_k)$ y $(M_{k+1} \\dots M_j)$, para algún punto de división $k$ con $i \\le k < j$.\nPor el principio de optimalidad, la parentización óptima de la cadena completa debe albergar parentizaciones óptimas en ambos sub-bloques. Sea $M[i, j]$ el costo mínimo de multiplicar la cadena $M_i \\dots M_j$:\n- Si $i = j$: Es una sola matriz, no hay multiplicaciones: $M[i, i] = 0$.\n- Si $i < j$: Se prueba exhaustivamente cada punto de corte posible $k \\in [i, j-1]$ y se añade el costo de multiplicar las dos matrices resultantes ($d_{i-1} \\cdot d_k \\cdot d_j$):\n$$M[i, j] = \\min_{i \\le k < j} \\{ M[i, k] + M[k+1, j] + d_{i-1} \\cdot d_k \\cdot d_j \\}$$\n\n**Orden No Convencional de Llenado**:\nPara computar $M[i, j]$, se necesitan $M[i, k]$ (misma fila, columnas anteriores) y $M[k+1, j]$ (filas inferiores, misma columna). Por lo tanto, no se puede llenar la matriz con bucles estándar de arriba hacia abajo y de izquierda a derecha. Se debe recorrer **por diagonales crecientes** (longitud de cadena $L = j - i + 1$ de 2 a $n$) o **por filas de abajo hacia arriba** ($i$ de $n-1$ descendiendo a 0, y $j$ de $i$ a $n-1$).",
+          "ecuacion_recurrencia": "$$M[i, j] = \\begin{cases} 0 & \\text{si } i = j \\\\ \\min_{i \\le k < j} \\{ M[i, k] + M[k+1, j] + d_{i-1} \\cdot d_k \\cdot d_j \\} & \\text{si } i < j \\end{cases}$$",
+          "estructura_tabla": {
+            "dimensiones": "Matriz triangular superior de tamaño n x n (o (n+1) x (n+1) si es 1-based).",
+            "significado_celda": "M[i, j] almacena el número mínimo de multiplicaciones escalares requeridas para evaluar el producto de la subsecuencia de matrices desde M_i hasta M_j.",
+            "orden_llenado": "Por diagonales paralelas a la diagonal principal (longitud de cadena L de 2 hasta n), o por filas en orden descendente i = n-1 down to 0 con j = i to n-1."
+          },
+          "reconstruccion_solucion": "Durante el cálculo de cada celda M[i, j], se registra en una matriz auxiliar S[i, j] el índice k* que minimizó la expresión de costo. Para reconstruir los paréntesis óptimos, se implementa una rutina recursiva PrintOptimalParens(S, i, j):\n1. Si i == j, se imprime 'M_' + i.\n2. Si i < j, se imprime '(', se invoca PrintOptimalParens(S, i, S[i, j]), se imprime ' x ', se invoca PrintOptimalParens(S, S[i, j] + 1, j), y se cierra con ')'.",
+          "animaciones": [
+            {
+              "id": "anim_mat_chain_tabla_uade",
+              "tipo": "tabla_dp",
+              "formato": "katex",
+              "descripcion": "Tabla DP para 4 matrices con dimensiones d = [10, 100, 5, 50, 1] (Costo óptimo M[0, 3] = 1750 escalares).",
+              "pasos": [
+                "\\begin{array}{|c|c|c|c|c|}\\hline i \\setminus j & 0 (M_1) & 1 (M_2) & 2 (M_3) & 3 (M_4) \\\\ \\hline 0 (M_1) & 0 & 5000 & 7500 & 1750 \\\\ \\hline 1 (M_2) & - & 0 & 25000 & 3000 \\\\ \\hline 2 (M_3) & - & - & 0 & 250 \\\\ \\hline 3 (M_4) & - & - & - & 0 \\\\ \\hline \\end{array}"
+              ]
+            },
+            {
+              "id": "anim_mat_chain_arbol",
+              "tipo": "dependencia",
+              "formato": "mermaid",
+              "descripcion": "Árbol de parentización óptima resultante: ((M1 x (M2 x M3)) x M4) minimizando el cuello de botella dimensional.",
+              "pasos": [
+                "graph TD\n  Root[\"M[0,3]: Costo 1750\"] --> Left1[\"M[0,2]: Costo 7500\"]\n  Root --> Right1[\"M_4 [50 x 1]\"]\n  Left1 --> Left2[\"M_1 [10 x 100]\"]\n  Left1 --> Right2[\"M[1,2]: Costo 25000\"]\n  Right2 --> M2[\"M_2 [100 x 5]\"]\n  Right2 --> M3[\"M_3 [5 x 50]\"]\n  style Root fill:#a6e3a1,stroke:#40a02b,color:#11111b\n  style Left1 fill:#89b4fa,stroke:#1e66f5,color:#11111b"
+              ]
+            },
+            {
+              "id": "anim_mat_chain_diagonal_svg",
+              "tipo": "flujo_reconstruccion",
+              "formato": "svg",
+              "descripcion": "Visualización del orden de llenado por diagonales en la matriz triangular superior.",
+              "pasos": [
+                "<svg viewBox=\"0 0 600 240\" xmlns=\"http://www.w3.org/2000/svg\">\n  <rect width=\"600\" height=\"240\" fill=\"#1e1e2e\" rx=\"10\"/>\n  <g fill=\"#cdd6f4\" font-family=\"monospace\" font-size=\"13\" text-anchor=\"middle\">\n    <text x=\"300\" y=\"30\" fill=\"#f9e2af\" font-size=\"15\" font-weight=\"bold\">Llenado Diagonal: L = 1 (Ceros), L = 2, L = 3, L = 4</text>\n    <line x1=\"100\" y1=\"60\" x2=\"100\" y2=\"210\" stroke=\"#6c7086\" stroke-width=\"1\"/>\n    <line x1=\"200\" y1=\"60\" x2=\"200\" y2=\"210\" stroke=\"#6c7086\" stroke-width=\"1\"/>\n    <line x1=\"300\" y1=\"60\" x2=\"300\" y2=\"210\" stroke=\"#6c7086\" stroke-width=\"1\"/>\n    <line x1=\"400\" y1=\"60\" x2=\"400\" y2=\"210\" stroke=\"#6c7086\" stroke-width=\"1\"/>\n    <line x1=\"500\" y1=\"60\" x2=\"500\" y2=\"210\" stroke=\"#6c7086\" stroke-width=\"1\"/>\n    <text x=\"150\" y=\"100\" fill=\"#a6e3a1\">L=1: 0</text>\n    <text x=\"250\" y=\"100\" fill=\"#89b4fa\">L=2: 5000</text>\n    <text x=\"350\" y=\"100\" fill=\"#fab387\">L=3: 7500</text>\n    <text x=\"450\" y=\"100\" fill=\"#f38ba8\" font-weight=\"bold\">L=4: 1750 (Final)</text>\n    <text x=\"250\" y=\"140\" fill=\"#a6e3a1\">L=1: 0</text>\n    <text x=\"350\" y=\"140\" fill=\"#89b4fa\">L=2: 25000</text>\n    <text x=\"450\" y=\"140\" fill=\"#fab387\">L=3: 3000</text>\n    <text x=\"350\" y=\"180\" fill=\"#a6e3a1\">L=1: 0</text>\n    <text x=\"450\" y=\"180\" fill=\"#89b4fa\">L=2: 250</text>\n    <text x=\"450\" y=\"215\" fill=\"#a6e3a1\">L=1: 0</text>\n  </g>\n</svg>"
+              ]
+            }
+          ],
+          "pseudocodigo": "Algoritmo ProductoMatrices_DP(d: Vector<entero>) -> Matriz<entero>:\n    Entrada: d vector de dimensiones de tamaño n + 1 (matrices M_0 a M_{n-1})\n    Salida: Matriz M de tamaño n x n con costos mínimos\n    \n    n = longitud(d) - 1\n    M = inicializarMatriz(n, n)\n    \n    // Diagonal principal con costo 0\n    Para i desde 0 hasta n - 1 hacer:\n        M[i, i] = 0\n    Fin Para\n    \n    // Recorrido por filas de abajo hacia arriba (cátedra UADE)\n    Para i desde n - 1 descendiendo hasta 0 hacer:\n        Para j desde i + 1 hasta n - 1 hacer:\n            M[i, j] = +INFINITO\n            Para k desde i hasta j - 1 hacer:\n                costo = M[i, k] + M[k + 1, j] + d[i] * d[k + 1] * d[j + 1]\n                Si costo < M[i, j] entonces:\n                    M[i, j] = costo\n                    S[i, j] = k\n                Fin Si\n            Fin Para\n        Fin Para\n    Fin Para\n    \n    Retornar M",
+          "codigo": {
+            "lenguaje": "Java",
+            "codigo": "public static int productoMatrices(VectorTDA<Integer> v) throws Exception {\n    int n = v.capacidadVector() - 1;\n    MatrizTDA<Integer> m = new Matriz<Integer>();\n    m.inicializarMatriz(n);\n    \n    // Diagonal principal a 0\n    for (int i = 0; i < n; i++) {\n        m.setearValor(i, i, 0);\n    }\n    \n    // Llenado por filas de abajo hacia arriba para respetar dependencias\n    for (int i = n - 1; i >= 0; i--) {\n        for (int j = i + 1; j < n; j++) {\n            int minimo = Integer.MAX_VALUE;\n            for (int k = i; k < j; k++) {\n                int dim_i = v.recuperarElemento(i);\n                int dim_k = v.recuperarElemento(k + 1);\n                int dim_j = v.recuperarElemento(j + 1);\n                \n                int costo = m.obtenerValor(i, k) + m.obtenerValor(k + 1, j) + (dim_i * dim_k * dim_j);\n                if (costo < minimo) {\n                    minimo = costo;\n                }\n            }\n            m.setearValor(i, j, minimo);\n        }\n    }\n    return m.obtenerValor(0, n - 1);\n}",
+            "correcciones_aplicadas": "1. Errata de cálculo de n: en el apunte se tomaba v.capacidadVector() como n directo en vez de n matrices con n+1 dimensiones, lo cual provocaba un desbordamiento en v.recuperarElemento(j + 1); se corrigió estableciendo int n = v.capacidadVector() - 1. 2. Se aseguró la inicialización correcta de valores mínimos con Integer.MAX_VALUE."
+          },
+          "analisis_complejidad": {
+            "temporal_peor_caso": "O(n^3)",
+            "temporal_mejor_caso": "O(n^3)",
+            "espacial": "O(n^2)",
+            "justificacion": "El algoritmo posee tres bucles for anidados: el externo para la fila i, el intermedio para la columna j, y el interno para explorar los puntos de partición k. La suma de operaciones es sum_{L=2}^n (n - L + 1)(L - 1) = (n^3 - n)/6 = Theta(n^3). La tabla triangular almacena n(n+1)/2 celdas, ocupando memoria O(n^2)."
+          }
+        },
+        {
+          "id": "caminos_minimos_floyd_warshall",
+          "titulo": "Caminos Mínimos de Todos a Todos: Algoritmo de Floyd-Warshall",
+          "teoria": "El algoritmo de Floyd-Warshall resuelve el problema de los Caminos Mínimos entre Todos los Pares de Vértices (All-Pairs Shortest Paths - APSP) en un grafo dirigido ponderado $G = (V, E)$, permitiendo aristas con pesos positivos (y pesos negativos siempre que no existan ciclos negativos). Computa el **cierre transitivo métrico** del grafo.\n\n**Principio de Subestructura Óptima**:\nNumeremos los vértices del grafo $V = \\{0, 1, \\dots, n-1\\}$. Consideremos los caminos mínimos entre un vértice origen $i$ y un vértice destino $j$ cuyos **vértices intermedios** pertenezcan exclusivamente al subconjunto $\\{0, 1, \\dots, k\\}$.\n\nSea $A_k[i, j]$ la longitud de dicho camino mínimo. Al incorporar el vértice $k$ al conjunto de vértices intermedios permitidos, surgen dos alternativas excluyentes:\n1. **El vértice $k$ no forma parte de un camino mínimo entre $i$ y $j$**: El camino óptimo sigue utilizando únicamente vértices del conjunto $\\{0, \\dots, k-1\\}$. Costo: $A_{k-1}[i, j]$.\n2. **El vértice $k$ sí forma parte del camino mínimo entre $i$ y $j$**: Por subestructura óptima, el camino se descompone en un camino mínimo de $i$ a $k$ (usando vértices intermedios en $\\{0, \\dots, k-1\\}$) seguido de un camino mínimo de $k$ a $j$ (usando vértices intermedios en $\\{0, \\dots, k-1\\}$). Costo: $A_{k-1}[i, k] + A_{k-1}[k, j]$.\n\nPor tanto, la recurrencia es:\n$$A_k[i, j] = \\min(A_{k-1}[i, j],\\, A_{k-1}[i, k] + A_{k-1}[k, j])$$\n\n**Caso Base ($k = -1$ o Matriz Inicial $A_{-1}$)**:\n- $A_{-1}[i, i] = 0$ para todo $i$.\n- $A_{-1}[i, j] = \\text{peso}(i, j)$ si existe la arista dirigida $(i, j) \\in E$.\n- $A_{-1}[i, j] = +\\infty$ si no existe arista dirigida entre $i$ y $j$.\n\n**Propiedad de Memoria In-Place**: Dado que $A_k[i, k] = A_{k-1}[i, k]$ y $A_k[k, j] = A_{k-1}[k, j]$, los valores de la fila $k$ y la columna $k$ no cambian en la iteración $k$. Esto permite actualizar la matriz directamente **in-place** sobre una única tabla de tamaño $n \\times n$, reduciendo la memoria de $O(n^3)$ a $O(n^2)$.",
+          "ecuacion_recurrencia": "$$A_k[i, j] = \\begin{cases} \\text{peso}(i, j) & \\text{si } k = -1 \\land i \\ne j \\\\ 0 & \\text{si } k = -1 \\land i = j \\\\ \\min(A_{k-1}[i, j],\\, A_{k-1}[i, k] + A_{k-1}[k, j]) & \\text{para } k = 0, 1, \\dots, n - 1 \\end{cases}$$",
+          "estructura_tabla": {
+            "dimensiones": "Matriz cuadrada de tamaño n x n (o secuencia de n matrices Ak si se guarda el historial completo).",
+            "significado_celda": "A[i, j] almacena el costo del camino más corto entre el vértice i y el vértice j considerando todos los vértices del grafo como posibles nodos intermedios.",
+            "orden_llenado": "Bucle exterior k desde 0 hasta n-1 (vértices intermedios pivote), y bucles anidados i (origen) y j (destino) de 0 hasta n-1."
+          },
+          "reconstruccion_solucion": "Para reconstruir la secuencia de vértices del camino mínimo entre i y j, se mantiene una matriz de siguientes vértices Next[i, j] o una matriz de predecesores P[i, j]. Inicialmente, si existe arista (i, j), Next[i, j] = j; si no, Next[i, j] = null. Cuando A[i, k] + A[k, j] < A[i, j], se actualiza Next[i, j] = Next[i, k]. Para imprimir el camino, se avanza sucesivamente u = Next[u, v] hasta llegar a v.",
+          "animaciones": [
+            {
+              "id": "anim_floyd_triangulo_relajacion",
+              "tipo": "dependencia",
+              "formato": "mermaid",
+              "descripcion": "Triángulo de relajación de Floyd-Warshall: evaluación del desvío a través del vértice pivote k.",
+              "pasos": [
+                "graph LR\n  I((Vértice i)) -->|A[i, j] Actual| J((Vértice j))\n  I -->|A[i, k]| K((Pivote k))\n  K -->|A[k, j]| J\n  style K fill:#f9e2af,stroke:#df8e1d,color:#11111b\n  style J fill:#a6e3a1,stroke:#40a02b,color:#11111b\n  style I fill:#89b4fa,stroke:#1e66f5,color:#11111b"
+              ]
+            },
+            {
+              "id": "anim_floyd_matrices_uade",
+              "tipo": "tabla_dp",
+              "formato": "katex",
+              "descripcion": "Evolución de matriz de distancias mínimas para grafo UADE de 4 vértices (A_{-1} inicial vs A_final con cierre transitivo completo).",
+              "pasos": [
+                "A_{final} = \\begin{pmatrix} 0 & 3 & 8 & 2 \\\\ \\infty & 0 & \\infty & \\infty \\\\ \\infty & 4 & 0 & 1 \\\\ \\infty & 1 & 7 & 0 \\end{pmatrix}"
+              ]
+            }
+          ],
+          "pseudocodigo": "Algoritmo FloydWarshall_DP(G: GrafoDirigido) -> Matriz<real>:\n    Entrada: Grafo dirigido ponderado G = (V, E) con n vértices\n    Salida: Matriz A de distancias mínimas entre todos los pares\n    \n    n = |V|\n    A = inicializarMatriz(n, n)\n    \n    // Inicialización A_{-1}\n    Para i desde 0 hasta n - 1 hacer:\n        Para j desde 0 hasta n - 1 hacer:\n            Si i == j entonces:\n                A[i, j] = 0\n            Sino si existe arista (i, j) en G entonces:\n                A[i, j] = peso(i, j)\n            Sino:\n                A[i, j] = +INFINITO\n            Fin Si\n        Fin Para\n    Fin Para\n    \n    // Relajación sistemática sobre los n pivotes k\n    Para k desde 0 hasta n - 1 hacer:\n        Para i desde 0 hasta n - 1 hacer:\n            Para j desde 0 hasta n - 1 hacer:\n                Si A[i, k] != +INFINITO y A[k, j] != +INFINITO entonces:\n                    Si A[i, k] + A[k, j] < A[i, j] entonces:\n                        A[i, j] = A[i, k] + A[k, j]\n                    Fin Si\n                Fin Si\n            Fin Para\n        Fin Para\n    Fin Para\n    \n    Retornar A",
+          "codigo": {
+            "lenguaje": "Java",
+            "codigo": "public static GrafoDirTDA<Integer> floyd(GrafoDirTDA<Integer> grafo) throws Exception {\n    // Implementación adaptada a los TDA GrafoDirTDA y ConjuntoTDA de la cátedra UADE\n    ConjuntoTDA<Integer> vertices = grafo.Vertices();\n    int n = 0;\n    ConjuntoTDA<Integer> temp = new Conjunto<Integer>();\n    temp.InicializarConjunto();\n    \n    // Determinar cantidad de vértices sin destruir el conjunto\n    // Se asume vértices numerados de 0 a n-1\n    while (!vertices.ConjuntoVacio()) {\n        int v = vertices.Elegir();\n        temp.Agregar(v);\n        vertices.Sacar(v);\n        if (v >= n) n = v + 1;\n    }\n    \n    int INF = 9999999;\n    int[][] A = new int[n][n];\n    \n    // Inicializar distancias\n    for (int i = 0; i < n; i++) {\n        for (int j = 0; j < n; j++) {\n            if (i == j) {\n                A[i][j] = 0;\n            } else if (grafo.ExisteArista(i, j)) {\n                A[i][j] = (int) grafo.PesoArista(i, j);\n            } else {\n                A[i][j] = INF;\n            }\n        }\n    }\n    \n    // Bucles k, i, j de Floyd-Warshall\n    for (int k = 0; k < n; k++) {\n        for (int i = 0; i < n; i++) {\n            for (int j = 0; j < n; j++) {\n                if (A[i][k] != INF && A[k][j] != INF) {\n                    if (A[i][k] + A[k][j] < A[i][j]) {\n                        A[i][j] = A[i][k] + A[k][j];\n                    }\n                }\n            }\n        }\n    }\n    \n    // Construir grafo dirigido resultado con el cierre métrico\n    GrafoDirTDA<Integer> resultado = new GrafoDir<Integer>();\n    resultado.InicializarGrafo();\n    for (int i = 0; i < n; i++) resultado.AgregarVertice(i);\n    for (int i = 0; i < n; i++) {\n        for (int j = 0; j < n; j++) {\n            if (i != j && A[i][j] != INF) {\n                resultado.AgregarArista(i, j, A[i][j]);\n            }\n        }\n    }\n    return resultado;\n}",
+            "correcciones_aplicadas": "1. Errata crítica del apunte corregida: en el apunte se consumía el conjunto de vértices con 'while (!conjuntoK.conjuntoVacio()){ int k = conjuntoK.Elegir(); conjuntoK.Sacar(k); ... }', lo cual destruía los conjuntos de vértices en cada iteración y requería re-copiados o provocaba bucles erróneos; se estructuró sobre matrices indexadas y métodos canónicos del TDA. 2. Control de infinito para evitar overflow aritmético en A[i][k] + A[k][j]."
+          },
+          "analisis_complejidad": {
+            "temporal_peor_caso": "O(|V|^3)",
+            "temporal_mejor_caso": "O(|V|^3)",
+            "espacial": "O(|V|^2) in-place",
+            "justificacion": "El algoritmo consta de 3 bucles anidados sobre los |V| vértices. Cada celda ejecuta una suma y una comparación en O(1). La complejidad temporal es estrictamente Theta(|V|^3), independientemente de la densidad de aristas. Resulta superior a ejecutar |V| veces Dijkstra en grafos densos con aristas de peso positivo (|V| * |V|^2 = O(|V|^3))."
+          }
+        },
+        {
+          "id": "problema_del_viajante_tsp_limite_exponencial",
+          "titulo": "El Problema del Viajante de Comercio (TSP) y la Frontera de la Intratabilidad",
+          "teoria": "El Problema del Viajante de Comercio (Traveling Salesperson Problem - TSP) consiste en hallar un ciclo hamiltoniano de costo mínimo en un grafo dirigido ponderado completo; es decir, una ruta que parta de un vértice origen, visite exactamente una vez a cada una de las restantes $n-1$ ciudades y regrese al punto de origen con la mínima distancia total.\n\n**Formulación de Bellman / Held-Karp (1962)**:\nFijemos el vértice $v_0 = 0$ como origen arbitrario. Para cualquier subconjunto de ciudades $C \\subseteq V \\setminus \\{0\\}$ y cualquier ciudad $v \\in C$, definamos $D(v, C)$ como la longitud mínima del camino que parte del vértice $0$, pasa por todos los vértices del subconjunto $C$ exactamente una vez, y termina en la ciudad $v$.\n\nAlternativamente, formulado hacia adelante (como en el apunte de cátedra):\nSea $D(v, C)$ el costo de ir desde la ciudad $v$ hasta el origen $0$ pasando exactamente una vez por cada ciudad del conjunto $C \\subseteq V \\setminus \\{0, v\\}$.\n\nPor el principio de subestructura óptima, el siguiente paso desde $v$ debe ser alguna ciudad $w \\in C$. Al elegir $w$, el costo remanente óptimo es llegar de $w$ a $0$ visitando el subconjunto reducido $C \\setminus \\{w\\}$:\n$$D(v, C) = \\min_{w \\in C} \\{ \\text{peso}(v, w) + D(w, C \\setminus \\{w\\}) \\}$$\n\n**Caso Base**: Cuando el conjunto de ciudades pendientes está vacío ($C = \\emptyset$), el único camino posible es regresar directamente al origen:\n$$D(v, \\emptyset) = \\text{peso}(v, 0)$$\n\n**Propósito Pedagógico y Teórico (Cátedra UADE)**:\nEl TSP ilustra la frontera conceptual de la Programación Dinámica frente a la clase de problemas **NP-Hard / NP-Completo**:\n1. **Fuerza Bruta**: Permuta todas las posibles rutas de $(n-1)!$ ciudades. Para $n = 20$, $(20-1)! \\approx 1.21 \\times 10^{17}$ operaciones (inviable en miles de años).\n2. **Programación Dinámica (Held-Karp)**: La tabla requiere indexar cada par $(v, C)$. Como hay $n$ elecciones para $v$ y $2^n$ subconjuntos posibles $C$, la tabla contiene $n \\cdot 2^n$ estados. Cada transición explora a lo sumo $n$ alternativas. La complejidad temporal es $\\Theta(n^2 2^n)$ y la espacial $\\Theta(n 2^n)$.\n\nPara $n = 20$, $n^2 2^n \\approx 20^2 \\times 10^6 \\approx 4 \\times 10^8$ operaciones (resoluble en segundos en una computadora moderna). La Programación Dinámica logra una mejora colosal respecto al factorial, pero al mantenerse exponencial, no puede resolver instancias grandes ($n > 40$), lo que justifica el estudio posterior de algoritmos de aproximación y backtracking con poda.",
+          "ecuacion_recurrencia": "$$D(v, C) = \\begin{cases} \\text{peso}(v, 0) & \\text{si } C = \\emptyset \\\\ \\min_{w \\in C} \\{ \\text{peso}(v, w) + D(w, C \\setminus \\{w\\}) \\} & \\text{si } C \\ne \\emptyset \\end{cases}$$",
+          "estructura_tabla": {
+            "dimensiones": "Tabla de dimensiones n x 2^n, típicamente implementada con una matriz donde las columnas representan la máscara binaria (bitmask) del subconjunto C.",
+            "significado_celda": "D[v][mask] representa la distancia mínima para visitar el subconjunto de nodos codificado por mask comenzando en el nodo v y regresando al nodo 0.",
+            "orden_llenado": "Por cardinalidad creciente del subconjunto C (|C| = 0, 1, 2, ..., n - 1); es decir, estados con menos bits encendidos se resuelven antes que los estados con más bits."
+          },
+          "reconstruccion_solucion": "Partiendo del estado inicial D(0, V \\ {0}), se selecciona el vértice w* que minimizó la ecuación de Bellman. Se registra w* en la ruta, se actualiza el estado a (w*, C \\ {w*}) y se repite la selección recursiva hasta llegar a C = vacío, cerrando finalmente el ciclo retornando al nodo 0.",
+          "animaciones": [
+            {
+              "id": "anim_tsp_reticulo_subconjuntos",
+              "tipo": "dependencia",
+              "formato": "mermaid",
+              "descripcion": "Reticulado de dependencias entre subconjuntos en Held-Karp para un grafo de 4 vértices {0, 1, 2, 3}.",
+              "pasos": [
+                "graph BT\n  Empty[\"C = vacio: Casos Base D(v, vacio)\"] --> S1[\"|C| = 1: {1}, {2}, {3}\"]\n  S1 --> S2[\"|C| = 2: {1,2}, {1,3}, {2,3}\"]\n  S2 --> S3[\"|C| = 3: {1,2,3} -> Estado Final\"]\n  style S3 fill:#f38ba8,stroke:#d20f39,color:#11111b\n  style Empty fill:#a6e3a1,stroke:#40a02b,color:#11111b"
+              ]
+            },
+            {
+              "id": "anim_tsp_comparativa_curvas",
+              "tipo": "flujo_reconstruccion",
+              "formato": "svg",
+              "descripcion": "Comparativa de curvas asintóticas: Factorial (n-1)! vs Programación Dinámica O(n^2 2^n) ilustrando la reducción del espacio de búsqueda.",
+              "pasos": [
+                "<svg viewBox=\"0 0 650 220\" xmlns=\"http://www.w3.org/2000/svg\">\n  <rect width=\"650\" height=\"220\" fill=\"#1e1e2e\" rx=\"10\"/>\n  <g fill=\"#cdd6f4\" font-family=\"sans-serif\" font-size=\"12\">\n    <text x=\"325\" y=\"25\" fill=\"#f9e2af\" font-size=\"15\" font-weight=\"bold\" text-anchor=\"middle\">Frontera de Intratabilidad: Fuerza Bruta vs DP Held-Karp</text>\n    <line x1=\"60\" y1=\"180\" x2=\"580\" y2=\"180\" stroke=\"#a6adc8\" stroke-width=\"2\"/>\n    <line x1=\"60\" y1=\"180\" x2=\"60\" y2=\"50\" stroke=\"#a6adc8\" stroke-width=\"2\"/>\n    <text x=\"585\" y=\"185\">n (ciudades)</text>\n    <text x=\"50\" y=\"45\" text-anchor=\"end\">Operaciones</text>\n    \n    <path d=\"M 70 178 Q 120 170 140 50\" stroke=\"#f38ba8\" stroke-width=\"3\" fill=\"none\"/>\n    <text x=\"145\" y=\"65\" fill=\"#f38ba8\" font-weight=\"bold\">O((n-1)!) Fuerza Bruta</text>\n    \n    <path d=\"M 70 179 Q 250 175 420 50\" stroke=\"#89b4fa\" stroke-width=\"3\" fill=\"none\"/>\n    <text x=\"425\" y=\"65\" fill=\"#89b4fa\" font-weight=\"bold\">O(n² 2ⁿ) DP (Held-Karp)</text>\n    \n    <text x=\"325\" y=\"205\" fill=\"#a6adc8\" text-anchor=\"middle\">Para n = 20: (n-1)! ≈ 10¹⁷ op (Inviable) vs n²2ⁿ ≈ 4×10⁸ op (Segundos)</text>\n  </g>\n</svg>"
+              ]
+            }
+          ],
+          "pseudocodigo": "Algoritmo TSP_HeldKarp_DP(dist: Matriz<real>, n: entero) -> real:\n    Entrada: dist matriz n x n de distancias, n cantidad de ciudades (origen = 0)\n    Salida: Longitud del ciclo hamiltoniano mínimo\n    \n    memo = inicializarMatriz(n, 2^n, valor: +INFINITO)\n    \n    // Caso base: subconjunto vacío regresa al nodo 0\n    Para i desde 1 hasta n - 1 hacer:\n        memo[i, 0] = dist[i, 0]\n    Fin Para\n    \n    // Llenado por tamaño creciente del subconjunto (número de bits encendidos)\n    Para tamaño desde 1 hasta n - 2 hacer:\n        Para cada máscara S de tamaño 'tamaño' en {1, ..., n-1} hacer:\n            Para cada u en {1, ..., n-1} que NO pertenezca a S hacer:\n                minCosto = +INFINITO\n                Para cada v en S hacer:\n                    costo = dist[u, v] + memo[v, S sin {v}]\n                    Si costo < minCosto entonces:\n                        minCosto = costo\n                    Fin Si\n                Fin Para\n                memo[u, S] = minCosto\n            Fin Para\n        Fin Para\n    Fin Para\n    \n    // Paso final: desde origen 0 pasando por todo el conjunto V \\ {0}\n    mascaraCompleta = 2^n - 2  // Todos los nodos excepto el 0\n    optimo = +INFINITO\n    Para v desde 1 hasta n - 1 hacer:\n        costo = dist[0, v] + memo[v, mascaraCompleta sin {v}]\n        Si costo < optimo entonces optimo = costo\n    Fin Para\n    \n    Retornar optimo",
+          "codigo": {
+            "lenguaje": "Java",
+            "codigo": "public class TSPHeldKarp {\n    // Implementación canónica del algoritmo de Held-Karp con Bitmask DP\n    public static int resolverTSP(int[][] dist, int n) {\n        int INF = 9999999;\n        int numEstados = 1 << n; // 2^n estados\n        int[][] dp = new int[n][numEstados];\n        \n        for (int i = 0; i < n; i++) {\n            for (int j = 0; j < numEstados; j++) {\n                dp[i][j] = INF;\n            }\n        }\n        \n        // Caso base: desde nodo i con conjunto vacío hacia el origen 0\n        for (int i = 1; i < n; i++) {\n            dp[i][0] = dist[i][0];\n        }\n        \n        // Iterar por subconjuntos ordenados por cantidad de bits\n        for (int mask = 1; mask < (1 << (n - 1)); mask++) {\n            int subset = mask << 1; // Desplazado porque el nodo 0 no está en la máscara\n            for (int u = 1; u < n; u++) {\n                if ((subset & (1 << u)) != 0) continue; // u no debe estar en subset\n                \n                int minCosto = INF;\n                for (int v = 1; v < n; v++) {\n                    if ((subset & (1 << v)) != 0) {\n                        int prevSubset = subset ^ (1 << v);\n                        int costo = dist[u][v] + dp[v][prevSubset];\n                        if (costo < minCosto) minCosto = costo;\n                    }\n                }\n                dp[u][subset] = minCosto;\n            }\n        }\n        \n        // Retorno al origen\n        int todoElGrafo = ((1 << n) - 1) ^ 1; // Nodos 1 a n-1\n        int res = INF;\n        for (int v = 1; v < n; v++) {\n            int costo = dist[0][v] + dp[v][todoElGrafo ^ (1 << v)];\n            if (costo < res) res = costo;\n        }\n        return res;\n    }\n}",
+            "correcciones_aplicadas": "Formalización algorítmica completa con operadores a nivel de bits (bitmasking) para representar los subconjuntos del TDA Conjunto de manera eficiente y evitar la explosión combinatoria de objetos."
+          },
+          "analisis_complejidad": {
+            "temporal_peor_caso": "O(n^2 * 2^n)",
+            "temporal_mejor_caso": "O(n^2 * 2^n)",
+            "espacial": "O(n * 2^n)",
+            "justificacion": "Existen n * 2^n subproblemas únicos (estados). Cada estado requiere iterar sobre a lo sumo n transiciones posibles, demandando un tiempo total de Theta(n^2 2^n). La memoria requerida es Theta(n 2^n) para almacenar la tabla de estados. Constituye una mejora exponencial frente a O(n!), pero marca el límite práctico de DP para problemas NP-Hard."
+          }
+        }
+      ]
+    }
+  ],
+  "conceptos": [
+    {
+      "id": "optimality-principle",
+      "title": "Principio de Optimalidad de Bellman y Tabulación Bottom-Up",
+      "badgeText": "Fundamento Dinámico",
+      "summary": "Una secuencia óptima de decisiones tiene la propiedad de que, cualquiera sea el estado y la decisión inicial, las decisiones restantes deben constituir una secuencia óptima respecto al estado resultante.",
+      "bulletPoints": [
+        "Subproblemas Solapados: A diferencia de Divide & Conquer, la formulación recursiva visita los mismos subproblemas una y otra vez.",
+        "Tabulación Bottom-Up: Se resuelven primero los subproblemas más pequeños (casos base en fila/columna 0) y se rellena la matriz en orden topológico.",
+        "Permite recuperar no solo el valor óptimo sino también la secuencia exacta de decisiones recorriendo la tabla hacia atrás."
+      ],
+      "formulas": [
+        {
+          "label": "Ecuación de Bellman para Mochila 0-1",
+          "latex": "V[i, j] = \\max\\big(V[i-1, j],\\; \\text{valor}[i] + V[i-1, j - \\text{peso}[i]]\\big)",
+          "description": "Compara el beneficio de excluir el objeto i frente al beneficio de incluirlo cediendo su peso en la capacidad restante."
+        },
+        {
+          "label": "Clausura de Caminos Mínimos en Floyd-Warshall",
+          "latex": "D_k[i, j] = \\min\\big(D_{k-1}[i, j],\\; D_{k-1}[i, k] + D_{k-1}[k, j]\\big)",
+          "description": "Evalúa si pasar por el vértice intermedio k mejora el camino directo entre el par (i, j)."
+        }
+      ]
+    },
+    {
+      "id": "dp-classic-problems-overview",
+      "title": "Catálogo de Problemas Clásicos",
+      "badgeText": "Complejidades de Tablas",
+      "summary": "En cada problema de Programación Dinámica, la complejidad temporal equivale al tamaño de la tabla multiplicado por el costo de transición de cada celda.",
+      "bulletPoints": [
+        "Fibonacci Tabulado: Vector unidimensional de tamaño n+1 con transición O(1) -> Tiempo Θ(n).",
+        "Problema del Cambio de Monedas: Matriz de n tipos de moneda por monto V -> Tiempo Θ(n · V).",
+        "Mochila 0-1: Matriz de n objetos por capacidad P -> Tiempo pseudopolinómico Θ(n · P).",
+        "Subsecuencia Común Más Larga (LCS): Matriz de longitudes m x n -> Tiempo Θ(m · n).",
+        "Subsecuencia Creciente Más Larga (LIS): Vector de longitud n comparando contra predecesores -> Tiempo Θ(n^2)."
+      ]
+    }
+  ],
+  "algoritmos": [
+    {
+      "id": "knapsack-01",
+      "name": "Mochila 0-1 (Knapsack)",
+      "paradigmTag": "Optimización Combinatoria Tabulada",
+      "bestCaseComplexityLatex": "\\Theta(n \\cdot P)",
+      "averageCaseComplexityLatex": "\\Theta(n \\cdot P)",
+      "worstCaseComplexityLatex": "\\Theta(n \\cdot P)",
+      "spaceComplexityLatex": "\\Theta(n \\cdot P)",
+      "recurrenceOrEquationLatex": "V[i, j] = \\max(V[i-1, j], v_i + V[i-1, j - p_i])",
+      "keyInsight": "Como los objetos no pueden fraccionarse, el criterio voraz por valor/peso falla; la matriz V[i, j] almacena el máximo beneficio alcanzable considerando los primeros i objetos con capacidad máxima j.",
+      "stepByStepSummary": [
+        "Crear una matriz V de dimensiones (n + 1) x (Capacidad + 1) inicializada con 0 en la fila 0 y columna 0.",
+        "Para cada objeto i y cada capacidad parcial j, copiar V[i-1, j] si el peso del objeto supera j.",
+        "Si el objeto entra (peso[i] <= j), asignar el máximo entre no llevarlo V[i-1, j] y llevarlo valor[i] + V[i-1, j - peso[i]]."
+      ],
+      "codeSnippets": {
+        "pseudocode": "Funcion Mochila01(pesos[1..n], valores[1..n], n, CapacidadP) : Entero\nInicio\n    Para j <- 0 Hasta CapacidadP Hacer V[0, j] <- 0 FinPara\n    Para i <- 1 Hasta n Hacer\n        V[i, 0] <- 0\n        Para j <- 1 Hasta CapacidadP Hacer\n            Si pesos[i] > j Entonces\n                V[i, j] <- V[i - 1, j]\n            Sino\n                V[i, j] <- Maximo(V[i - 1, j], valores[i] + V[i - 1, j - pesos[i]])\n            FinSi\n        FinPara\n    FinPara\n    Devolver V[n, CapacidadP]\nFin",
+        "java": "public class ZeroOneKnapsack {\n    public static int[][] buildOptimalTable(int[] weights, int[] values, int maxCapacity) {\n        int itemCount = weights.length;\n        int[][] table = new int[itemCount + 1][maxCapacity + 1];\n\n        for (int itemIndex = 1; itemIndex <= itemCount; itemIndex++) {\n            int currentWeight = weights[itemIndex - 1];\n            int currentValue = values[itemIndex - 1];\n            for (int capacity = 1; capacity <= maxCapacity; capacity++) {\n                if (currentWeight > capacity) {\n                    table[itemIndex][capacity] = table[itemIndex - 1][capacity];\n                } else {\n                    int valueWithoutItem = table[itemIndex - 1][capacity];\n                    int valueWithItem = currentValue + table[itemIndex - 1][capacity - currentWeight];\n                    table[itemIndex][capacity] = Math.max(valueWithoutItem, valueWithItem);\n                }\n            }\n        }\n        return table;\n    }\n}",
+        "python": "def solve_zero_one_knapsack(weights: list[int], values: list[int], max_capacity: int) -> list[list[int]]:\n    item_count = len(weights)\n    dp_table = [[0] * (max_capacity + 1) for _ in range(item_count + 1)]\n\n    for item_index in range(1, item_count + 1):\n        current_weight = weights[item_index - 1]\n        current_value = values[item_index - 1]\n        for capacity in range(1, max_capacity + 1):\n            if current_weight > capacity:\n                dp_table[item_index][capacity] = dp_table[item_index - 1][capacity]\n            else:\n                dp_table[item_index][capacity] = max(\n                    dp_table[item_index - 1][capacity],\n                    current_value + dp_table[item_index - 1][capacity - current_weight]\n                )\n    return dp_table"
+      }
+    },
+    {
+      "id": "floyd-warshall",
+      "name": "Floyd-Warshall (Caminos Mínimos entre Todos los Pares)",
+      "paradigmTag": "Programación Dinámica en Grafos",
+      "bestCaseComplexityLatex": "\\Theta(n^3)",
+      "averageCaseComplexityLatex": "\\Theta(n^3)",
+      "worstCaseComplexityLatex": "\\Theta(n^3)",
+      "spaceComplexityLatex": "\\Theta(n^2)",
+      "recurrenceOrEquationLatex": "D[i, j] = \\min(D[i, j],\\; D[i, k] + D[k, j])",
+      "keyInsight": "Itera sobre un vértice pivote k de 1 a n habilitándolo como escala intermedia permitida para mejorar la distancia entre cualquier par de nodos (i, j).",
+      "stepByStepSummary": [
+        "Inicializar la matriz D con los pesos directos de las aristas (0 en la diagonal e infinito donde no hay arista).",
+        "Ejecutar tres ciclos anidados donde el bucle externo k representa el vértice intermedio habilitado.",
+        "Si D[i, k] + D[k, j] < D[i, j], actualizar D[i, j] y registrar k en la matriz de caminos P[i, j]."
+      ],
+      "codeSnippets": {
+        "pseudocode": "Procedimiento FloydWarshall(costos[1..n, 1..n], D[1..n, 1..n], P[1..n, 1..n], n)\nInicio\n    Para i <- 1 Hasta n Hacer\n        Para j <- 1 Hasta n Hacer\n            D[i, j] <- costos[i, j]\n            P[i, j] <- 0\n        FinPara\n    FinPara\n    Para k <- 1 Hasta n Hacer\n        Para i <- 1 Hasta n Hacer\n            Para j <- 1 Hasta n Hacer\n                Si D[i, k] + D[k, j] < D[i, j] Entonces\n                    D[i, j] <- D[i, k] + D[k, j]\n                    P[i, j] <- k\n                FinSi\n            FinPara\n        FinPara\n    FinPara\nFin",
+        "java": "public class FloydWarshallAllPairs {\n    public static void computeAllPairsShortestPaths(int[][] distances, int[][] intermediatePath) {\n        int vertexCount = distances.length;\n        for (int pivotK = 0; pivotK < vertexCount; pivotK++) {\n            for (int sourceI = 0; sourceI < vertexCount; sourceI++) {\n                for (int targetJ = 0; targetJ < vertexCount; targetJ++) {\n                    if (distances[sourceI][pivotK] != Integer.MAX_VALUE &&\n                        distances[pivotK][targetJ] != Integer.MAX_VALUE) {\n                        int detourCost = distances[sourceI][pivotK] + distances[pivotK][targetJ];\n                        if (detourCost < distances[sourceI][targetJ]) {\n                            distances[sourceI][targetJ] = detourCost;\n                            intermediatePath[sourceI][targetJ] = pivotK;\n                        }\n                    }\n                }\n            }\n        }\n    }\n}",
+        "python": "def floyd_warshall(distance_matrix: list[list[float]]) -> tuple[list[list[float]], list[list[int | None]]]:\n    vertex_count = len(distance_matrix)\n    distances = [row[:] for row in distance_matrix]\n    intermediate: list[list[int | None]] = [[None] * vertex_count for _ in range(vertex_count)]\n\n    for pivot_k in range(vertex_count):\n        for source_i in range(vertex_count):\n            for target_j in range(vertex_count):\n                detour_cost = distances[source_i][pivot_k] + distances[pivot_k][target_j]\n                if detour_cost < distances[source_i][target_j]:\n                    distances[source_i][target_j] = detour_cost\n                    intermediate[source_i][target_j] = pivot_k\n    return distances, intermediate"
+      }
+    },
+    {
+      "id": "lcs-and-coin-change",
+      "name": "Subsecuencia Común Más Larga (LCS) y Cambio de Monedas",
+      "paradigmTag": "Alineamiento de Secuencias",
+      "bestCaseComplexityLatex": "\\Theta(m \\cdot n)",
+      "averageCaseComplexityLatex": "\\Theta(m \\cdot n)",
+      "worstCaseComplexityLatex": "\\Theta(m \\cdot n)",
+      "spaceComplexityLatex": "\\Theta(m \\cdot n)",
+      "recurrenceOrEquationLatex": "L[i, j] = \\begin{cases} 1 + L[i-1, j-1] & \\text{si } X_i = Y_j \\\\ \\max(L[i-1, j], L[i, j-1]) & \\text{si } X_i \\ne Y_j \\end{cases}",
+      "keyInsight": "Cuando los caracteres actuales coinciden, se extiende en 1 la subsecuencia común de los prefijos anteriores; si difieren, se conserva la mejor opción entre descartar el último carácter de X o el de Y.",
+      "stepByStepSummary": [
+        "Construir la tabla L de dimensiones (m + 1) x (n + 1) con bordes inicializados en cero.",
+        "Recorrer fila por fila comparando el carácter X[i-1] contra Y[j-1].",
+        "Sumar 1 a la diagonal superior izquierda cuando coinciden, o tomar el máximo entre arriba e izquierda cuando difieren."
+      ],
+      "codeSnippets": {
+        "pseudocode": "Funcion LCS(cadenaX[1..m], cadenaY[1..n], m, n) : Entero\nInicio\n    Para i <- 0 Hasta m Hacer L[i, 0] <- 0 FinPara\n    Para j <- 0 Hasta n Hacer L[0, j] <- 0 FinPara\n    Para i <- 1 Hasta m Hacer\n        Para j <- 1 Hasta n Hacer\n            Si cadenaX[i] = cadenaY[j] Entonces\n                L[i, j] <- 1 + L[i - 1, j - 1]\n            Sino\n                L[i, j] <- Maximo(L[i - 1, j], L[i, j - 1])\n            FinSi\n        FinPara\n    FinPara\n    Devolver L[m, n]\nFin",
+        "java": "public class LongestCommonSubsequence {\n    public static int computeLength(String firstText, String secondText) {\n        int firstLength = firstText.length();\n        int secondLength = secondText.length();\n        int[][] lcsTable = new int[firstLength + 1][secondLength + 1];\n\n        for (int row = 1; row <= firstLength; row++) {\n            for (int col = 1; col <= secondLength; col++) {\n                if (firstText.charAt(row - 1) == secondText.charAt(col - 1)) {\n                    lcsTable[row][col] = 1 + lcsTable[row - 1][col - 1];\n                } else {\n                    lcsTable[row][col] = Math.max(lcsTable[row - 1][col], lcsTable[row][col - 1]);\n                }\n            }\n        }\n        return lcsTable[firstLength][secondLength];\n    }\n}",
+        "python": "def longest_common_subsequence_length(first_text: str, second_text: str) -> int:\n    rows, cols = len(first_text), len(second_text)\n    lcs_table = [[0] * (cols + 1) for _ in range(rows + 1)]\n\n    for i in range(1, rows + 1):\n        for j in range(1, cols + 1):\n            if first_text[i - 1] == second_text[j - 1]:\n                lcs_table[i][j] = 1 + lcs_table[i - 1][j - 1]\n            else:\n                lcs_table[i][j] = max(lcs_table[i - 1][j], lcs_table[i][j - 1])\n    return lcs_table[rows][cols]"
+      }
+    }
+  ]
+}

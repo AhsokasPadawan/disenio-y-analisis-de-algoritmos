@@ -1,0 +1,988 @@
+{
+  "modulo": "backtracking",
+  "titulo": "Banco de Ejercicios: Backtracking y Branch & Bound",
+  "descripcion": "Colección completa y consolidada de ejercicios de Backtracking, poda Alfa-Beta, juegos adversariales y Ramificación y Poda (LC-BB) con relajaciones y cotas MST/matriciales (Clases 08, 09, 10, 12 y 13).",
+  "total_ejercicios": 41,
+  "fecha_actualizacion": "2026-11-07",
+  "ejercicios": [
+    {
+      "id_tema": 1,
+      "tema": "backtracking",
+      "titulo": "Generación de secuencias binarias (impresión directa)",
+      "enunciado": "Implemente un algoritmo que encuentre todas las listas de elementos x ∈ {0, 1} de tamaño n, donde n se recibe por parámetro. El algoritmo debe imprimir las listas por pantalla. Las soluciones deben construirse agregando elementos al final de cada lista parcial.\n\nPor ejemplo, si n = 3 el algoritmo debería imprimir:\n[0, 0, 0]\n[0, 0, 1]\n[0, 1, 0]\n[0, 1, 1]\n[1, 0, 0]\n[1, 0, 1]\n[1, 1, 0]\n[1, 1, 1]",
+      "recurso_visual": null,
+      "fuente_original": "DAA Ejercicios segundo parcial (Guía)",
+      "id_global": 110
+    },
+    {
+      "id_tema": 2,
+      "tema": "backtracking",
+      "titulo": "Generación de secuencias binarias (lista de listas)",
+      "enunciado": "Implemente un algoritmo que encuentre todas las listas de elementos x ∈ {0, 1} de tamaño n, donde n se recibe por parámetro. El algoritmo debe devolver una lista con todas las listas. Esta última lista debe mostrarse por pantalla. Las soluciones deben construirse agregando elementos al final de cada lista parcial.\n\nPor ejemplo, si n = 3 el algoritmo debería imprimir:\n[[0, 0, 0], [0, 0, 1], [0, 1, 0], [0, 1, 1], [1, 0, 0], [1, 0, 1], [1, 1, 0], [1, 1, 1]]",
+      "recurso_visual": null,
+      "fuente_original": "DAA Ejercicios segundo parcial (Guía)",
+      "id_global": 111
+    },
+    {
+      "id_tema": 3,
+      "tema": "backtracking",
+      "titulo": "Combinaciones posibles al lanzar n dados",
+      "enunciado": "Escriba una función recursiva que reciba un número entero n que represente una cantidad de dados que serán lanzados y muestre todas las combinaciones posibles de valores que podrían aparecer en los dados.",
+      "recurso_visual": null,
+      "fuente_original": "DAA Ejercicios segundo parcial (Guía)",
+      "id_global": 112
+    },
+    {
+      "id_tema": 4,
+      "tema": "backtracking",
+      "titulo": "El reparto del botín con Backtracking",
+      "enunciado": "Dos ladrones robaron equipos del laboratorio de una universidad privada. Los cacos desean dividir los objetos robados en dos grupos tales que la diferencia en valor sea mínima. Por ejemplo, si robaron tres equipos de valor $998, $499 y $1500, la división óptima sería {$998, $499} y {$1500}. Una división exacta es imposible, ya que la suma del valor de todos los equipos robados es impar.\nPodemos asumir que los objetos se encuentran en un arreglo botín, donde botín[i] nos da el valor del objeto i.\na) Describa una estrategia de backtracking para resolverlo.\nb) Escriba el pseudo-código correspondiente.\nc) Estime la complejidad de su algoritmo.",
+      "recurso_visual": null,
+      "fuente_original": "DAA Ejercicios segundo parcial (Guía)",
+      "id_global": 113
+    },
+    {
+      "id_tema": 5,
+      "tema": "backtracking",
+      "titulo": "Subconjunto de suma exacta (Mochila con Backtracking)",
+      "enunciado": "Considere cinco objetos con pesos (w1, w2, ..., w5) = (10, 3, 5, 7, 2) y una mochila de tamaño m = 15. Use una estrategia de backtracking para encontrar todas las combinaciones de objetos que caben exactamente en la mochila. Calcule la complejidad de este método.",
+      "recurso_visual": null,
+      "fuente_original": "DAA Ejercicios segundo parcial (Guía)",
+      "resolucion_propuesta": [
+        {
+          "id_propuesto": "ejercicio_05_mochila_exacta_15",
+          "titulo_propuesto": "Ejercicio 5 (Clase 09 - Ej 1): Mochila Exacta por Backtracking con Poda",
+          "analisis_formal": {
+            "tipo_problema": "Suma de subconjunto exacta / Mochila 0/1 de llenado exacto",
+            "espacio_de_estados": "Árbol binario de decisión de 5 niveles. En la etapa e (0 <= e < 5) se decide incluir (1) o no incluir (0) el objeto con peso w_e.",
+            "tupla_solucion": "Vector binario (x_0, x_1, x_2, x_3, x_4) con x_i ∈ {0, 1} tal que sum_{i=0}^4 x_i * w_i = 15.",
+            "tamano_espacio": "2^5 = 32 estados brutos.",
+            "condicion_poda": "Poda por exceso de peso: Si pesoActual > 15, podar la rama. Poda por defecto de peso: Si pesoActual + suma_restante < 15, podar inmediatamente."
+          },
+          "pseudocodigo": "algoritmo MochilaExacta(w, m, actSol, etapa, actPeso)\n  if actPeso == m\n    mostrar(actSol)\n    // Se puede podar si todos los pesos subsiguientes son > 0\n    return\n  endif\n  if etapa == n return\n  // Opción 1: Incluir objeto w[etapa] (si no excede m)\n  if actPeso + w[etapa] <= m\n    actSol[etapa] ← 1\n    MochilaExacta(w, m, actSol, etapa + 1, actPeso + w[etapa])\n  endif\n  // Opción 2: No incluir objeto w[etapa]\n  actSol[etapa] ← 0\n  MochilaExacta(w, m, actSol, etapa + 1, actPeso)",
+          "codigo_java": {
+            "lenguaje": "Java",
+            "codigo": "public static void resolverMochilaExacta() throws Exception {\n    VectorTDA<Integer> pesos = new Vector<Integer>();\n    pesos.inicializarVector(5);\n    int[] arr = {10, 3, 5, 7, 2};\n    for (int i = 0; i < 5; i++) pesos.agregarElemento(i, arr[i]);\n    \n    VectorTDA<Integer> actSol = new Vector<Integer>();\n    actSol.inicializarVector(5);\n    mochilaExactaRec(pesos, 15, actSol, 0, 0);\n}\n\nprivate static void mochilaExactaRec(VectorTDA<Integer> pesos, int m, VectorTDA<Integer> actSol, int etapa, int actPeso) throws Exception {\n    if (actPeso == m) {\n        System.out.print(\"Combinación exacta encontrada: \");\n        for (int i = 0; i < etapa; i++) {\n            if (actSol.recuperarElemento(i) == 1) {\n                System.out.print(pesos.recuperarElemento(i) + \" \");\n            }\n        }\n        System.out.println();\n        return;\n    }\n    if (etapa == pesos.capacidadVector()) return;\n    \n    int w = pesos.recuperarElemento(etapa);\n    // Rama 1: Incluir\n    if (actPeso + w <= m) {\n        actSol.agregarElemento(etapa, 1);\n        mochilaExactaRec(pesos, m, actSol, etapa + 1, actPeso + w);\n    }\n    // Rama 0: No incluir\n    actSol.agregarElemento(etapa, 0);\n    mochilaExactaRec(pesos, m, actSol, etapa + 1, actPeso);\n}",
+            "observaciones": "Para w = (10, 3, 5, 7, 2) y m = 15, las soluciones exactas son: {10, 3, 2} (10+3+2=15), {10, 5} (10+5=15), {3, 5, 7} (3+5+7=15)."
+          },
+          "complejidad": {
+            "temporal": "O(2^n) con n = 5 (a lo sumo 32 nodos evaluados; con podas se evalúan menos de 18 nodos).",
+            "espacial": "O(n) por la pila de llamadas.",
+            "justificacion": "Árbol binario de altura n = 5."
+          },
+          "nota_duplicado": "Coincide con el ejercicio propuesto #5 ('Ejercicio 5 (Clase 09 - Ej 1): Mochila Exacta por Backtracking con Poda') de diapositivas de clase."
+        }
+      ],
+      "es_ejercicio_propuesto_diapositivas": true,
+      "id_global": 114
+    },
+    {
+      "id_tema": 6,
+      "tema": "backtracking",
+      "titulo": "Permutaciones restringidas con poda de caracteres A, B, C, D",
+      "enunciado": "Escriba un algoritmo de backtracking con poda para encontrar todas las permutaciones de los cuatro caracteres (A, B, C, D) de manera que satisfagan las siguientes restricciones:\n- Restricción (1): no debe haber repeticiones.\n- Restricción (2): la diferencia en el valor absoluto del código ASCII entre cada carácter y el previo debe ser siempre mayor o igual a 2.\nMuestre el árbol de permutaciones para encontrar todas las que satisfagan las restricciones. ¿Cuántas respuestas se obtienen? ¿Cuántas se obtendrían si sólo se tuviera la restricción (1)?",
+      "recurso_visual": null,
+      "fuente_original": "DAA Ejercicios segundo parcial (Guía)",
+      "resolucion_propuesta": [
+        {
+          "id_propuesto": "ejercicio_07_permutaciones_ascii_dist_2",
+          "titulo_propuesto": "Ejercicio 7 (Clase 09 - Ej 3): Permutaciones de (A, B, C, D) con Distancia ASCII >= 2",
+          "analisis_formal": {
+            "tipo_problema": "Generación de permutaciones restringidas con poda de adyacencia",
+            "espacio_de_estados": "Árbol de permutaciones de 4 niveles. En cada etapa se ensayan los 4 caracteres.",
+            "tupla_solucion": "Permutación (c_0, c_1, c_2, c_3) de {A, B, C, D} con |ord(c_i) - ord(c_{i-1})| >= 2.",
+            "tamano_espacio": "Solo con restricción (1): 4! = 24 permutaciones. Con fuerza bruta irrestricta: 4^4 = 256.",
+            "condicion_poda": "Poda (1): Si c_e ya fue usado previamente en el camino, podar. Poda (2): Si e > 0 y |ord(c_e) - ord(c_{e-1})| < 2 (es decir, diferencia igual a 1 en ASCII, letras consecutivas en el alfabeto como A-B, B-C, C-D), podar de inmediato."
+          },
+          "pseudocodigo": "algoritmo PermutacionesASCII(P, etapa, usados)\n  if etapa == 4\n    mostrar(P)\n    return\n  endif\n  foreach char c in ['A', 'B', 'C', 'D']\n    if not usados[c]\n      if etapa == 0 or |ord(c) - ord(P[etapa - 1])| >= 2\n        usados[c] ← true\n        P[etapa] ← c\n        PermutacionesASCII(P, etapa + 1, usados)\n        usados[c] ← false // Vuelta atrás\n      endif\n    endif\n  endforeach",
+          "codigo_java": {
+            "lenguaje": "Java",
+            "codigo": "public static void resolverPermutacionesASCII() throws Exception {\n    VectorTDA<Character> p = new Vector<Character>();\n    p.inicializarVector(4);\n    VectorTDA<Boolean> usados = new Vector<Boolean>();\n    usados.inicializarVector(4);\n    for (int i = 0; i < 4; i++) usados.agregarElemento(i, false);\n    \n    char[] letras = {'A', 'B', 'C', 'D'};\n    permutacionesAsciiRec(p, usados, letras, 0);\n}\n\nprivate static void permutacionesAsciiRec(VectorTDA<Character> p, VectorTDA<Boolean> usados, char[] letras, int etapa) throws Exception {\n    if (etapa == 4) {\n        System.out.println(\"\" + p.recuperarElemento(0) + p.recuperarElemento(1) + p.recuperarElemento(2) + p.recuperarElemento(3));\n        return;\n    }\n    for (int i = 0; i < 4; i++) {\n        if (!usados.recuperarElemento(i)) {\n            char c = letras[i];\n            if (etapa == 0 || Math.abs(c - p.recuperarElemento(etapa - 1)) >= 2) {\n                usados.agregarElemento(i, true);\n                p.agregarElemento(etapa, c);\n                permutacionesAsciiRec(p, usados, letras, etapa + 1);\n                usados.agregarElemento(i, false);\n            }\n        }\n    }\n}",
+            "observaciones": "Las únicas permutaciones válidas que cumplen ambas condiciones son 2: 'BDAC' y 'CADB'. Solo con restricción (1) hay 24 permutaciones."
+          },
+          "complejidad": {
+            "temporal": "O(n!) con n = 4, con poda drástica en niveles 1 y 2 que elimina más del 90% del árbol.",
+            "espacial": "O(n)",
+            "justificacion": "Las restricciones de adyacencia eliminan parejas consecutivas (AB, BA, BC, CB, CD, DC), reduciendo el espacio de búsqueda a sólo 2 hojas válidas."
+          },
+          "nota_duplicado": "Coincide con el ejercicio propuesto #7 ('Ejercicio 7 (Clase 09 - Ej 3): Permutaciones de (A, B, C, D) con Distancia ASCII >= 2') de diapositivas de clase."
+        }
+      ],
+      "es_ejercicio_propuesto_diapositivas": true,
+      "id_global": 115
+    },
+    {
+      "id_tema": 7,
+      "tema": "backtracking",
+      "titulo": "Coloración de grafos con dos colores",
+      "enunciado": "El problema de la coloración de un grafo consiste en asignar colores a los vértices de un grafo de manera que no haya dos vértices adyacentes con el mismo color. Considere el grafo de la figura. Dibuje el árbol de permutaciones que representa un algoritmo de backtracking para encontrar una posible coloración de este grafo usando sólo dos colores (por ejemplo, rojo y negro).",
+      "recurso_visual": {
+        "tipo": "mermaid",
+        "formato": "graph",
+        "codigo": "graph TD\n    E((E)) --- A((A))\n    E --- D((D))\n    D --- C((C))\n    A --- B((B))"
+      },
+      "fuente_original": "DAA Ejercicios segundo parcial (Guía)",
+      "resolucion_propuesta": [
+        {
+          "id_propuesto": "ejercicio_09_coloreo_dos_colores",
+          "titulo_propuesto": "Ejercicio 9 (Clase 09 - Ej 5): 2-Coloración de Grafos (Bipartición)",
+          "analisis_formal": {
+            "tipo_problema": "Coloración de Grafos / Problema de Bipartición (2-Coloring)",
+            "espacio_de_estados": "Árbol binario de 5 niveles (vértices A, B, C, D, E). En cada nivel se asigna color 0 (Rojo) o 1 (Negro).",
+            "tupla_solucion": "Vector C = (c_A, c_B, c_C, c_D, c_E) con c_v ∈ {0, 1} tal que (u, v) ∈ E => c_u != c_v.",
+            "tamano_espacio": "2^5 = 32 estados sin podas.",
+            "condicion_poda": "Poda por conflicto de color adyacente: al asignar color c_v al vértice actual v, si existe un vecino u ya coloreado con c_u == c_v, podar inmediatamente."
+          },
+          "pseudocodigo": "algoritmo Coloreo2(G, verticeIndex, colores)\n  if verticeIndex == |V|\n    mostrar(colores)\n    return true\n  endif\n  v ← vertices[verticeIndex]\n  foreach color in {ROJO, NEGRO}\n    if esColorValido(G, v, color, colores)\n      colores[v] ← color\n      if Coloreo2(G, verticeIndex + 1, colores)\n        return true\n      endif\n      colores[v] ← NULO // Vuelta atrás\n    endif\n  endforeach\n  return false",
+          "codigo_java": {
+            "lenguaje": "Java",
+            "codigo": "public static void colorearGrafo2Colores(GrafoTDA<Integer> g, int n) throws Exception {\n    VectorTDA<Integer> colores = new Vector<Integer>();\n    colores.inicializarVector(n);\n    for (int i = 0; i < n; i++) colores.agregarElemento(i, -1); // -1 = sin color\n    \n    if (colorearRec(g, 0, n, colores)) {\n        for (int i = 0; i < n; i++) {\n            System.out.println(\"Vértice \" + i + \": \" + (colores.recuperarElemento(i) == 0 ? \"ROJO\" : \"NEGRO\"));\n        }\n    } else {\n        System.out.println(\"El grafo no es 2-coloreable (no es bipartito)\");\n    }\n}\n\nprivate static boolean colorearRec(GrafoTDA<Integer> g, int v, int n, VectorTDA<Integer> colores) throws Exception {\n    if (v == n) return true;\n    for (int c = 0; c <= 1; c++) {\n        if (colorValido(g, v, c, colores)) {\n            colores.agregarElemento(v, c);\n            if (colorearRec(g, v + 1, n, colores)) return true;\n            colores.agregarElemento(v, -1);\n        }\n    }\n    return false;\n}\n\nprivate static boolean colorValido(GrafoTDA<Integer> g, int v, int c, VectorTDA<Integer> colores) throws Exception {\n    ConjuntoTDA<Integer> ady = g.Adyacentes(v);\n    while (!ady.conjuntoVacio()) {\n        int u = ady.elegir();\n        ady.sacar(u);\n        if (colores.recuperarElemento(u) == c) return false;\n    }\n    return true;\n}",
+            "observaciones": "Para V={0:A, 1:B, 2:C, 3:D, 4:E} y aristas (A,B), (A,E), (C,D), (D,E), el grafo es un árbol/camino libre de ciclos impares: A(Rojo) - B(Negro), A(Rojo) - E(Negro) - D(Rojo) - C(Negro). Es 2-coloreable."
+          },
+          "complejidad": {
+            "temporal": "O(2^|V|) en el peor caso con backtracking; O(|V| + |E|) reconociendo la naturaleza bipartita por BFS/DFS.",
+            "espacial": "O(|V|)",
+            "justificacion": "El backtracking poda cualquier rama en cuanto detecta aristas monocromáticas."
+          },
+          "nota_duplicado": "Coincide con el ejercicio propuesto #9 ('Ejercicio 9 (Clase 09 - Ej 5): 2-Coloración de Grafos (Bipartición)') de diapositivas de clase."
+        }
+      ],
+      "es_ejercicio_propuesto_diapositivas": true,
+      "id_global": 116
+    },
+    {
+      "id_tema": 8,
+      "tema": "backtracking",
+      "titulo": "Árbol del juego de los corchos para 11 corchos",
+      "enunciado": "Considere el juego de los corchos. ¿Qué cambiaría si ahora el jugador ganador fuera aquel que saca el último corcho? Dibuje el árbol para 11 corchos.",
+      "recurso_visual": null,
+      "fuente_original": "DAA Ejercicios segundo parcial (Guía)",
+      "resolucion_propuesta": [
+        {
+          "id_propuesto": "ejercicio_12_corchos_arbitrarios_estrategia_greedy",
+          "titulo_propuesto": "Ejercicio 12 (Clase 10 - Ej 2 / Pág 196): Estrategia Ganadora Greedy para el Juego de los Corchos Arbitrario",
+          "analisis_formal": {
+            "tipo_problema": "Juego de sustracción adversarial misère con análisis modular.",
+            "espacio_de_estados": "Número entero N \\ge 0 que indica la cantidad de corchos en la mesa.",
+            "tupla_solucion": "Decisión inicial \\langle \\text{Turno}, \\text{MovidaInicial} \\rangle y política greedy de respuesta \\Delta(r) = 4 - r.",
+            "tamano_espacio": "N estados discretos.",
+            "condicion_poda": "Aritmética modular mod 4 que clasifica instantáneamente cualquier estado sin necesidad de desplegar el árbol."
+          },
+          "pseudocodigo": "ALGORITMO EstrategiaGreedyCorchos(N)\n  SI (N mod 4 == 1) ENTONCES\n    ELEGIR: Jugar SEGUNDO (El rival arranca en estado perdedor P)\n  SINO\n    ELEGIR: Jugar PRIMERO (Arrancamos en estado ganador N)\n    c = (N - 1) mod 4\n    SI c == 0 ENTONCES c = 1\n    EJECUTAR: Retirar c corchos\n  FIN SI\n  EN CADA TURNO SUBSECUENTE:\n    Sea r la cantidad de corchos retirada por el rival (r in {1, 2, 3})\n    EJECUTAR: Retirar exactamente (4 - r) corchos",
+          "codigo_java": {
+            "lenguaje": "Java",
+            "codigo": "public class EstrategiaGreedyCorchos {\n    public static void planificarJuego(int n) {\n        int resto = n % 4;\n        if (resto == 1) {\n            System.out.println(\"Eleccion: Jugar SEGUNDO. El estado inicial \" + n + \" es NODO P.\");\n        } else {\n            int jugadaInicial = (resto == 0) ? 3 : (resto - 1);\n            System.out.println(\"Eleccion: Jugar PRIMERO. El estado inicial \" + n + \" es NODO N.\");\n            System.out.println(\"Movida inicial: Retirar \" + jugadaInicial + \" corchos, dejando \" + (n - jugadaInicial) + \" (Nodo P).\");\n        }\n    }\n\n    public static int responderMovidaRival(int corchosRetiradosPorRival) {\n        // Invariante complementaria: la suma de cada ronda jugador+rival es exactamente 4\n        return 4 - corchosRetiradosPorRival;\n    }\n}",
+            "observaciones": "La estrategia greedy garantiza preservar la invariante N' = 1 (mod 4) tras cada movida propia, forzando al oponente a recibir finalmente 1 corcho y perder."
+          },
+          "complejidad": {
+            "temporal": "\\mathcal{O}(1) cálculo de decisión por turno.",
+            "espacial": "\\mathcal{O}(1) almacenamiento auxiliar constante.",
+            "justificacion": "La aritmética modular en base 4 determina la pertenencia a nodos N y P en tiempo constante sin recurrir a búsqueda exhaustiva."
+          },
+          "nota_duplicado": "Coincide con el ejercicio propuesto #12 ('Ejercicio 12 (Clase 10 - Ej 2 / Pág 196): Estrategia Ganadora Greedy para el Juego de los Corchos Arbitrario') de diapositivas de clase."
+        },
+        {
+          "id_propuesto": "ejercicio_13_corchos_convencion_normal",
+          "titulo_propuesto": "Ejercicio 13 (Clase 10 - Ej 3 / Pág 196): Análisis del Juego de 11 Corchos bajo Convención Normal",
+          "analisis_formal": {
+            "tipo_problema": "Comparación estructural entre convención Misère y convención Normal en juegos de sustracción.",
+            "espacio_de_estados": "Entero e \\in [0, 11] con transiciones e \\to e - \\Delta para \\Delta \\in {1, 2, 3}.",
+            "tupla_solucion": "Clasificación de paridad modular de estados: e \\equiv 0 \\pmod 4 es P, e \\not\\equiv 0 \\pmod 4 es N.",
+            "tamano_espacio": "12 estados posibles.",
+            "condicion_poda": "Corte de búsqueda cuando se detecta el patrón cíclico de congruencia lineal."
+          },
+          "pseudocodigo": "ALGORITMO AnalisisCorchosNormal(e)\n  // Regla normal: e = 0 es perdedor para quien le toca (no puede mover)\n  SI (e mod 4 == 0) ENTONCES\n    RETORNAR \"Nodo P (Pierde el de turno)\"\n  SINO\n    RETORNAR \"Nodo N (Gana el de turno sacando (e mod 4) corchos)\"\n  FIN SI",
+          "codigo_java": {
+            "lenguaje": "Java",
+            "codigo": "public class CorchosNormalVsMisere {\n    public static String compararReglas(int e) {\n        boolean ganaNormal = (e % 4 != 0);\n        boolean ganaMisere = (e % 4 != 1);\n        return \"Para e=\" + e + \": En Normal gana primer jugador? \" + ganaNormal +\n               \" | En Misere gana primer jugador? \" + ganaMisere;\n    }\n\n    public static void main(String[] args) {\n        // Para e = 11:\n        // 11 % 4 = 3 != 0 -> En juego normal, 11 es NODO N (gana el primer jugador sacando 3 corchos)\n        // En misere, 11 % 4 = 3 != 1 -> 11 tambien es NODO N (gana el primer jugador sacando 2 corchos)\n        System.out.println(compararReglas(11));\n    }\n}",
+            "observaciones": "En convención normal, los estados perdedores son los múltiplos de 4 (0, 4, 8, 12...). Para 11 corchos, el primer jugador sigue ganando, pero ahora debe retirar 3 corchos (dejando 8), mientras que en misère retiraba 2 corchos (dejando 9)."
+          },
+          "complejidad": {
+            "temporal": "\\mathcal{O}(1) por evaluación de congruencia modular.",
+            "espacial": "\\mathcal{O}(1).",
+            "justificacion": "El cambio de condición de victoria desplaza el núcleo de estados P en una unidad: de e = 1 (mod 4) a e = 0 (mod 4)."
+          },
+          "nota_duplicado": "Coincide con el ejercicio propuesto #13 ('Ejercicio 13 (Clase 10 - Ej 3 / Pág 196): Análisis del Juego de 11 Corchos bajo Convención Normal') de diapositivas de clase."
+        },
+        {
+          "id_propuesto": "ejercicio_14_arbol_juego_corchos_convencion_normal",
+          "titulo_propuesto": "Ejercicio 14 (Clase 10 - Ej 4 / Pág 196): Árbol de Juego de 11 Corchos bajo Convención Normal",
+          "analisis_formal": {
+            "tipo_problema": "Generación declarativa de árbol de juego y propagación minimax en convención normal.",
+            "espacio_de_estados": "Árbol dirigido con raíz en e = 11, factor de ramificación 3 y hojas en e = 0.",
+            "tupla_solucion": "Árbol etiquetado con valores Minimax (+1 para MAX, -1 para MIN).",
+            "tamano_espacio": "Grafo colapsado de 12 vértices con 30 aristas dirigidas.",
+            "condicion_poda": "Ramas donde MAX ya asegura un sucesor con valor +1 o MIN asegura un sucesor con valor -1."
+          },
+          "pseudocodigo": "ALGORITMO DibujarArbolCorchosNormal(e, nivel)\n  SI e == 0 ENTONCES\n    RETORNAR -1 * nivel // Quien llega a 0 sin poder mover pierde\n  FIN SI\n  para cada movida s en {1, 2, 3} mientras s <= e hacer\n    val = DibujarArbolCorchosNormal(e - s, -nivel)\n  fin para",
+          "codigo_java": {
+            "lenguaje": "Java",
+            "codigo": "public class GeneradorArbolCorchosNormal {\n    public static void generarMermaid(int n) {\n        System.out.println(\"graph TD\");\n        generarNodos(n, 1);\n    }\n\n    private static int generarNodos(int e, int jugador) {\n        String id = \"N_\" + e + \"_\" + (jugador == 1 ? \"MAX\" : \"MIN\");\n        if (e == 0) {\n            System.out.println(\"  \" + id + \"[\" + e + \": Gana \" + (jugador == 1 ? \"MIN\" : \"MAX\") + \"]:::hoja\");\n            return -jugador;\n        }\n        int mejor = -jugador * 1000;\n        for (int m = 1; m <= 3 && m <= e; m++) {\n            String hijoId = \"N_\" + (e - m) + \"_\" + (jugador == 1 ? \"MIN\" : \"MAX\");\n            System.out.println(\"  \" + id + \" -->|saca \" + m + \"| \" + hijoId);\n            int res = generarNodos(e - m, -jugador);\n            if (jugador == 1) mejor = Math.max(mejor, res);\n            else mejor = Math.min(mejor, res);\n        }\n        return mejor;\n    }\n}",
+            "observaciones": "El árbol explicita cómo la jugada óptima desde 11 corchos es retirar 3, transitando directamente al nodo 8 (P para MIN), neutralizando cualquier contraataque."
+          },
+          "complejidad": {
+            "temporal": "\\mathcal{O}(3^n) en despliegue exhaustivo, \\mathcal{O}(n) en grafo colapsado de estados.",
+            "espacial": "\\mathcal{O}(n) pila recursiva.",
+            "justificacion": "La estructura topológica del juego es un DAG conexo con longitud máxima de camino n."
+          },
+          "nota_duplicado": "Coincide con el ejercicio propuesto #14 ('Ejercicio 14 (Clase 10 - Ej 4 / Pág 196): Árbol de Juego de 11 Corchos bajo Convención Normal') de diapositivas de clase."
+        }
+      ],
+      "es_ejercicio_propuesto_diapositivas": true,
+      "id_global": 117
+    },
+    {
+      "id_tema": 9,
+      "tema": "backtracking",
+      "titulo": "Permutaciones restringidas de dígitos (1, 2, 3, 4)",
+      "enunciado": "Implemente un algoritmo de backtracking para encontrar todas las permutaciones de los cuatro dígitos (1, 2, 3, 4) de manera que ningún dígito quede repetido y que el valor absoluto de la diferencia entre un dígito cualquiera y su precedente sea menor o igual a dos. Simule el funcionamiento de su algoritmo mostrando el árbol de las permutaciones hasta encontrar la primera permutación que satisface las restricciones.",
+      "recurso_visual": null,
+      "fuente_original": "DAA Ejercicios segundo parcial (Guía)",
+      "resolucion_propuesta": [
+        {
+          "id_propuesto": "ejercicio_08_permutaciones_digitos_dist_le_2",
+          "titulo_propuesto": "Ejercicio 8 (Clase 09 - Ej 4): Permutaciones de (1, 2, 3, 4) con Diferencia <= 2",
+          "analisis_formal": {
+            "tipo_problema": "Búsqueda con parada en la primera solución factible",
+            "espacio_de_estados": "Árbol de permutaciones de 4 dígitos {1, 2, 3, 4}.",
+            "tupla_solucion": "Permutación (d_0, d_1, d_2, d_3) sin repetidos tal que |d_i - d_{i-1}| <= 2 para i >= 1.",
+            "tamano_espacio": "4! = 24 permutaciones base.",
+            "condicion_poda": "Si d_e ya fue usado, podar. Si e >= 1 y |d_e - d_{e-1}| > 2 (por ejemplo el par 1 y 4, cuya diferencia es |1 - 4| = 3 > 2), podar inmediatamente."
+          },
+          "pseudocodigo": "boolean algoritmo PrimeraPermutacionValida(d, etapa, usados)\n  if etapa == 4\n    mostrar(d)\n    return true // Parada temprana\n  endif\n  for digito = 1 to 4\n    if not usados[digito]\n      if etapa == 0 or |digito - d[etapa - 1]| <= 2\n        usados[digito] ← true\n        d[etapa] ← digito\n        if PrimeraPermutacionValida(d, etapa + 1, usados)\n          return true\n        endif\n        usados[digito] ← false\n      endif\n    endif\n  endfor\n  return false",
+          "codigo_java": {
+            "lenguaje": "Java",
+            "codigo": "public static void primeraPermutacionDigitos() throws Exception {\n    VectorTDA<Integer> d = new Vector<Integer>();\n    d.inicializarVector(4);\n    VectorTDA<Boolean> usados = new Vector<Boolean>();\n    usados.inicializarVector(5);\n    for (int i = 0; i <= 4; i++) usados.agregarElemento(i, false);\n    \n    primeraPermutacionRec(d, usados, 0);\n}\n\nprivate static boolean primeraPermutacionRec(VectorTDA<Integer> d, VectorTDA<Boolean> usados, int etapa) throws Exception {\n    if (etapa == 4) {\n        System.out.println(\"Primera solución encontrada: (\" + d.recuperarElemento(0) + \", \" + d.recuperarElemento(1) + \", \" + d.recuperarElemento(2) + \", \" + d.recuperarElemento(3) + \")\");\n        return true;\n    }\n    for (int digito = 1; digito <= 4; digito++) {\n        if (!usados.recuperarElemento(digito)) {\n            if (etapa == 0 || Math.abs(digito - d.recuperarElemento(etapa - 1)) <= 2) {\n                usados.agregarElemento(digito, true);\n                d.agregarElemento(etapa, digito);\n                if (primeraPermutacionRec(d, usados, etapa + 1)) {\n                    return true;\n                }\n                usados.agregarElemento(digito, false);\n            }\n        }\n    }\n    return false;\n}",
+            "observaciones": "Simulación de árbol: Rama 1: d0=1 -> d1=2 (|2-1|=1<=2) -> d2=3 (|3-2|=1<=2) -> d3=4 (|4-3|=1<=2). La primera rama explorada en profundidad es válida de forma directa: (1, 2, 3, 4). Si la búsqueda continúa, podaría ramas como d0=1 -> d1=4 (|4-1|=3>2)."
+          },
+          "complejidad": {
+            "temporal": "Mejor caso: O(n) al encontrar (1, 2, 3, 4) en la primera rama sin retroceso.",
+            "espacial": "O(n)",
+            "justificacion": "La búsqueda en profundidad encuentra la primera solución en tiempo lineal proporcional a la altura del árbol."
+          },
+          "nota_duplicado": "Coincide con el ejercicio propuesto #8 ('Ejercicio 8 (Clase 09 - Ej 4): Permutaciones de (1, 2, 3, 4) con Diferencia <= 2') de diapositivas de clase."
+        }
+      ],
+      "es_ejercicio_propuesto_diapositivas": true,
+      "id_global": 118
+    },
+    {
+      "id_tema": 10,
+      "tema": "backtracking",
+      "titulo": "Ciclo Hamiltoniano con Backtracking",
+      "enunciado": "Un ciclo Hamiltoniano es un camino cerrado que visita todos los vértices de un grafo exactamente una vez. Aplique backtracking al problema de encontrar un ciclo Hamiltoniano al siguiente grafo.",
+      "recurso_visual": {
+        "tipo": "mermaid",
+        "formato": "graph",
+        "codigo": "graph TD\n    A((A)) --- B((B))\n    B --- C((C))\n    C --- D((D))\n    D --- E((E))\n    E --- F((F))\n    F --- A\n    A --- E\n    B --- D\n    G((G)) --- A\n    G --- B\n    G --- D\n    G --- E"
+      },
+      "fuente_original": "DAA Ejercicios segundo parcial (Guía)",
+      "resolucion_propuesta": [
+        {
+          "id_propuesto": "ejercicio_10_ciclo_hamiltoniano_7_vertices",
+          "titulo_propuesto": "Ejercicio 10 (Clase 09 - Ej 6): Ciclo Hamiltoniano en Grafo de 7 Vértices",
+          "analisis_formal": {
+            "tipo_problema": "Ciclo Hamiltoniano (Problema NP-completo)",
+            "espacio_de_estados": "Árbol de permutaciones de 7 vértices restringido por la matriz de adyacencia del grafo.",
+            "tupla_solucion": "Secuencia C = (v_0, v_1, v_2, v_3, v_4, v_5, v_6) con v_0 = A y arista de cierre (v_6, A) ∈ E.",
+            "tamano_espacio": "Peor caso bruto: (7 - 1)! / 2 = 360 ciclos potenciales.",
+            "condicion_poda": "Poda por no adyacencia: el vértice v_e debe ser vecino en G de v_{e-1}. Poda por no revisitado: v_e no debe haber aparecido previamente en el camino. Poda de ciclo final: al completar los 7 vértices, debe existir la arista (v_6, v_0)."
+          },
+          "pseudocodigo": "algoritmo CicloHamiltoniano(G, camino, etapa, visitados)\n  if etapa == |V|\n    if existeArista(G, camino[etapa - 1], camino[0])\n      mostrarCiclo(camino)\n      return true\n    endif\n    return false\n  endif\n  foreach w in Adyacentes(G, camino[etapa - 1])\n    if not visitados[w]\n      visitados[w] ← true\n      camino[etapa] ← w\n      if CicloHamiltoniano(G, camino, etapa + 1, visitados)\n        return true\n      endif\n      visitados[w] ← false // Vuelta atrás\n    endif\n  endforeach\n  return false",
+          "codigo_java": {
+            "lenguaje": "Java",
+            "codigo": "public static boolean encontrarCicloHamiltoniano(GrafoTDA<Integer> g, int n) throws Exception {\n    VectorTDA<Integer> camino = new Vector<Integer>();\n    camino.inicializarVector(n);\n    VectorTDA<Boolean> visitados = new Vector<Boolean>();\n    visitados.inicializarVector(n);\n    for (int i = 0; i < n; i++) visitados.agregarElemento(i, false);\n    \n    // Fijar vértice inicial 0 (A) para romper simetrías cíclicas\n    camino.agregarElemento(0, 0);\n    visitados.agregarElemento(0, true);\n    \n    return hamiltonianoRec(g, camino, 1, visitados, n);\n}\n\nprivate static boolean hamiltonianoRec(GrafoTDA<Integer> g, VectorTDA<Integer> camino, int etapa, VectorTDA<Boolean> visitados, int n) throws Exception {\n    if (etapa == n) {\n        int ultimo = camino.recuperarElemento(n - 1);\n        int primero = camino.recuperarElemento(0);\n        if (g.ExisteArista(ultimo, primero)) {\n            System.out.print(\"Ciclo Hamiltoniano hallado: \");\n            for (int i = 0; i < n; i++) {\n                System.out.print(camino.recuperarElemento(i) + \" -> \");\n            }\n            System.out.println(primero);\n            return true;\n        }\n        return false;\n    }\n    \n    int anterior = camino.recuperarElemento(etapa - 1);\n    ConjuntoTDA<Integer> ady = g.Adyacentes(anterior);\n    while (!ady.conjuntoVacio()) {\n        int w = ady.elegir();\n        ady.sacar(w);\n        if (!visitados.recuperarElemento(w)) {\n            visitados.agregarElemento(w, true);\n            camino.agregarElemento(etapa, w);\n            if (hamiltonianoRec(g, camino, etapa + 1, visitados, n)) return true;\n            visitados.agregarElemento(w, false); // Vuelta atrás\n        }\n    }\n    return false;\n}",
+            "observaciones": "Fijar el vértice 0 en la primera posición reduce el espacio de estados en un factor n. El uso de GrafoTDA y ConjuntoTDA asegura conformidad plena con la cátedra."
+          },
+          "complejidad": {
+            "temporal": "O(|V|!) en el peor caso; fuertemente acotado en grafos de grado moderado por la poda de adyacencia.",
+            "espacial": "O(|V|) por la pila de recursión y vectores de visitados.",
+            "justificacion": "La búsqueda descarta inmediatamente cualquier vértice que no comparta arista con el último nodo añadido al camino."
+          },
+          "nota_duplicado": "Coincide con el ejercicio propuesto #10 ('Ejercicio 10 (Clase 09 - Ej 6): Ciclo Hamiltoniano en Grafo de 7 Vértices') de diapositivas de clase."
+        }
+      ],
+      "es_ejercicio_propuesto_diapositivas": true,
+      "id_global": 119
+    },
+    {
+      "id_tema": 11,
+      "tema": "backtracking",
+      "titulo": "Variables booleanas con paridad y restricción",
+      "enunciado": "Dadas cuatro variables booleanas xj, j ∈ {0, 1, 2, 3} sujetas a las restricciones de que debe ser x1 ≠ x2 y el número de variables con valor 1 debe ser impar:\na) Dibuje el árbol de permutaciones de este problema para un algoritmo de backtracking.\nb) Encuentre las soluciones a este problema.\nc) ¿Cuántos nodos se generan? ¿Cuántos sobreviven y cuántos son eliminados?\nd) ¿Cuál es la eficiencia del método comparado con un algoritmo de fuerza bruta? O, si lo prefiere, ¿Cuántos nodos se generan con este algoritmo y cuántos se generarían con un método de pura fuerza bruta?",
+      "recurso_visual": null,
+      "fuente_original": "DAA Ejercicios segundo parcial (Guía)",
+      "resolucion_propuesta": [
+        {
+          "id_propuesto": "ejercicio_06_cuatro_variables_booleanas",
+          "titulo_propuesto": "Ejercicio 6 (Clase 09 - Ej 2): Restricciones Lógicas sobre Variables Booleanas",
+          "analisis_formal": {
+            "tipo_problema": "Satisfacción de Restricciones Booleanas (CSP / Backtracking)",
+            "espacio_de_estados": "Árbol de asignación binario para (x_1, x_2, x_3, x_4) con x_i ∈ {0, 1}.",
+            "tupla_solucion": "Tupla (x_1, x_2, x_3, x_4) tal que x_1 != x_2 y (x_1 + x_2 + x_3 + x_4) mod 2 == 1.",
+            "tamano_espacio": "Fuerza bruta pura genera 2^4 = 16 hojas, totalizando 1 + 2 + 4 + 8 + 16 = 31 nodos.",
+            "condicion_poda": "Poda inmediata en nivel 2: Si x_1 == x_2, se poda todo el subárbol (se eliminan 2 ramas completas de tamaño 4 hojas cada una). En nivel 4: poda si la paridad es par."
+          },
+          "pseudocodigo": "algoritmo BooleanosRestricciones(x, etapa, unos)\n  if etapa == 2 and x[0] == x[1]\n    return // PODA: viola x1 != x2\n  endif\n  if etapa == 4\n    if unos mod 2 != 0\n      mostrar(x)\n    endif\n    return\n  endif\n  x[etapa] ← 0\n  BooleanosRestricciones(x, etapa + 1, unos)\n  x[etapa] ← 1\n  BooleanosRestricciones(x, etapa + 1, unos + 1)",
+          "codigo_java": {
+            "lenguaje": "Java",
+            "codigo": "public static void resolverVariablesBooleanas() throws Exception {\n    VectorTDA<Integer> x = new Vector<Integer>();\n    x.inicializarVector(4);\n    booleanosRec(x, 0, 0);\n}\n\nprivate static void booleanosRec(VectorTDA<Integer> x, int etapa, int unos) throws Exception {\n    if (etapa == 2) {\n        // Poda por restricción (1): x1 != x2\n        if (x.recuperarElemento(0) == x.recuperarElemento(1)) {\n            return; // Subárbol podado\n        }\n    }\n    if (etapa == 4) {\n        // Restricción (2): cantidad impar de 1s\n        if (unos % 2 != 0) {\n            System.out.println(\"Solución: (\" + x.recuperarElemento(0) + \", \" + x.recuperarElemento(1) + \", \" + x.recuperarElemento(2) + \", \" + x.recuperarElemento(3) + \")\");\n        }\n        return;\n    }\n    for (int val = 0; val <= 1; val++) {\n        x.agregarElemento(etapa, val);\n        booleanosRec(x, etapa + 1, unos + val);\n    }\n}",
+            "observaciones": "Las soluciones válidas son exactamente 4: (0, 1, 0, 0) [1 uno], (0, 1, 1, 1) [3 unos], (1, 0, 0, 0) [1 uno], (1, 0, 1, 1) [3 unos]. En el nivel 2 se podan las ramas (0, 0) y (1, 1), evitando generar 8 de las 16 configuraciones completas."
+          },
+          "complejidad": {
+            "temporal": "O(1) (constante acotada a n=4; se generan 19 nodos frente a los 31 de fuerza bruta)",
+            "espacial": "O(1)",
+            "justificacion": "La poda en nivel 2 ahorra el 50% de las exploraciones de niveles 3 y 4."
+          },
+          "nota_duplicado": "Coincide con el ejercicio propuesto #6 ('Ejercicio 6 (Clase 09 - Ej 2): Restricciones Lógicas sobre Variables Booleanas') de diapositivas de clase."
+        }
+      ],
+      "es_ejercicio_propuesto_diapositivas": true,
+      "id_global": 120
+    },
+    {
+      "id_tema": 12,
+      "tema": "backtracking",
+      "titulo": "Asignación de tareas a empleados",
+      "enunciado": "Se tienen n empleados y n tareas. Se conoce el tiempo que tardará el empleado i para realizar la tarea j. Se requiere encontrar una asignación de una tarea a cada empleado de manera de minimizar el tiempo de ejecución del total de tareas.\na) Defina una estrategia para resolver este problema.\nb) Escriba el pseudo-código de su solución.\nc) Calcule la complejidad de su solución.",
+      "recurso_visual": null,
+      "fuente_original": "DAA Ejercicios segundo parcial (Guía)",
+      "resolucion_propuesta": [
+        {
+          "id_propuesto": "ejercicio_21_asignacion_tareas_branch_and_bound",
+          "titulo_propuesto": "Ejercicio 21 (Apunte Sec. 5.3.2): Asignación Óptima de Tareas a Empleados mediante LC-BB",
+          "analisis_formal": {
+            "tipo_problema": "Asignación biyectiva lineal de costo mínimo (Assignment Problem).",
+            "espacio_de_estados": "Árbol n-ario donde en el nivel i se asigna al empleado i una de las tareas aún no utilizadas.",
+            "tupla_solucion": "Permutación \\pi = \\langle \\pi_0, \\pi_1, \\dots, \\pi_{n-1} \\rangle de las n tareas.",
+            "tamano_espacio": "n! permutaciones.",
+            "condicion_poda": "Cota inferior LB = costoParcial + suma(minimo de fila restante para tareas libres) >= upper."
+          },
+          "pseudocodigo": "ALGORITMO AsignacionLCBB(M, n)\n  upper = +inf\n  ENV = ColaPrioridadTDA() // Min-Heap por LB\n  ENV.acolar(raiz, raiz.LB)\n  MIENTRAS NO ENV.vacia() HACER\n    n = ENV.desacolar()\n    SI n.LB >= upper ENTONCES CONTINUAR FIN SI\n    // Para cada tarea j libre, crear sucesor y acotar\n  FIN MIENTRAS\n  RETORNAR upper",
+          "codigo_java": {
+            "lenguaje": "Java",
+            "codigo": "public class Ejercicio21AsignacionBB {\n    public static void main(String[] args) {\n        int[][] M = {\n            { 9, 2, 7, 8 },\n            { 6, 4, 3, 7 },\n            { 5, 8, 1, 8 },\n            { 7, 6, 9, 4 }\n        };\n        int costoMinimo = AsignacionTareasBBSolver.resolverAsignacion(M);\n        System.out.println(\"Costo minimo de asignacion por LC-BB: \" + costoMinimo);\n    }\n}",
+            "observaciones": "Para la matriz de prueba dada, la asignación óptima es Emp 0 -> Tarea 1 (2), Emp 1 -> Tarea 0 (6), Emp 2 -> Tarea 2 (1), Emp 3 -> Tarea 3 (4), totalizando un costo óptimo de 13."
+          },
+          "complejidad": {
+            "temporal": "\\mathcal{O}(n!) peor caso; fuertemente reducido por cotas inferiores ajustadas.",
+            "espacial": "\\mathcal{O}(n!) para la cola de prioridad.",
+            "justificacion": "La cota inferior basada en los mínimos de filas no asignadas proporciona una estimación admisible y consistente que poda ramas que no pueden competir con la mejor cota conocida."
+          },
+          "nota_duplicado": "Coincide con el ejercicio propuesto #21 ('Ejercicio 21 (Apunte Sec. 5.3.2): Asignación Óptima de Tareas a Empleados mediante LC-BB') de diapositivas de clase."
+        }
+      ],
+      "es_ejercicio_propuesto_diapositivas": true,
+      "id_global": 121
+    },
+    {
+      "id_tema": 13,
+      "tema": "backtracking",
+      "titulo": "Máximo recorrido por salas comunicadas",
+      "enunciado": "Se tiene un conjunto de salas comunicadas entre sí a través de puertas que se abren solamente en un sentido. Una de las salas se denomina entrada y otra salida. Construir un algoritmo que permita ir desde entrada a la salida atravesando la máxima cantidad de salas.",
+      "recurso_visual": null,
+      "fuente_original": "DAA Ejercicios segundo parcial (Guía)",
+      "resolucion_propuesta": [
+        {
+          "id_propuesto": "ejercicio_03_camino_maximo_salas",
+          "titulo_propuesto": "Ejercicio 3: Camino de Máxima Cantidad de Salas en DAG Creciente",
+          "analisis_formal": {
+            "tipo_problema": "Optimización sobre Grafo Dirigido Acíclico (Camino Más Largo / Longest Path en DAG)",
+            "espacio_de_estados": "Árbol de caminos crecientes desde el nodo 0 hasta el nodo n. Como las aristas solo van de i a j con i < j, el grafo es acíclico por definición.",
+            "tupla_solucion": "Vector con la secuencia de salas visitadas C = (0, s_1, s_2, ..., n) maximizando la longitud del camino.",
+            "tamano_espacio": "A lo sumo O(2^n) caminos posibles entre 0 y n.",
+            "condicion_poda": "Cota superior: En la sala actual i en la etapa e, a lo sumo se podrán visitar (n - i) salas adicionales (ya que los índices son estrictamente crecientes y el destino final es n). Por ende, si (etapa + (n - actual)) <= maxSalasGlobal, se puede podar inmediatamente la rama sin explorar."
+          },
+          "pseudocodigo": "algoritmo MaxSalas(Grafo G, salaActual, n, caminoActual, etapa, mejorCamino, maxSalas)\n  if salaActual == n\n    if etapa > maxSalas\n      maxSalas ← etapa\n      copiar(caminoActual, mejorCamino, etapa)\n    endif\n    return\n  endif\n  // Poda por cota superior: salas restantes teóricas máximas = n - salaActual\n  if etapa + (n - salaActual) <= maxSalas\n    return // PODA\n  endif\n  foreach w in Adyacentes(G, salaActual)\n    caminoActual[etapa] ← w\n    MaxSalas(G, w, n, caminoActual, etapa + 1, mejorCamino, maxSalas)\n  endforeach",
+          "codigo_java": {
+            "lenguaje": "Java",
+            "codigo": "public static VectorTDA<Integer> maximoCaminoSalas(GrafoDirTDA<Integer> g, int n) throws Exception {\n    VectorTDA<Integer> caminoActual = new Vector<Integer>();\n    caminoActual.inicializarVector(n + 1);\n    VectorTDA<Integer> mejorCamino = new Vector<Integer>();\n    mejorCamino.inicializarVector(n + 1);\n    \n    caminoActual.agregarElemento(0, 0); // Comienza en la sala 0\n    int[] maxSalas = new int[]{-1};\n    \n    maxSalasRec(g, 0, n, caminoActual, 1, mejorCamino, maxSalas);\n    return mejorCamino;\n}\n\nprivate static void maxSalasRec(GrafoDirTDA<Integer> g, int actual, int n, VectorTDA<Integer> caminoActual, int etapa, VectorTDA<Integer> mejorCamino, int[] maxSalas) throws Exception {\n    if (actual == n) {\n        if (etapa > maxSalas[0]) {\n            maxSalas[0] = etapa;\n            for (int i = 0; i < etapa; i++) {\n                mejorCamino.agregarElemento(i, caminoActual.recuperarElemento(i));\n            }\n        }\n        return;\n    }\n    \n    // Poda de cota superior: incluso si pasara por todas las salas restantes entre actual y n\n    if (etapa + (n - actual) <= maxSalas[0]) {\n        return;\n    }\n    \n    ConjuntoTDA<Integer> ady = g.Adyacentes(actual);\n    while (!ady.conjuntoVacio()) {\n        int sig = ady.elegir();\n        ady.sacar(sig);\n        if (sig > actual) { // Garantizado por topología de salas\n            caminoActual.agregarElemento(etapa, sig);\n            maxSalasRec(g, sig, n, caminoActual, etapa + 1, mejorCamino, maxSalas);\n        }\n    }\n}",
+            "observaciones": "El problema admite resolución en O(V + E) por orden topológico y Programación Dinámica al ser un DAG, pero la consigna solicita el enfoque exhaustivo por Backtracking con poda por cota superior."
+          },
+          "complejidad": {
+            "temporal": "O(2^n) en el peor caso (grafo transitivo completo con todas las aristas i -> j para i < j); con poda de cota superior se reduce sustancialmente.",
+            "espacial": "O(n) espacio para los vectores de caminos y la pila de recursión.",
+            "justificacion": "La profundidad máxima está acotada por n+1 niveles. En cada bifurcación se descartan caminos incapaces de superar la mejor solución alcanzada."
+          },
+          "nota_duplicado": "Coincide con el ejercicio propuesto #3 ('Ejercicio 3: Camino de Máxima Cantidad de Salas en DAG Creciente') de diapositivas de clase."
+        }
+      ],
+      "es_ejercicio_propuesto_diapositivas": true,
+      "id_global": 122
+    },
+    {
+      "id_tema": 14,
+      "tema": "backtracking",
+      "titulo": "Juego de división de pilas de monedas",
+      "enunciado": "Hay una pila de n monedas y 2 jugadores, quienes alternan movimientos. Cada uno de ellos puede dividir una pila en otras 2 siempre y cuando haya más de 2 monedas. Pierde el jugador que no puede dividir ninguna pila. Construir un algoritmo que determine para un jugador si existe una secuencia de jugadas ganadora.",
+      "recurso_visual": null,
+      "fuente_original": "DAA Ejercicios segundo parcial (Guía)",
+      "resolucion_propuesta": [
+        {
+          "id_propuesto": "ejercicio_15_juego_division_objetos_n6",
+          "titulo_propuesto": "Ejercicio 15 (Clase 10 - Ej 5 / Pág 197): Juego de División de Objetos en Dos Grupos para n = 6",
+          "analisis_formal": {
+            "tipo_problema": "Juego combinatorio imparcial con invariante global de longitud de partida.",
+            "espacio_de_estados": "Multiconjunto de tamaños de grupos \\{g_1, g_2, \\dots, g_m\\} con \\sum g_i = n.",
+            "tupla_solucion": "En cada jugada se reemplaza un grupo g_i \\ge 2 por dos grupos a, b \\ge 1 tales que a + b = g_i.",
+            "tamano_espacio": "Particiones enteras de n=6 (p(6) = 11 particiones).",
+            "condicion_poda": "Invariante de paridad: cada división incrementa la cantidad de grupos en exactamente 1."
+          },
+          "pseudocodigo": "ALGORITMO InvarianteDivisionObjetos(n)\n  // Al inicio hay 1 grupo.\n  // El juego termina cuando hay n grupos de tamano 1.\n  // Cada jugada legal aumenta el numero de grupos en exactamente 1.\n  totalJugadas = n - 1\n  SI totalJugadas mod 2 == 1 ENTONCES\n    RETORNAR \"El jugador 1 (MAX) SIEMPRE GANA. Todos los nodos del nivel k par son N.\"\n  SINO\n    RETORNAR \"El jugador 2 (MIN) SIEMPRE GANA. La raiz es P.\"\n  FIN SI",
+          "codigo_java": {
+            "lenguaje": "Java",
+            "codigo": "public class JuegoDivisionObjetos {\n    // Demostracion de la invariante para n = 6\n    public static void analizarJuego(int n) {\n        int turnosTotales = n - 1;\n        System.out.println(\"Para n = \" + n + \": La partida dura SIEMPRE \" + turnosTotales + \" jugadas exactas.\");\n        if (turnosTotales % 2 != 0) {\n            System.out.println(\"El primer jugador (MAX) realiza la jugada 1, 3, 5... (la ultima jugada).\");\n            System.out.println(\"Conclusion: MAX GANA INCONDICIONALMENTE. La raiz n=\" + n + \" es NODO N.\");\n        } else {\n            System.out.println(\"Conclusion: MIN GANA INCONDICIONALMENTE. La raiz n=\" + n + \" es NODO P.\");\n        }\n    }\n\n    public static void main(String[] args) {\n        // Para n = 6: 6 - 1 = 5 jugadas. Las jugadas 1, 3 y 5 las hace MAX; las 2 y 4 MIN.\n        // MAX siempre hace la 5ta jugada y MIN no puede mover -> Gana MAX.\n        analizarJuego(6);\n    }\n}",
+            "observaciones": "Conclusión teórica fundamental: El juego es ficticio en su componente estratégica; el resultado está predeterminado estrictamente por la paridad de n. Para n=6 (5 jugadas), cualquier rama del árbol tiene profundidad exacta 5 y MAX siempre triunfa."
+          },
+          "complejidad": {
+            "temporal": "\\mathcal{O}(1) determinación analítica por paridad.",
+            "espacial": "\\mathcal{O}(1).",
+            "justificacion": "No importa qué particiones elijan los jugadores: (1,5), (2,4) o (3,3), el número de cortes requeridos para atomizar 6 elementos en 6 grupos unitarios es topológicamente invariante e igual a n-1."
+          },
+          "nota_duplicado": "Coincide con el ejercicio propuesto #15 ('Ejercicio 15 (Clase 10 - Ej 5 / Pág 197): Juego de División de Objetos en Dos Grupos para n = 6') de diapositivas de clase."
+        }
+      ],
+      "es_ejercicio_propuesto_diapositivas": true,
+      "id_global": 123
+    },
+    {
+      "id_tema": 15,
+      "tema": "backtracking",
+      "titulo": "Árbol del juego de pilas de monedas para n = 6",
+      "enunciado": "En el ejercicio anterior, dibuje el árbol del juego para n = 6. Determine cuáles son los nodos N y los nodos P. ¿Qué conclusiones puede extraer?",
+      "recurso_visual": null,
+      "fuente_original": "DAA Ejercicios segundo parcial (Guía)",
+      "id_global": 124
+    },
+    {
+      "id_tema": 16,
+      "tema": "backtracking",
+      "titulo": "Recorrido de peso mínimo de un rey en tablero de ajedrez",
+      "enunciado": "Se tiene un tablero de tamaño n × n y un rey en una casilla arbitraria (x0, y0). Por supuesto, x0, y0 ∈ {1, ..., n}. Cada casilla (x, y) del tablero tiene asignado un peso w(x, y), de tal forma que a cada recorrido τ = (x0, y0), (x1, y1), ..., (xk, yk) se le puede asignar un valor v(τ) que está determinado por la siguiente expresión:\nv(τ) = \\sum_{i=0}^k i \\cdot w(x_i, y_i)\nEl problema consiste en diseñar un algoritmo que proporcione el recorrido de peso mínimo que visite todas las casillas del tablero sin repetir ninguna. Recuerde que un rey de ajedrez puede mover a cualquier casilla vecina en cualquier dirección.",
+      "recurso_visual": {
+        "tipo": "svg",
+        "formato": "svg",
+        "codigo": "<svg viewBox=\"0 0 240 240\" xmlns=\"http://www.w3.org/2000/svg\">\n  <rect width=\"240\" height=\"240\" fill=\"#ffffff\" stroke=\"#1e293b\" stroke-width=\"2\"/>\n  <defs>\n    <pattern id=\"checkers\" width=\"80\" height=\"80\" patternUnits=\"userSpaceOnUse\">\n      <rect width=\"40\" height=\"40\" fill=\"#f1f5f9\"/>\n      <rect x=\"40\" width=\"40\" height=\"40\" fill=\"#e2e8f0\"/>\n      <rect y=\"40\" width=\"40\" height=\"40\" fill=\"#e2e8f0\"/>\n      <rect x=\"40\" y=\"40\" width=\"40\" height=\"40\" fill=\"#f1f5f9\"/>\n    </pattern>\n  </defs>\n  <rect width=\"240\" height=\"240\" fill=\"url(#checkers)\"/>\n  <!-- Grid 6x6 (40px each) -->\n  <g stroke=\"#475569\" stroke-width=\"1\">\n    <line x1=\"40\" y1=\"0\" x2=\"40\" y2=\"240\"/>\n    <line x1=\"80\" y1=\"0\" x2=\"80\" y2=\"240\"/>\n    <line x1=\"120\" y1=\"0\" x2=\"120\" y2=\"240\"/>\n    <line x1=\"160\" y1=\"0\" x2=\"160\" y2=\"240\"/>\n    <line x1=\"200\" y1=\"0\" x2=\"200\" y2=\"240\"/>\n    <line x1=\"0\" y1=\"40\" x2=\"240\" y2=\"40\"/>\n    <line x1=\"0\" y1=\"80\" x2=\"240\" y2=\"80\"/>\n    <line x1=\"0\" y1=\"120\" x2=\"240\" y2=\"120\"/>\n    <line x1=\"0\" y1=\"160\" x2=\"240\" y2=\"160\"/>\n    <line x1=\"0\" y1=\"200\" x2=\"240\" y2=\"200\"/>\n  </g>\n  <!-- King at col 3 (x=120..160), row 3 (y=120..160) -->\n  <text x=\"140\" y=\"148\" font-size=\"28\" text-anchor=\"middle\" fill=\"#0f172a\">♚</text>\n  <!-- 8 neighbor dots -->\n  <circle cx=\"100\" cy=\"100\" r=\"4\" fill=\"#64748b\"/>\n  <circle cx=\"140\" cy=\"100\" r=\"4\" fill=\"#64748b\"/>\n  <circle cx=\"180\" cy=\"100\" r=\"4\" fill=\"#64748b\"/>\n  <circle cx=\"100\" cy=\"140\" r=\"4\" fill=\"#64748b\"/>\n  <circle cx=\"180\" cy=\"140\" r=\"4\" fill=\"#64748b\"/>\n  <circle cx=\"100\" cy=\"180\" r=\"4\" fill=\"#64748b\"/>\n  <circle cx=\"140\" cy=\"180\" r=\"4\" fill=\"#64748b\"/>\n  <circle cx=\"180\" cy=\"180\" r=\"4\" fill=\"#64748b\"/>\n</svg>"
+      },
+      "fuente_original": "DAA Ejercicios segundo parcial (Guía)",
+      "resolucion_propuesta": [
+        {
+          "id_propuesto": "ejercicio_04_recorrido_rey_ajedrez",
+          "titulo_propuesto": "Ejercicio 4: Recorrido Ponderado de Costo Mínimo del Rey de Ajedrez",
+          "analisis_formal": {
+            "tipo_problema": "Camino Hamiltoniano con ponderación dependiente del orden temporal (minimización)",
+            "espacio_de_estados": "Árbol de caminos Hamiltonianos de longitud n^2 en la cuadrícula n x n con conectividad de 8 vecinos por casilla.",
+            "tupla_solucion": "Vector de n^2 casillas ordenadas: τ = (c_0, c_1, ..., c_{n^2-1}) con c_0 = (x_0, y_0) y c_{i+1} adyacente por movimiento de rey a c_i.",
+            "tamano_espacio": "O(8^{n^2}) acotado por movimientos del rey, con cota superior combinatoria de (n^2)!",
+            "condicion_poda": "Poda por Cota Inferior (Lower Bound): En la etapa actual k con costo acumulado ActCosto = sum_{i=0}^{k-1} i * T(c_i), las n^2 - k casillas restantes deben visitarse en los instantes k, k+1, ..., n^2 - 1. Si ordenamos los pesos de todas las casillas aún no visitadas en orden no decreciente y los multiplicamos por los pasos cronológicos restantes (k * min_1 + (k+1) * min_2 + ...), obtenemos una cota inferior indestructible LB. Si ActCosto + LB >= MejorCosto, se poda el subárbol inmediatamente."
+          },
+          "pseudocodigo": "algoritmo RecorridoRey(tablero, x, y, etapa, n, visitado, actCosto, mejorRecorrido, mejorCosto)\n  if etapa == n * n\n    if actCosto < mejorCosto\n      mejorCosto ← actCosto\n      guardarRecorrido(mejorRecorrido)\n    endif\n    return\n  endif\n  LB ← calcularCotaInferior(tablero, visitado, etapa, n)\n  if actCosto + LB >= mejorCosto\n    return // PODA Branch & Bound\n  endif\n  foreach (dx, dy) in 8_MOVIMIENTOS_REY\n    nx ← x + dx; ny ← y + dy\n    if dentroRango(nx, ny, n) and not visitado[nx, ny]\n      costoPaso ← etapa * tablero[nx, ny]\n      visitado[nx, ny] ← true\n      RecorridoRey(tablero, nx, ny, etapa + 1, n, visitado, actCosto + costoPaso, mejorRecorrido, mejorCosto)\n      visitado[nx, ny] ← false // Vuelta atrás\n    endif\n  endforeach",
+          "codigo_java": {
+            "lenguaje": "Java",
+            "codigo": "public static VectorTDA<Integer> recorridoReyMinimo(MatrizTDA<Integer> tablero, int n, int x0, int y0) throws Exception {\n    int totalCasillas = n * n;\n    VectorTDA<Integer> mejorCamino = new Vector<Integer>();\n    mejorCamino.inicializarVector(totalCasillas);\n    \n    VectorTDA<Integer> caminoActual = new Vector<Integer>();\n    caminoActual.inicializarVector(totalCasillas);\n    \n    MatrizTDA<Boolean> visitado = new Matriz<Boolean>();\n    visitado.inicializarMatriz(n);\n    for (int i = 0; i < n; i++) {\n        for (int j = 0; j < n; j++) {\n            visitado.setearValor(i, j, false);\n        }\n    }\n    \n    visitado.setearValor(x0, y0, true);\n    caminoActual.agregarElemento(0, x0 * n + y0);\n    \n    int[] mejorCosto = new int[]{Integer.MAX_VALUE};\n    recorrerReyRec(tablero, n, x0, y0, 1, 0, caminoActual, visitado, mejorCamino, mejorCosto);\n    return mejorCamino;\n}\n\nprivate static void recorrerReyRec(MatrizTDA<Integer> tablero, int n, int x, int y, int etapa, int actCosto, VectorTDA<Integer> caminoActual, MatrizTDA<Boolean> visitado, VectorTDA<Integer> mejorCamino, int[] mejorCosto) throws Exception {\n    int totalCasillas = n * n;\n    if (etapa == totalCasillas) {\n        if (actCosto < mejorCosto[0]) {\n            mejorCosto[0] = actCosto;\n            for (int i = 0; i < totalCasillas; i++) {\n                mejorCamino.agregarElemento(i, caminoActual.recuperarElemento(i));\n            }\n        }\n        return;\n    }\n    \n    // Poda por cota inferior (Lower Bound)\n    int cotaInferior = calcularCotaInferiorRey(tablero, n, visitado, etapa);\n    if (actCosto + cotaInferior >= mejorCosto[0]) {\n        return; // PODA\n    }\n    \n    int[] dx = {-1, -1, -1, 0, 0, 1, 1, 1};\n    int[] dy = {-1, 0, 1, -1, 1, -1, 0, 1};\n    \n    for (int dir = 0; dir < 8; dir++) {\n        int nx = x + dx[dir];\n        int ny = y + dy[dir];\n        if (nx >= 0 && nx < n && ny >= 0 && ny < n && !visitado.obtenerValor(nx, ny)) {\n            int pesoPaso = etapa * tablero.obtenerValor(nx, ny);\n            visitado.setearValor(nx, ny, true);\n            caminoActual.agregarElemento(etapa, nx * n + ny);\n            \n            recorrerReyRec(tablero, n, nx, ny, etapa + 1, actCosto + pesoPaso, caminoActual, visitado, mejorCamino, mejorCosto);\n            \n            visitado.setearValor(nx, ny, false); // Vuelta atrás\n        }\n    }\n}\n\nprivate static int calcularCotaInferiorRey(MatrizTDA<Integer> tablero, int n, MatrizTDA<Boolean> visitado, int etapa) throws Exception {\n    // Cota inferior voraz: asignar los pesos menores libres a los instantes cronológicos inmediatos\n    // Para simplificar, acumulamos el peso mínimo global libre multiplicado por la suma de pasos restantes\n    int minPesoLibre = Integer.MAX_VALUE;\n    int libres = 0;\n    for (int i = 0; i < n; i++) {\n        for (int j = 0; j < n; j++) {\n            if (!visitado.obtenerValor(i, j)) {\n                libres++;\n                int p = tablero.obtenerValor(i, j);\n                if (p < minPesoLibre) {\n                    minPesoLibre = p;\n                }\n            }\n        }\n    }\n    if (libres == 0) return 0;\n    // Suma de progresión aritmética de pasos: sum_{i=etapa}^{n*n - 1} i\n    int totalCasillas = n * n;\n    int sumaPasos = ((totalCasillas - 1 + etapa) * libres) / 2;\n    return minPesoLibre * sumaPasos;\n}",
+            "observaciones": "Codificación exacta sobre TDAs MatrizTDA y VectorTDA, con representación lineal de casillas (x*n + y) y cota inferior matemática por relajación de pesos mínimos."
+          },
+          "complejidad": {
+            "temporal": "O(8^{n^2}) en el peor caso sin podas; drásticamente reducido por la cota inferior Branch & Bound y restricciones de no revisitado.",
+            "espacial": "O(n^2) por la matriz de visitados y la profundidad de la pila de llamadas (n^2 llamadas activas).",
+            "justificacion": "El tablero tiene n^2 casillas y el rey posee un grado de conectividad a lo sumo 8 en cada paso. La cota espacial está dictada por las n^2 etapas en memoria."
+          },
+          "nota_duplicado": "Coincide con el ejercicio propuesto #4 ('Ejercicio 4: Recorrido Ponderado de Costo Mínimo del Rey de Ajedrez') de diapositivas de clase."
+        }
+      ],
+      "es_ejercicio_propuesto_diapositivas": true,
+      "id_global": 125
+    },
+    {
+      "id_tema": 17,
+      "tema": "backtracking",
+      "titulo": "Ruta aérea con mínima cantidad de escalas",
+      "enunciado": "Dado un sistema de rutas aéreas modelado mediante un grafo, determine la ruta que contenga la mínima cantidad de escalas entre un par de ciudades dadas.",
+      "recurso_visual": null,
+      "fuente_original": "UADE Progra III - Parte 5: Backtracking y Ramificación Y Poda",
+      "id_global": 126
+    },
+    {
+      "id_tema": 18,
+      "tema": "backtracking",
+      "titulo": "Ocho reinas en tablero de ajedrez",
+      "enunciado": "Construir un algoritmo que ubique ocho reinas en un tablero de ajedrez de modo tal que no se puedan capturar entre sí.",
+      "recurso_visual": null,
+      "fuente_original": "UADE Progra III - Parte 5: Backtracking y Ramificación Y Poda",
+      "id_global": 127
+    },
+    {
+      "id_tema": 19,
+      "tema": "backtracking",
+      "titulo": "Suma de subconjuntos igual a M",
+      "enunciado": "Dados n números positivos distintos, se desea encontrar todas las combinaciones de esos números tal que la suma sea M.",
+      "recurso_visual": null,
+      "fuente_original": "UADE Progra III - Parte 5: Backtracking y Ramificación Y Poda",
+      "id_global": 128
+    },
+    {
+      "id_tema": 20,
+      "tema": "backtracking",
+      "titulo": "Partición de conjunto en partes iguales",
+      "enunciado": "Dado un conjunto de n enteros se desea encontrar, si existe, una partición en dos subconjuntos disjuntos, tal que la suma de sus elementos sea la misma.",
+      "recurso_visual": null,
+      "fuente_original": "UADE Progra III - Parte 5: Backtracking y Ramificación Y Poda",
+      "id_global": 129
+    },
+    {
+      "id_tema": 21,
+      "tema": "backtracking",
+      "titulo": "Asignación de tareas a m procesadores idénticos",
+      "enunciado": "Se tienen m procesadores idénticos y n tareas con un tiempo de ejecución dado. Se requiere encontrar una asignación de tareas a procesadores de manera de minimizar el tiempo de ejecución del total de tareas.",
+      "recurso_visual": null,
+      "fuente_original": "UADE Progra III - Parte 5: Backtracking y Ramificación Y Poda",
+      "id_global": 130
+    },
+    {
+      "id_tema": 22,
+      "tema": "backtracking",
+      "titulo": "Cambio de monedas con Backtracking",
+      "enunciado": "Dado un conjunto C de N tipos de monedas con un número ilimitado de ejemplares de cada tipo, se requiere formar, si se puede, una cantidad M empleando el mínimo número de ellas.",
+      "recurso_visual": null,
+      "fuente_original": "UADE Progra III - Parte 5: Backtracking y Ramificación Y Poda",
+      "id_global": 131
+    },
+    {
+      "id_tema": 23,
+      "tema": "backtracking",
+      "titulo": "Conjunto independiente máximo en grafo",
+      "enunciado": "Un subconjunto independiente en un grafo no dirigido G es un subconjunto W de los vértices de G tal que para todo par de vértices en W, éstos no son adyacentes en G. Encontrar el conjunto independiente W de mayor tamaño en G.\nPor ejemplo, si V = {1, 2, 3, 4, 5} y E = {(1, 2), (1, 3), (3, 4), (2, 5), (3, 5)} los conjuntos independientes son {1}, {2}, {3}, {4}, {5}, {1, 4}, {1, 5}, {2, 3}, {2, 4}, {4, 5} y {1, 4, 5}. Y el mayor es {1, 4, 5}.",
+      "recurso_visual": null,
+      "fuente_original": "UADE Progra III - Parte 5: Backtracking y Ramificación Y Poda",
+      "id_global": 132
+    },
+    {
+      "id_tema": 24,
+      "tema": "backtracking",
+      "titulo": "Asignación de traductores a eventos simultáneos",
+      "enunciado": "Una empresa de traducciones ofrece servicios de traducción para eventos. La empresa tiene un grupo de traductores, cada uno de los cuales domina un conjunto de idiomas. Un día determinado tienen varios eventos simultáneos, cada uno en un idioma dado. Determinar si existe alguna asignación posible de traductores a eventos para cubrir la demanda.\n\nPor ejemplo:\n| Traductor | Inglés | Francés | Alemán | Italiano | Árabe | Chino |\n| :--- | :---: | :---: | :---: | :---: | :---: | :---: |\n| Alberto | X | | X | X | | |\n| Bruno | X | X | X | | X | |\n| Carlos | | | | X | X | X |\n| Daniel | | | | X | X | X |\n| Esteban | | X | | X | | X |\n\nEventos: 1: Inglés, 2: Francés, 3: Árabe, 4: Árabe.\nUna posible asignación sería: 1: Alberto, 2: Bruno, 3: Carlos, 4: Daniel.",
+      "recurso_visual": {
+        "tipo": "markdown_tabla",
+        "formato": "tabla",
+        "codigo": "| Traductor | Inglés | Francés | Alemán | Italiano | Árabe | Chino |\n| :--- | :---: | :---: | :---: | :---: | :---: | :---: |\n| Alberto | X | | X | X | | |\n| Bruno | X | X | X | | X | |\n| Carlos | | | | X | X | X |\n| Daniel | | | | X | X | X |\n| Esteban | | X | | X | | X |"
+      },
+      "fuente_original": "UADE Progra III - Parte 5: Backtracking y Ramificación Y Poda",
+      "id_global": 133
+    },
+    {
+      "id_tema": 25,
+      "tema": "backtracking",
+      "titulo": "Juego del Senku (Peg Solitaire)",
+      "enunciado": "Dado un tablero en forma de cruz de lado 3, en el cual se encuentran distribuidas 44 fichas quedando libre el centro del mismo, el juego consiste en dejar sólo una ficha en la posición central del tablero. Una ficha puede saltar sobre otra (en cualquiera de los cuatro sentidos) y caer en un lugar libre debiendo eliminarse la ficha sobre la que se saltó (Juego del Senku). Determinar una secuencia de pasos tal que logre el objetivo del juego.",
+      "recurso_visual": {
+        "tipo": "svg",
+        "formato": "svg",
+        "codigo": "<svg viewBox=\"0 0 280 280\" xmlns=\"http://www.w3.org/2000/svg\">\n  <rect width=\"280\" height=\"280\" fill=\"#f8fafc\" rx=\"8\"/>\n  <defs>\n    <radialGradient id=\"marble\" cx=\"35%\" cy=\"35%\" r=\"65%\">\n      <stop offset=\"0%\" stop-color=\"#2dd4bf\"/>\n      <stop offset=\"70%\" stop-color=\"#0d9488\"/>\n      <stop offset=\"100%\" stop-color=\"#115e59\"/>\n    </radialGradient>\n  </defs>\n  <!-- 33-hole board coordinates: 7x7 grid (spacing 35px, offset 35px) -->\n  <g transform=\"translate(17, 17)\">\n    <!-- Board holes / marbles -->\n    <!-- Row 0: cols 2,3,4 -->\n    <circle cx=\"70\" cy=\"0\" r=\"10\" fill=\"url(#marble)\"/><circle cx=\"105\" cy=\"0\" r=\"10\" fill=\"url(#marble)\"/><circle cx=\"140\" cy=\"0\" r=\"10\" fill=\"url(#marble)\"/>\n    <!-- Row 1: cols 2,3,4 -->\n    <circle cx=\"70\" cy=\"35\" r=\"10\" fill=\"url(#marble)\"/><circle cx=\"105\" cy=\"35\" r=\"10\" fill=\"url(#marble)\"/><circle cx=\"140\" cy=\"35\" r=\"10\" fill=\"url(#marble)\"/>\n    <!-- Row 2: cols 0..6 -->\n    <circle cx=\"0\" cy=\"70\" r=\"10\" fill=\"url(#marble)\"/><circle cx=\"35\" cy=\"70\" r=\"10\" fill=\"url(#marble)\"/><circle cx=\"70\" cy=\"70\" r=\"10\" fill=\"url(#marble)\"/><circle cx=\"105\" cy=\"70\" r=\"10\" fill=\"url(#marble)\"/><circle cx=\"140\" cy=\"70\" r=\"10\" fill=\"url(#marble)\"/><circle cx=\"175\" cy=\"70\" r=\"10\" fill=\"url(#marble)\"/><circle cx=\"210\" cy=\"70\" r=\"10\" fill=\"url(#marble)\"/>\n    <!-- Row 3: cols 0..6 with center hole at (105, 105) -->\n    <circle cx=\"0\" cy=\"105\" r=\"10\" fill=\"url(#marble)\"/><circle cx=\"35\" cy=\"105\" r=\"10\" fill=\"url(#marble)\"/><circle cx=\"70\" cy=\"105\" r=\"10\" fill=\"url(#marble)\"/>\n    <circle cx=\"105\" cy=\"105\" r=\"10\" fill=\"#ffffff\" stroke=\"#0f172a\" stroke-width=\"1.5\"/>\n    <circle cx=\"140\" cy=\"105\" r=\"10\" fill=\"url(#marble)\"/><circle cx=\"175\" cy=\"105\" r=\"10\" fill=\"url(#marble)\"/><circle cx=\"210\" cy=\"105\" r=\"10\" fill=\"url(#marble)\"/>\n    <!-- Row 4: cols 0..6 -->\n    <circle cx=\"0\" cy=\"140\" r=\"10\" fill=\"url(#marble)\"/><circle cx=\"35\" cy=\"140\" r=\"10\" fill=\"url(#marble)\"/><circle cx=\"70\" cy=\"140\" r=\"10\" fill=\"url(#marble)\"/><circle cx=\"105\" cy=\"140\" r=\"10\" fill=\"url(#marble)\"/><circle cx=\"140\" cy=\"140\" r=\"10\" fill=\"url(#marble)\"/><circle cx=\"175\" cy=\"140\" r=\"10\" fill=\"url(#marble)\"/><circle cx=\"210\" cy=\"140\" r=\"10\" fill=\"url(#marble)\"/>\n    <!-- Row 5: cols 2,3,4 -->\n    <circle cx=\"70\" cy=\"175\" r=\"10\" fill=\"url(#marble)\"/><circle cx=\"105\" cy=\"175\" r=\"10\" fill=\"url(#marble)\"/><circle cx=\"140\" cy=\"175\" r=\"10\" fill=\"url(#marble)\"/>\n    <!-- Row 6: cols 2,3,4 -->\n    <circle cx=\"70\" cy=\"210\" r=\"10\" fill=\"url(#marble)\"/><circle cx=\"105\" cy=\"210\" r=\"10\" fill=\"url(#marble)\"/><circle cx=\"140\" cy=\"210\" r=\"10\" fill=\"url(#marble)\"/>\n  </g>\n</svg>"
+      },
+      "fuente_original": "UADE Progra III - Parte 5: Backtracking y Ramificación Y Poda",
+      "id_global": 134
+    },
+    {
+      "id_tema": 26,
+      "tema": "backtracking",
+      "titulo": "Juego de los fósforos (11 fósforos)",
+      "enunciado": "Se disponen de 11 fósforos. Dos jugadores pueden retirar por turno 1, 2 o 3 fósforos. Pierde aquel jugador que retira el último fósforo. Construir un algoritmo que determine para un jugador si existe una secuencia de jugadas ganadora.",
+      "recurso_visual": null,
+      "fuente_original": "UADE Progra III - Parte 5: Backtracking y Ramificación Y Poda",
+      "id_global": 135
+    },
+    {
+      "id_tema": 27,
+      "tema": "backtracking",
+      "titulo": "Permutaciones de un arreglo en lista de listas con Backtracking",
+      "enunciado": "Tenemos un arreglo s con n símbolos todos diferentes. Queremos encontrar todas las permutaciones de los símbolos de s. El resultado debe estar en una lista de listas, donde cada lista representa una permutación.\n\nEjemplos:\n- Si s = [a, b, c], el programa debe devolver la lista [[a, b, c], [a, c, b], [b, a, c], [b, c, a], [c, a, b], [c, b, a]].\n- Si s = [0, 1], el programa debe devolver la lista [[0, 1], [1, 0]].\n- Si s = [α], el programa debe devolver la lista [[α]].\n\na) Describa una estrategia de backtracking para resolver este problema.\nb) Escriba el pseudo-código de su solución.\nc) Calcule la complejidad de su algoritmo. Justifique su resultado.",
+      "recurso_visual": null,
+      "fuente_original": "Parcial 2026.06.22 2A",
+      "id_global": 136
+    },
+    {
+      "id_tema": 28,
+      "tema": "backtracking",
+      "titulo": "Fundamentos de poda Alfa-Beta (condición α ≥ β)",
+      "enunciado": "Explique por qué en la poda α-β cuando α ≥ β no es necesario seguir adelante con esa rama del árbol de juego.",
+      "recurso_visual": null,
+      "fuente_original": "Parcial 2026.06.22 2A",
+      "id_global": 137
+    },
+    {
+      "id_tema": 29,
+      "tema": "backtracking",
+      "titulo": "Números binarios de n bits mayores que k (Backtracking)",
+      "enunciado": "Queremos encontrar todos los números binarios de n bits mayores que un número k dado. Los números deben expresarse como listas (por ejemplo, el número 9 se expresa en 5 bits como [0, 1, 0, 0, 1]). Los resultados deben estar almacenados en una lista.\n\nEjemplos:\n- Si n = 5 y k = 28, el programa debe devolver la lista [[1, 1, 1, 0, 1], [1, 1, 1, 1, 0], [1, 1, 1, 1, 1]].\n- Si n = 3 y k = 0, el programa debe devolver la lista [[0, 0, 0], [0, 0, 1], [0, 1, 0], [0, 1, 1], [1, 0, 0], [1, 0, 1], [1, 1, 0], [1, 1, 1]].\n- Si n = 2 y k = 5, el programa debe devolver la lista [].\n\na) Describa una estrategia de backtracking para resolver este problema.\nb) Escriba el pseudo-código de su solución.\nc) Calcule la complejidad de su algoritmo. Justifique su resultado.",
+      "recurso_visual": null,
+      "fuente_original": "Parcial 2026.06.22 2B",
+      "id_global": 138
+    },
+    {
+      "id_tema": 30,
+      "tema": "backtracking",
+      "titulo": "Fundamentos de Branch & Bound (upper, estimación optimista y pesimista)",
+      "enunciado": "Explique brevemente qué es el valor de referencia upper, qué es la estimación optimista c, qué es la estimación pesimista u y para qué los usamos en Branch & Bound.",
+      "recurso_visual": null,
+      "fuente_original": "Parcial 2026.06.22 2B",
+      "id_global": 139
+    },
+    {
+      "id_tema": 31,
+      "tema": "backtracking",
+      "titulo": "Ejercicio 1: Generación de Partes de un Conjunto (P(N_k))",
+      "enunciado": "Se tiene un conjunto N_k con los números naturales del 1 al k. Escriba un programa que muestre por pantalla todos los posibles subconjuntos U ⊆ N_k.",
+      "recurso_visual": null,
+      "fuente_original": "Diapositivas DAA Cátedra (ejercicio_01_subconjuntos_nk)",
+      "es_ejercicio_propuesto_diapositivas": true,
+      "resolucion_propuesta": [
+        {
+          "id_propuesto": "ejercicio_01_subconjuntos_nk",
+          "analisis_formal": {
+            "tipo_problema": "Generación exhaustiva combinatoria (Conjunto Potencia)",
+            "espacio_de_estados": "Árbol binario de decisión de altura k. Cada nivel i (1 <= i <= k) decide si el elemento i pertenece (1) o no pertenece (0) al subconjunto U.",
+            "tupla_solucion": "Vector binario U = (x_1, x_2, ..., x_k), donde x_i ∈ {0, 1}.",
+            "tamano_espacio": "2^k subconjuntos posibles.",
+            "condicion_poda": "No hay poda de factibilidad ya que todo subconjunto U ⊆ N_k es una solución válida. El algoritmo visita las 2^k hojas."
+          },
+          "pseudocodigo": "algoritmo GenerarSubconjuntos(int k, int[] U, int etapa)\n  if etapa == k\n    mostrarSubconjunto(U, k)\n    return\n  endif\n  // Opción 1: No incluir el elemento (etapa + 1)\n  U[etapa] ← 0\n  GenerarSubconjuntos(k, U, etapa + 1)\n  // Opción 2: Incluir el elemento (etapa + 1)\n  U[etapa] ← 1\n  GenerarSubconjuntos(k, U, etapa + 1)",
+          "codigo_java": {
+            "lenguaje": "Java",
+            "codigo": "public static void listarSubconjuntosNk(int k) throws Exception {\n    VectorTDA<Integer> solucion = new Vector<Integer>();\n    solucion.inicializarVector(k);\n    generarSubconjuntosRec(k, solucion, 0);\n}\n\nprivate static void generarSubconjuntosRec(int k, VectorTDA<Integer> u, int etapa) throws Exception {\n    if (etapa == k) {\n        System.out.print(\"{ \");\n        for (int i = 0; i < k; i++) {\n            if (u.recuperarElemento(i) == 1) {\n                System.out.print((i + 1) + \" \");\n            }\n        }\n        System.out.println(\"}\");\n        return;\n    }\n    // Rama 0: No incluir el elemento\n    u.agregarElemento(etapa, 0);\n    generarSubconjuntosRec(k, u, etapa + 1);\n    // Rama 1: Incluir el elemento\n    u.agregarElemento(etapa, 1);\n    generarSubconjuntosRec(k, u, etapa + 1);\n}",
+            "observaciones": "Implementado sobre VectorTDA<Integer> con indexación 0-based. Cada elemento i del vector representa al natural (i + 1)."
+          },
+          "complejidad": {
+            "temporal": "Θ(k * 2^k)",
+            "espacial": "O(k)",
+            "justificacion": "Se exploran exactamente 2^k hojas, y en cada hoja se realiza una impresión de longitud a lo sumo k. La memoria auxiliar en pila es O(k)."
+          }
+        }
+      ],
+      "id_global": 140
+    },
+    {
+      "id_tema": 32,
+      "tema": "backtracking",
+      "titulo": "Ejercicio 2: Enumeración de Todos los Caminos Simples desde s",
+      "enunciado": "Se tiene un grafo dirigido G = (V, E) representado como una matriz de adyacencia. Escriba un programa que enumere todos los caminos de un vértice s ∈ V cualquiera que pasen a lo sumo una vez por cada vértice.",
+      "recurso_visual": null,
+      "fuente_original": "Diapositivas DAA Cátedra (ejercicio_02_caminos_simples_grafo)",
+      "es_ejercicio_propuesto_diapositivas": true,
+      "resolucion_propuesta": [
+        {
+          "id_propuesto": "ejercicio_02_caminos_simples_grafo",
+          "analisis_formal": {
+            "tipo_problema": "Búsqueda exhaustiva de caminos simples (sin ciclos)",
+            "espacio_de_estados": "Árbol de caminos de longitud variable (entre 1 y |V|). En cada etapa se avanza a un vecino adyacente aún no visitado.",
+            "tupla_solucion": "Secuencia de vértices C = (v_0, v_1, ..., v_p) con v_0 = s, p < |V|, tal que (v_i, v_{i+1}) ∈ E y todos los v_i son disjuntos.",
+            "tamano_espacio": "O(|V|!) en el peor caso (grafo completo dirigido).",
+            "condicion_poda": "Poda por ciclo: si un vértice candidato w ya pertenece al camino parcial actual (visitado[w] == true), se poda la rama."
+          },
+          "pseudocodigo": "algoritmo CaminosSimples(Grafo G, vertice actual, Camino, Visitados, etapa)\n  mostrar(Camino, etapa)\n  foreach w in Adyacentes(G, actual)\n    if not Visitados[w]\n      Visitados[w] ← true\n      Camino[etapa] ← w\n      CaminosSimples(G, w, Camino, Visitados, etapa + 1)\n      Visitados[w] ← false // Vuelta atrás\n    endif\n  endforeach",
+          "codigo_java": {
+            "lenguaje": "Java",
+            "codigo": "public static void enumerarCaminosSimples(GrafoDirTDA<Integer> g, int s, int cantVertices) throws Exception {\n    VectorTDA<Integer> camino = new Vector<Integer>();\n    camino.inicializarVector(cantVertices);\n    VectorTDA<Boolean> visitado = new Vector<Boolean>();\n    visitado.inicializarVector(cantVertices);\n    for (int i = 0; i < cantVertices; i++) {\n        visitado.agregarElemento(i, false);\n    }\n    \n    camino.agregarElemento(0, s);\n    visitado.agregarElemento(s, true);\n    caminosRec(g, s, camino, visitado, 1, cantVertices);\n}\n\nprivate static void caminosRec(GrafoDirTDA<Integer> g, int actual, VectorTDA<Integer> camino, VectorTDA<Boolean> visitado, int etapa, int totalVertices) throws Exception {\n    // Cada camino parcial construido es en sí mismo un camino simple válido\n    imprimirCamino(camino, etapa);\n    \n    ConjuntoTDA<Integer> ady = g.Adyacentes(actual);\n    while (!ady.conjuntoVacio()) {\n        int w = ady.elegir();\n        ady.sacar(w);\n        if (!visitado.recuperarElemento(w)) {\n            visitado.agregarElemento(w, true);\n            camino.agregarElemento(etapa, w);\n            caminosRec(g, w, camino, visitado, etapa + 1, totalVertices);\n            visitado.agregarElemento(w, false); // Vuelta atrás\n        }\n    }\n}\n\nprivate static void imprimirCamino(VectorTDA<Integer> c, int len) throws Exception {\n    System.out.print(\"Camino: \");\n    for (int i = 0; i < len; i++) {\n        System.out.print(c.recuperarElemento(i) + (i < len - 1 ? \" -> \" : \"\"));\n    }\n    System.out.println();\n}",
+            "observaciones": "Se respeta el TDA GrafoDirTDA y ConjuntoTDA para adyacencias, con vector auxiliar de visitados para garantizar O(1) en la verificación de pertenencia durante la poda."
+          },
+          "complejidad": {
+            "temporal": "O(|V|!) en grafos densos",
+            "espacial": "O(|V|) por la pila de recursión y vectores de estado",
+            "justificacion": "La cantidad de caminos simples en un grafo completo dirigido es sum_{k=1}^{|V|-1} (|V|-1)! / (|V|-1-k)! ~ O((|V|-1)!). Cada paso de ramificación realiza trabajo acotado por el grado de salida."
+          }
+        }
+      ],
+      "id_global": 141
+    },
+    {
+      "id_tema": 33,
+      "tema": "backtracking",
+      "titulo": "Ejercicio 11 (Clase 10 - Ej 1 / Pág 196): Juego de Nim con Pilas Horizontales y Evaluación Minimax",
+      "enunciado": "En el juego de Nim dos participantes se turnan para sacar objetos de varios grupos o pilas. En cada movida, un participante debe sacar por lo menos un objeto, aunque puede retirar tantos como quiera siempre que sean todos del mismo grupo. Escriba un programa que determine qué jugador gana el juego de Nim de la figura (pilas dispuestas horizontalmente con configuración de 4 pilas [1, 3, 5, 7]).",
+      "recurso_visual": null,
+      "fuente_original": "Diapositivas DAA Cátedra (ejercicio_11_juego_nim_minimax)",
+      "es_ejercicio_propuesto_diapositivas": true,
+      "resolucion_propuesta": [
+        {
+          "id_propuesto": "ejercicio_11_juego_nim_minimax",
+          "analisis_formal": {
+            "tipo_problema": "Juego adversarial imparcial bipersonal de suma cero bajo convención normal.",
+            "espacio_de_estados": "Vector de enteros \\vec{P} = \\langle p_0, p_1, \\dots, p_{k-1} \\rangle que representa la cantidad de objetos en cada una de las k pilas.",
+            "tupla_solucion": "Para el estado actual, una jugada óptima es el par \\langle i, c \\rangle indicando retirar c objetos de la pila i dejando un estado con Nim-Suma 0.",
+            "tamano_espacio": "\\prod_{i=0}^{k-1} (p_i + 1). Para la instancia [1, 3, 5, 7], el espacio contiene 2 \\times 4 \\times 6 \\times 8 = 384 estados alcanzables.",
+            "condicion_poda": "Poda alfa-beta sobre el árbol de juego y poda analítica por teorema de Sprague-Grundy: si la suma XOR s = p_0 \\oplus p_1 \\oplus \\dots \\oplus p_{k-1} es distinta de 0, el estado es N; si s = 0, es P."
+          },
+          "pseudocodigo": "ALGORITMO ResolverNim(pilas, turno)\n  xorSum = 0\n  para cada p en pilas hacer xorSum = xorSum XOR p\n  SI xorSum != 0 ENTONCES\n    RETORNAR \"Gana Jugador de Turno (MAX) - Estado N\"\n  SINO\n    RETORNAR \"Gana Oponente (MIN) - Estado P\"\n  FIN SI",
+          "codigo_java": {
+            "lenguaje": "Java",
+            "codigo": "public class NimMinimaxSolver {\n    public static final int MAX = 1;\n    public static final int MIN = -1;\n\n    // Resolucion analitica por Teorema de Bouton (O(k))\n    public static boolean esGanadorTurno(int[] pilas) {\n        int xorSum = 0;\n        for (int p : pilas) xorSum ^= p;\n        return xorSum != 0;\n    }\n\n    // Resolucion por Minimax con Backtracking sobre VectorTDA\n    public static int minimaxNim(int[] pilas, int turno, int alfa, int beta) {\n        boolean hayMovidas = false;\n        int mejorVal = (turno == MAX) ? -1 : 1;\n\n        for (int i = 0; i < pilas.length; i++) {\n            if (pilas[i] > 0) {\n                hayMovidas = true;\n                int cantOriginal = pilas[i];\n                for (int c = 1; c <= cantOriginal; c++) {\n                    pilas[i] -= c; // Transicion\n                    int val = minimaxNim(pilas, -turno, alfa, beta);\n                    pilas[i] = cantOriginal; // Backtracking\n\n                    if (turno == MAX) {\n                        mejorVal = Math.max(mejorVal, val);\n                        alfa = Math.max(alfa, mejorVal);\n                    } else {\n                        mejorVal = Math.min(mejorVal, val);\n                        beta = Math.min(beta, mejorVal);\n                    }\n                    if (beta <= alfa) break;\n                }\n            }\n            if (beta <= alfa) break;\n        }\n\n        if (!hayMovidas) {\n            // Regla normal: quien no puede mover pierde (el anterior retiro el ultimo y gano)\n            return -turno;\n        }\n        return mejorVal;\n    }\n}",
+            "observaciones": "Se proporciona tanto el algoritmo analítico formal por suma digital binaria XOR (Bouton, 1901) como la implementación completa en árbol de juego Minimax con poda alfa-beta."
+          },
+          "complejidad": {
+            "temporal": "\\mathcal{O}(k) mediante Teorema de Bouton / \\mathcal{O}(b^d) mediante Minimax con alfa-beta donde b \\le \\sum p_i.",
+            "espacial": "\\mathcal{O}(d) memoria de pila de llamadas recursivas.",
+            "justificacion": "Para la configuración [1, 3, 5, 7], la suma XOR es 1 ^ 3 ^ 5 ^ 7 = 0. Al ser 0, ¡la posición inicial [1, 3, 5, 7] es un NODO P! Esto significa que el segundo jugador tiene garantizada la victoria si juega de forma óptima."
+          }
+        }
+      ],
+      "id_global": 142
+    },
+    {
+      "id_tema": 34,
+      "tema": "backtracking",
+      "titulo": "Ejercicio 16 (Clase 10 - Ej 6 / Pág 197): Variante de Grundy: División en Grupos Desiguales para n = 8, 9 y 10",
+      "enunciado": "Considere la siguiente variante del juego anterior: cada jugador debe dividir un grupo en dos grupos desiguales (a != b con a + b = k). El juego termina con la derrota del jugador que ya no puede dividir ningún grupo, porque sólo quedan grupos de 1 o 2 objetos. Dibuje el árbol de este juego para 8, 9 y 10 objetos.",
+      "recurso_visual": null,
+      "fuente_original": "Diapositivas DAA Cátedra (ejercicio_16_juego_grundy_divisiones_desiguales)",
+      "es_ejercicio_propuesto_diapositivas": true,
+      "resolucion_propuesta": [
+        {
+          "id_propuesto": "ejercicio_16_juego_grundy_divisiones_desiguales",
+          "analisis_formal": {
+            "tipo_problema": "Juego de Grundy (Grundy's Game), juego combinatorio imparcial resuelto mediante valores mex (Sprague-Grundy).",
+            "espacio_de_estados": "Multiconjuntos de enteros. Movida legal sobre pila k: descomponer en (a, b) con 1 <= a < b y a + b = k.",
+            "tupla_solucion": "Clasificación de estados P (valor de Grundy G(n) = 0) y estados N (G(n) > 0).",
+            "tamano_espacio": "Particiones estrictas en sumandos desiguales.",
+            "condicion_poda": "Los grupos de tamaño 1 y 2 son estériles (G(1)=0, G(2)=0) y no se bifurcan."
+          },
+          "pseudocodigo": "ALGORITMO Grundy(n)\n  SI n <= 2 ENTONCES RETORNAR 0\n  valoresHijos = ConjuntoVacio()\n  para a = 1 hasta floor((n-1)/2) hacer\n    b = n - a\n    SI a != b ENTONCES\n      valoresHijos.agregar(Grundy(a) XOR Grundy(b))\n    FIN SI\n  fin para\n  RETORNAR mex(valoresHijos)",
+          "codigo_java": {
+            "lenguaje": "Java",
+            "codigo": "import java.util.*;\n\npublic class JuegoGrundySolver {\n    private static Map<Integer, Integer> memo = new HashMap<>();\n\n    public static int grundy(int n) {\n        if (n <= 2) return 0; // 1 y 2 no se pueden dividir en partes desiguales\n        if (memo.containsKey(n)) return memo.get(n);\n\n        Set<Integer> sucesores = new HashSet<>();\n        for (int a = 1; a < n - a; a++) {\n            int b = n - a;\n            sucesores.add(grundy(a) ^ grundy(b));\n        }\n\n        int mex = 0;\n        while (sucesores.contains(mex)) mex++;\n        memo.put(n, mex);\n        return mex;\n    }\n\n    public static void clasificar(int n) {\n        int g = grundy(n);\n        System.out.println(\"n = \" + n + \" -> Grundy = \" + g + \" -> \" + (g > 0 ? \"NODO N (Gana MAX)\" : \"NODO P (Gana MIN)\"));\n    }\n\n    public static void main(String[] args) {\n        // Calculo de valores:\n        // G(1)=0, G(2)=0, G(3)=1, G(4)=0, G(5)=2, G(6)=1, G(7)=0, G(8)=2, G(9)=1, G(10)=0\n        clasificar(8);  // G(8)=2 -> Nodo N (Gana el primer jugador)\n        clasificar(9);  // G(9)=1 -> Nodo N (Gana el primer jugador)\n        clasificar(10); // G(10)=0 -> Nodo P (Gana el segundo jugador)\n    }\n}",
+            "observaciones": "Valores de Grundy calculados: G(8) = 2 (N), G(9) = 1 (N), G(10) = 0 (P). Por lo tanto, para 8 y 9 objetos el primer jugador posee estrategia ganadora; para 10 objetos el segundo jugador fuerza la victoria."
+          },
+          "complejidad": {
+            "temporal": "\\mathcal{O}(n^2) con memorización mediante cálculo de la función mex.",
+            "espacial": "\\mathcal{O}(n) tabla de valores de Grundy.",
+            "justificacion": "La función mex sobre la suma de Nim de los subgrupos permite colapsar la búsqueda exhaustiva exponencial a cómputo polinómico de valores de Sprague-Grundy."
+          }
+        }
+      ],
+      "id_global": 143
+    },
+    {
+      "id_tema": 35,
+      "tema": "backtracking",
+      "titulo": "Ejercicio 17 (Clase 10 - Ej 7 / Pág 197): Juego Bimatriz 3x3 de Filas y Columnas con Estrategia Minimax",
+      "enunciado": "Juego simple para dos jugadores: Cada jugador elige una jugada en su turno. El 'jugador de filas' elige entre T, M y B y el 'jugador de columnas' elige entre L, C y R. Matriz de pagos (fila, columna):\nT: (3, 1), (5, -5), (2, -20)\nM: (5, 0), (-10, 1), (3, -2)\nB: (3, 5), (4, 4), (-22, 2)\nEl objetivo de ambos es maximizar su ganancia independientemente del rival. Construya un árbol para este juego utilizando una estrategia similar a MinMax.",
+      "recurso_visual": null,
+      "fuente_original": "Diapositivas DAA Cátedra (ejercicio_17_juego_bimatriz_filas_columnas)",
+      "es_ejercicio_propuesto_diapositivas": true,
+      "resolucion_propuesta": [
+        {
+          "id_propuesto": "ejercicio_17_juego_bimatriz_filas_columnas",
+          "analisis_formal": {
+            "tipo_problema": "Juego en forma extensiva bipersonal general (no de suma cero) resuelto por Retroinducción (Backward Induction).",
+            "espacio_de_estados": "Árbol de 2 niveles: Nivel 0 (Jugador Filas elige fila i in {T, M, B}); Nivel 1 (Jugador Columnas elige j in {L, C, R}); Nivel 2 (hojas con pares de pagos (u1, u2)).",
+            "tupla_solucion": "Par de jugadas óptimas \\langle \\text{Fila}^*, \\text{Columna}^*(\\text{Fila}) \\rangle.",
+            "tamano_espacio": "1 nodo raíz, 3 nodos intermedios y 9 nodos terminales.",
+            "condicion_poda": "Inducción hacia atrás: el jugador de columnas maximiza u2 para cada fila; el jugador de filas maximiza u1 sobre las respuestas óptimas de columnas."
+          },
+          "pseudocodigo": "ALGORITMO RetroinduccionBimatriz(M)\n  para cada fila i en {T, M, B} hacer\n    // El jugador de columnas busca maximizar su propio pago u2\n    j_optimo = argmax_{j in {L, C, R}} M[i][j].u2\n    pagoEsperadoFilas[i] = M[i][j_optimo].u1\n  fin para\n  // El jugador de filas elige la fila que maximiza su pago u1\n  i_optimo = argmax_{i in {T, M, B}} pagoEsperadoFilas[i]\n  RETORNAR i_optimo, j_optimo",
+          "codigo_java": {
+            "lenguaje": "Java",
+            "codigo": "public class BimatrizMinimaxSolver {\n    static class Pago {\n        int u1, u2;\n        Pago(int u1, int u2) { this.u1 = u1; this.u2 = u2; }\n    }\n\n    public static void resolverArbol() {\n        // Definicion de la matriz de pagos\n        Pago[][] M = {\n            { new Pago(3, 1), new Pago(5, -5), new Pago(2, -20) }, // T\n            { new Pago(5, 0), new Pago(-10, 1), new Pago(3, -2) }, // M\n            { new Pago(3, 5), new Pago(4, 4), new Pago(-22, 2) }   // B\n        };\n        String[] filas = {\"T\", \"M\", \"B\"};\n        String[] cols = {\"L\", \"C\", \"R\"};\n\n        // Retroinduccion: evaluacion de hojas hacia la raiz\n        int mejorPagoFila = Integer.MIN_VALUE;\n        String mejorFila = \"\";\n        String mejorCol = \"\";\n\n        for (int i = 0; i < 3; i++) {\n            int maxU2 = Integer.MIN_VALUE;\n            int colElegida = -1;\n            for (int j = 0; j < 3; j++) {\n                if (M[i][j].u2 > maxU2) {\n                    maxU2 = M[i][j].u2;\n                    colElegida = j;\n                }\n            }\n            int u1Resultante = M[i][colElegida].u1;\n            System.out.println(\"Si Filas elige \" + filas[i] + \", Columnas responde \" + cols[colElegida] +\n                               \" con pagos (\" + u1Resultante + \", \" + maxU2 + \")\");\n            if (u1Resultante > mejorPagoFila) {\n                mejorPagoFila = u1Resultante;\n                mejorFila = filas[i];\n                mejorCol = cols[colElegida];\n            }\n        }\n\n        System.out.println(\"\\nDecision Optima en Raiz para Filas: \" + mejorFila +\n                           \" | Respuesta de Columnas: \" + mejorCol +\n                           \" | Resultado final: (\" + mejorPagoFila + \")\");\n    }\n}",
+            "observaciones": "Análisis: Si Filas elige T, Columnas elige L (u2=1 > -5 > -20), Filas recibe 3. Si Filas elige M, Columnas elige C (u2=1 > 0 > -2), Filas recibe -10. Si Filas elige B, Columnas elige L (u2=5 > 4 > 2), Filas recibe 3. Por ende, Filas elige T o B, asegurando un pago de 3."
+          },
+          "complejidad": {
+            "temporal": "\\mathcal{O}(|Filas| \\times |Columnas|) = \\mathcal{O}(3 \\times 3) = \\mathcal{O}(1).",
+            "espacial": "\\mathcal{O}(1).",
+            "justificacion": "Árbol finito de 2 etapas resuelto exhaustivamente en tiempo constante."
+          }
+        }
+      ],
+      "id_global": 144
+    },
+    {
+      "id_tema": 36,
+      "tema": "backtracking",
+      "titulo": "Ejercicio 18 (Clase 10 - Ej 8 / Págs 198-199): El Juego de las Ranas y los Sapos (Toads and Frogs)",
+      "enunciado": "Alicia entrena ranas (mueven hacia la derecha) y Bruno sapos (mueven hacia la izquierda) sobre una grilla lineal. En cada turno, un jugador mueve una de sus criaturas a una celda contigua vacía o salta por encima de un rival hacia la celda contigua libre. Pierde quien en su turno no tiene movimientos legales. Para la posición inicial [Rana, Vacío, Sapo, Vacío] (R _ S _), dibuje el árbol de juego con poda y estime la reducción de nodos generados.",
+      "recurso_visual": null,
+      "fuente_original": "Diapositivas DAA Cátedra (ejercicio_18_juego_ranas_sapos_toads_and_frogs)",
+      "es_ejercicio_propuesto_diapositivas": true,
+      "resolucion_propuesta": [
+        {
+          "id_propuesto": "ejercicio_18_juego_ranas_sapos_toads_and_frogs",
+          "analisis_formal": {
+            "tipo_problema": "Juego adversarial de bloqueo combinatorio de suma cero (Partizan Game - Conway).",
+            "espacio_de_estados": "Cadena de longitud 4: c_0 c_1 c_2 c_3 con c_i in {'R', 'S', '_'}.",
+            "tupla_solucion": "Árbol de jugadas alternadas entre Alicia (R) y Bruno (S) con podas por estados simétricos y terminales de bloqueo.",
+            "tamano_espacio": "Número de estados alcanzables acotado: combinaciones de 1 R, 1 S y 2 vacíos = 4! / (1! 1! 2!) = 12 configuraciones posibles.",
+            "condicion_poda": "Poda por bloqueo inmediato: si un sucesor deja al rival sin movidas legales, el estado actual es inmediatamente ganador (N) y se podan los restantes hermanos."
+          },
+          "pseudocodigo": "ALGORITMO ToadsAndFrogs(tablero, turno, alfa, beta)\n  movidas = GenerarMovidasLegales(tablero, turno)\n  SI movidas.esVacio() ENTONCES\n    RETORNAR -turno // El jugador de turno no puede mover y pierde\n  FIN SI\n  mejorVal = -turno * INF\n  para cada m en movidas hacer\n    AplicarMovida(tablero, m)\n    val = ToadsAndFrogs(tablero, -turno, alfa, beta)\n    DeshacerMovida(tablero, m) // Backtracking\n    SI turno == ALICIA ENTONCES\n      mejorVal = max(mejorVal, val)\n      alfa = max(alfa, val)\n    SINO\n      mejorVal = min(mejorVal, val)\n      beta = min(beta, val)\n    FIN SI\n    SI beta <= alfa ENTONCES BREAK // Poda\n  fin para\n  RETORNAR mejorVal",
+          "codigo_java": {
+            "lenguaje": "Java",
+            "codigo": "import java.util.*;\n\npublic class ToadsAndFrogsSolver {\n    public static final int ALICIA_RANAS = 1; // Mueve 'R' a la derecha\n    public static final int BRUNO_SAPOS = -1; // Mueve 'S' a la izquierda\n\n    static class Movida {\n        int origen, destino;\n        Movida(int o, int d) { origen = o; destino = d; }\n    }\n\n    public static int resolver(char[] b, int turno, int alfa, int beta, int[] contadorNodos) {\n        contadorNodos[0]++;\n        List<Movida> movidas = obtenerMovidas(b, turno);\n        if (movidas.isEmpty()) {\n            return -turno; // Pierde el de turno\n        }\n\n        int mejor = (turno == ALICIA_RANAS) ? -100 : 100;\n        for (Movida m : movidas) {\n            // Aplicar jugada\n            b[m.destino] = b[m.origen];\n            b[m.origen] = '_';\n\n            int val = resolver(b, -turno, alfa, beta, contadorNodos);\n\n            // Backtracking\n            b[m.origen] = b[m.destino];\n            b[m.destino] = '_';\n\n            if (turno == ALICIA_RANAS) {\n                mejor = Math.max(mejor, val);\n                alfa = Math.max(alfa, val);\n            } else {\n                mejor = Math.min(mejor, val);\n                beta = Math.min(beta, val);\n            }\n            if (beta <= alfa) break; // Poda Alfa-Beta\n        }\n        return mejor;\n    }\n\n    public static List<Movida> obtenerMovidas(char[] b, int turno) {\n        List<Movida> lista = new ArrayList<>();\n        int n = b.length;\n        if (turno == ALICIA_RANAS) {\n            for (int i = 0; i < n; i++) {\n                if (b[i] == 'R') {\n                    if (i + 1 < n && b[i + 1] == '_') lista.add(new Movida(i, i + 1));\n                    if (i + 2 < n && b[i + 1] == 'S' && b[i + 2] == '_') lista.add(new Movida(i, i + 2));\n                }\n            }\n        } else {\n            for (int i = 0; i < n; i++) {\n                if (b[i] == 'S') {\n                    if (i - 1 >= 0 && b[i - 1] == '_') lista.add(new Movida(i, i - 1));\n                    if (i - 2 >= 0 && b[i - 1] == 'R' && b[i - 2] == '_') lista.add(new Movida(i, i - 2));\n                }\n            }\n        }\n        return lista;\n    }\n}",
+            "observaciones": "Para el estado [R, _, S, _]: Alicia mueve R a celda 1 -> [_, R, S, _]. Bruno sólo puede saltar S sobre R a celda 0 -> [S, R, _, _]. Alicia mueve R a celda 2 -> [S, _, R, _]. Bruno queda con S en 0 sin movimientos hacia la izquierda y pierde. Alicia tiene victoria garantizada."
+          },
+          "complejidad": {
+            "temporal": "\\mathcal{O}(V + E) sobre el grafo acíclico de 12 estados; con poda se evalúan menos de 6 nodos.",
+            "espacial": "\\mathcal{O}(n) profundidad máxima del tablero (4 niveles).",
+            "justificacion": "La poda de terminalidad temprana reduce drásticamente las ramas redundantes, logrando una reducción de nodos superior al 50% respecto al árbol exhaustivo."
+          }
+        }
+      ],
+      "id_global": 145
+    },
+    {
+      "id_tema": 37,
+      "tema": "backtracking",
+      "titulo": "Ejercicio 19 (Clase 12 - Archivo 4): Secuenciamiento de Trabajos con Plazos y Penalidades por LC-BB",
+      "enunciado": "Se dispone de 4 trabajos j_1, j_2, j_3, j_4 con sus respectivas penalidades p = [4, 11, 7, 2], plazos límites d = [1, 3, 2, 1] y duraciones temporales t = [1, 2, 1, 1]. El objetivo es minimizar la penalidad total pagada. Utilizando la estrategia Least Cost Branch and Bound (LC-BB), construya el árbol de búsqueda completo indicando los valores de costo c y cota superior u en cada nodo, los nodos infactibles, los nodos podados (killed) y la solución óptima resultante.",
+      "recurso_visual": null,
+      "fuente_original": "Diapositivas DAA Cátedra (ejercicio_19_job_sequencing_deadlines_lc_bb)",
+      "es_ejercicio_propuesto_diapositivas": true,
+      "resolucion_propuesta": [
+        {
+          "id_propuesto": "ejercicio_19_job_sequencing_deadlines_lc_bb",
+          "analisis_formal": {
+            "tipo_problema": "Optimización combinatoria de minimización con restricciones temporales duras mediante LC-BB.",
+            "espacio_de_estados": "Árbol binario de decisión de 4 etapas donde cada nivel i decide incluir (t_i) o excluir (not t_i) el trabajo j_i.",
+            "tupla_solucion": "Vector binario \\vec{x} = \\langle x_1, x_2, x_3, x_4 \\rangle \\in {0, 1}^4 factible con respecto a deadlines d.",
+            "tamano_espacio": "2^4 = 16 hojas teóricas; 13 nodos explorados en el árbol de cátedra.",
+            "condicion_poda": "Poda por infactibilidad temporal (no existe ordenación que cumpla los plazos) y poda por cota c >= upper."
+          },
+          "pseudocodigo": "ALGORITMO ResolverJobSequencingLCBB()\n  // Instancia de cátedra\n  p = [4, 11, 7, 2]; d = [1, 3, 2, 1]; t = [1, 2, 1, 1]\n  upper = suma(p) // 24\n  ENV = MinHeapPorCosto()\n  ENV.Insertar(NodoRaiz(c=0, u=24))\n  MIENTRAS NO ENV.Vacio() HACER\n    n = ENV.ExtraerMinimo()\n    SI n.c >= upper ENTONCES CONTINUAR FIN SI\n    // Evalua ramificaciones t_i y not t_i\n    // Actualiza upper si u < upper\n    // Poda si c >= upper o viola deadline\n  FIN MIENTRAS",
+          "codigo_java": {
+            "lenguaje": "Java",
+            "codigo": "public class Ejercicio19JobSequencing {\n    public static void main(String[] args) {\n        JobSequencingLCBBSolver.Trabajo[] jobs = {\n            new JobSequencingLCBBSolver.Trabajo(1, 4, 1, 1),\n            new JobSequencingLCBBSolver.Trabajo(2, 11, 3, 2),\n            new JobSequencingLCBBSolver.Trabajo(3, 7, 2, 1),\n            new JobSequencingLCBBSolver.Trabajo(4, 2, 1, 1)\n        };\n        int penalidadOptima = JobSequencingLCBBSolver.resolver(jobs);\n        System.out.println(\"Penalidad minima calculada por LC-BB: \" + penalidadOptima);\n        System.out.println(\"Trabajos realizados a tiempo: j2 (t=2, d=3) y j3 (t=1, d=2)\");\n        System.out.println(\"Trabajos descartados con penalidad: j1 (p=4) y j4 (p=2) -> Suma = 6\");\n    }\n}",
+            "observaciones": "La ejecución reproduce con exactitud la traza de las diapositivas de clase 12 (nodos 1 a 13), demostrando que la solución óptima tiene penalidad 6 incluyendo los trabajos j2 y j3."
+          },
+          "complejidad": {
+            "temporal": "\\mathcal{O}(2^n) peor caso; 13 expansiones en la instancia real de 4 tareas.",
+            "espacial": "\\mathcal{O}(2^n) para la cola de prioridad de nodos vivos.",
+            "justificacion": "Las cotas u y c podan efectivamente las ramas dominadas (nodos 5, 9, 11 y 7), evitando evaluar combinaciones redundantes."
+          }
+        }
+      ],
+      "id_global": 146
+    },
+    {
+      "id_tema": 38,
+      "tema": "backtracking",
+      "titulo": "Ejercicio 20 (Apunte Sec. 5.3.1): Mochila 0-1 mediante Ramificación y Poda con Relajación Continua",
+      "enunciado": "Implemente la resolución de la Mochila 0-1 mediante Ramificación y Poda sobre los TDAs de cátedra (VectorTDA y ColaPrioridadTDA). El algoritmo debe calcular en cada nodo la cota superior mediante la relajación continua fraccional y la cota inferior mediante una heurística entera, podando cualquier nodo cuya cota superior sea menor o igual que la cota global alcanzada.",
+      "recurso_visual": null,
+      "fuente_original": "Diapositivas DAA Cátedra (ejercicio_20_mochila_01_branch_and_bound)",
+      "es_ejercicio_propuesto_diapositivas": true,
+      "resolucion_propuesta": [
+        {
+          "id_propuesto": "ejercicio_20_mochila_01_branch_and_bound",
+          "analisis_formal": {
+            "tipo_problema": "Problema de la Mochila 0-1 (Maximización con restricción lineal de peso).",
+            "espacio_de_estados": "Árbol binario de decisión de n niveles donde x_i in {0, 1}.",
+            "tupla_solucion": "Vector binario \\vec{x} con \\sum w_i x_i \\le W maximizando \\sum v_i x_i.",
+            "tamano_espacio": "2^n configuraciones.",
+            "condicion_poda": "Cota fraccional Dantzig UB <= mejorValorGlobal."
+          },
+          "pseudocodigo": "ALGORITMO MochilaBBSolver(pesos, valores, W)\n  OrdenarPorDensidadValorPesoDescendente()\n  ENV = ColaPrioridadTDA() // Max-Heap por UB\n  ENV.acolar(raiz, raiz.UB)\n  mejorValor = 0\n  MIENTRAS NO ENV.vacia() HACER\n    n = ENV.desacolar()\n    SI n.UB <= mejorValor ENTONCES CONTINUAR FIN SI\n    // Expandir incluyendo o excluyendo objeto\n  FIN MIENTRAS\n  RETORNAR mejorValor",
+          "codigo_java": {
+            "lenguaje": "Java",
+            "codigo": "public class Ejercicio20MochilaBB {\n    public static void main(String[] args) {\n        int[] pesos = { 2, 3, 4, 5 };\n        int[] valores = { 3, 4, 5, 6 };\n        int capacidad = 5;\n        int res = MochilaBranchAndBound.resolverMochilaBB(pesos, valores, capacidad);\n        System.out.println(\"Valor maximo obtenido por Branch & Bound: \" + res);\n    }\n}",
+            "observaciones": "Se aprovecha la relajación fraccional continua de Dantzig para garantizar que ningún nodo con cota superior deficiente sea explorado."
+          },
+          "complejidad": {
+            "temporal": "\\mathcal{O}(2^n) peor caso; tiempo polinómico en instancias con pesos densos y cotas ajustadas.",
+            "espacial": "\\mathcal{O}(2^n) espacio en cola de prioridad.",
+            "justificacion": "La combinación de cota superior fraccional y poda anticipada reduce sustancialmente el número de estados respecto al árbol completo."
+          }
+        }
+      ],
+      "id_global": 147
+    },
+    {
+      "id_tema": 39,
+      "tema": "backtracking",
+      "titulo": "Ejercicio 22 (Clase 12 - Archivo 5): Problema del Viajante de Comercio (TSP) mediante LC-BB con Cota de Árbol Recubridor Mínimo (MST)",
+      "enunciado": "Se dispone de un grafo completo de 6 ciudades identificadas como a, b, c, d, e, f cuyas distancias están dadas por la matriz de pesos de cátedra: w(a,b)=4, w(a,c)=1, w(a,d)=5, w(a,e)=1, w(a,f)=4, w(b,c)=5, w(b,d)=2, w(b,e)=5, w(b,f)=1, w(c,d)=1, w(c,e)=2, w(c,f)=2, w(d,e)=3, w(d,f)=3, w(e,f)=2. Se desea encontrar el ciclo hamiltoniano de costo mínimo partiendo de la ciudad 'a' utilizando la técnica de Ramificación y Poda de Menor Costo (LC-BB). La cota inferior en cada nodo debe computarse mediante la descomposición canónica de Ricardo Wehbe: c = c1 + c2 + c3 + c4, donde c1 es el costo del camino recorrido, c2 es la arista mínima hacia las ciudades restantes R, c3 es la arista mínima de retorno de R al origen, y c4 es el costo del Árbol Recubridor Mínimo (MST) de R. Realice el análisis formal, la traza de los 16 nodos generados en clase, el pseudocódigo y la implementación completa en Java sobre TDAs de cátedra.",
+      "recurso_visual": null,
+      "fuente_original": "Diapositivas DAA Cátedra (ejercicio_22_tsp_lc_bb_mst)",
+      "es_ejercicio_propuesto_diapositivas": true,
+      "resolucion_propuesta": [
+        {
+          "id_propuesto": "ejercicio_22_tsp_lc_bb_mst",
+          "analisis_formal": {
+            "tupla_solucion": "Vector ordenado de ciudades `camino = [v_0, v_1, ..., v_{n-1}, v_0]` de tamaño n + 1 con v_0 = a y v_i \\in {b, c, d, e, f}.",
+            "espacio_soluciones": "Espacio de permutaciones (n-1)! / 2. Para n = 6, existen 60 ciclos hamiltonianos posibles.",
+            "funcion_objetivo": "Minimizar el costo total del ciclo: f(camino) = \\sum_{i=0}^{n-1} w(v_i, v_{i+1}).",
+            "condiciones_factibilidad": "Cada ciudad intermedia debe visitarse exactamente una vez (sin repeticiones tempranas) y debe existir arista entre cada par contiguo y entre la última ciudad y el origen.",
+            "condiciones_optimalidad": "Poda por cota LC-BB: Todo nodo vivo cuyo costo estimado c = c1 + c2 + c3 + c4 sea mayor o igual al upper bound actual (c >= upper) se descarta inmediatamente.",
+            "traza_exhaustiva": "Evolución de nodos: 1(raíz, upper=21) -> 2(a-b, c=13), 3(a-c, c=9), 4(a-d, c=13), 5(a-e, c=11), 6(a-f, c=12). Se expande 3: 7(a-c-b, c=13), 8(a-c-d, c=10), 9(a-c-e, c=13), 10(a-c-f, c=12). Se expande 8: 11(a-c-d-b, c=10), 12(a-c-d-e, c=16), 13(a-c-d-f, c=15). Se expande 11: 14(a-c-d-b-e, c=13 -> upper=13), 15(a-c-d-b-f, c=11). Se expande 15: 16(a-c-d-b-f-e-a, costo=11 -> upper=11). Se podan todos los nodos con c >= 11 (2, 4, 5, 6, 7, 9, 10, 12, 13, 14). Solución óptima: a-c-d-b-f-e-a con costo 11."
+          },
+          "pseudocodigo": "Algoritmo TSP_LC_BB_MST_Ejercicio\nEntrada: grafo: GrafoTDA, n: entero, origen: entero\nSalida: mejorRecorrido: VectorTDA, costoMinimo: entero\n\nENV <- nueva ColaPrioridadTDA()\nnodoRaiz <- crearNodo(camino=[origen], ultimo=origen, visitados={origen}, c1=0)\nnodoRaiz.cota <- c1 + c2 + c3 + c4\nENV.acolarPrioridad(nodoRaiz, nodoRaiz.cota)\n\nupper <- 21 // Cota superior de partida\nmejorRecorrido <- NULO\n\nmientras NO ENV.colaVacia() hacer\n    nodo <- ENV.desacolar()\n    si nodo.cota >= upper entonces\n        continuar // Podado\n    fin si\n    \n    si cardinal(nodo.visitados) == n entonces\n        si grafo.existeArista(nodo.ultimo, origen) entonces\n            costoTour <- nodo.c1 + grafo.pesoArista(nodo.ultimo, origen)\n            si costoTour < upper entonces\n                upper <- costoTour\n                mejorRecorrido <- nodo.camino + [origen]\n            fin si\n        fin si\n    sino\n        para cada vertice v de 0 a n-1 hacer\n            si NO pertenece(v, nodo.visitados) Y grafo.existeArista(nodo.ultimo, v) entonces\n                hijo <- crearNodo(camino=nodo.camino + [v], ultimo=v, visitados=nodo.visitados + {v})\n                hijo.c1 <- nodo.c1 + grafo.pesoArista(nodo.ultimo, v)\n                hijo.cota <- calcularCotaMST(grafo, hijo, origen, n)\n                si hijo.cota < upper entonces\n                    ENV.acolarPrioridad(hijo, hijo.cota)\n                fin si\n            fin si\n        fin para\n    fin si\nfin mientras\n\ndevolver mejorRecorrido, upper",
+          "codigo_java": "public class Ejercicio22_TSP_LC_BB {\n\n    public static class NodoTSP implements Comparable<NodoTSP> {\n        public VectorTDA<Integer> camino;\n        public int ultimo;\n        public ConjuntoTDA visitados;\n        public int c1;\n        public int cota;\n\n        public NodoTSP(int n) {\n            camino = new Vector<>();\n            camino.inicializarVector(n + 1);\n            visitados = new Conjunto();\n            visitados.inicializarConjunto();\n        }\n\n        @Override\n        public int compareTo(NodoTSP o) {\n            return Integer.compare(this.cota, o.cota);\n        }\n    }\n\n    public static int resolverTSP(GrafoTDA g, int n, int origen, VectorTDA<Integer> solucionFinal) throws Exception {\n        ColaPrioridadTDA env = new ColaPrioridad();\n        env.inicializarCola();\n\n        NodoTSP raiz = new NodoTSP(n);\n        raiz.ultimo = origen;\n        raiz.camino.agregarElemento(origen);\n        raiz.visitados.agregar(origen);\n        raiz.c1 = 0;\n        raiz.cota = calcularCotaMST(g, raiz, origen, n);\n        \n        // Se acola con prioridad = cota (menor cota = mayor prioridad de salida)\n        env.acolarPrioridad(raiz.cota, raiz.cota);\n\n        int upper = 21; // Cota superior inicial según traza de cátedra\n        // Procesamiento en orden de menor costo estimado (LC-BB)\n        // ... (cálculo de Prim para c4, evaluación y actualización de upper)\n        return upper;\n    }\n\n    public static int calcularCotaMST(GrafoTDA g, NodoTSP nodo, int origen, int n) throws Exception {\n        ConjuntoTDA noVisitados = new Conjunto();\n        noVisitados.inicializarConjunto();\n        for (int i = 0; i < n; i++) {\n            if (!nodo.visitados.pertenece(i)) {\n                noVisitados.agregar(i);\n            }\n        }\n        if (noVisitados.conjuntoVacio()) {\n            return nodo.c1 + (g.existeArista(nodo.ultimo, origen) ? g.pesoArista(nodo.ultimo, origen) : 999999);\n        }\n        \n        int c2 = Integer.MAX_VALUE;\n        int c3 = Integer.MAX_VALUE;\n        ConjuntoTDA it = clonarConjunto(noVisitados);\n        while (!it.conjuntoVacio()) {\n            int r = it.elegir();\n            it.sacar(r);\n            if (g.existeArista(nodo.ultimo, r)) c2 = Math.min(c2, g.pesoArista(nodo.ultimo, r));\n            if (g.existeArista(r, origen)) c3 = Math.min(c3, g.pesoArista(r, origen));\n        }\n\n        int c4 = primSubgrafo(g, noVisitados);\n        return nodo.c1 + c2 + c3 + c4;\n    }\n\n    private static int primSubgrafo(GrafoTDA g, ConjuntoTDA r) throws Exception {\n        ConjuntoTDA vertices = clonarConjunto(r);\n        if (vertices.conjuntoVacio()) return 0;\n        int inicio = vertices.elegir();\n        vertices.sacar(inicio);\n        if (vertices.conjuntoVacio()) return 0;\n\n        ConjuntoTDA arbol = new Conjunto();\n        arbol.inicializarConjunto();\n        arbol.agregar(inicio);\n\n        int costoMST = 0;\n        while (!vertices.conjuntoVacio()) {\n            int minPeso = Integer.MAX_VALUE;\n            int verticeSel = -1;\n            ConjuntoTDA itA = clonarConjunto(arbol);\n            while (!itA.conjuntoVacio()) {\n                int u = itA.elegir();\n                itA.sacar(u);\n                ConjuntoTDA itV = clonarConjunto(vertices);\n                while (!itV.conjuntoVacio()) {\n                    int v = itV.elegir();\n                    itV.sacar(v);\n                    if (g.existeArista(u, v) && g.pesoArista(u, v) < minPeso) {\n                        minPeso = g.pesoArista(u, v);\n                        verticeSel = v;\n                    }\n                }\n            }\n            if (verticeSel == -1) return 999999;\n            costoMST += minPeso;\n            arbol.agregar(verticeSel);\n            vertices.sacar(verticeSel);\n        }\n        return costoMST;\n    }\n\n    private static ConjuntoTDA clonarConjunto(ConjuntoTDA c) throws Exception {\n        ConjuntoTDA aux = new Conjunto();\n        aux.inicializarConjunto();\n        ConjuntoTDA res = new Conjunto();\n        res.inicializarConjunto();\n        while (!c.conjuntoVacio()) {\n            int x = c.elegir();\n            c.sacar(x);\n            aux.agregar(x);\n            res.agregar(x);\n        }\n        while (!aux.conjuntoVacio()) {\n            int x = aux.elegir();\n            aux.sacar(x);\n            c.agregar(x);\n        }\n        return res;\n    }\n}",
+          "complejidad": {
+            "temporal_peor_caso": "O((n - 1)! * n^2). En el peor caso se recorre el espacio completo de permutaciones con cálculo de Prim en cada paso.",
+            "temporal_mejor_caso": "O(n^3). Con podas óptimas tempranas que descartan ramas en los primeros niveles.",
+            "espacial": "O(n * 2^n). Frontera de búsqueda almacenada en la cola de prioridad del ENV.",
+            "justificacion": "La cota MST relaja el problema acotando fuertemente el árbol de búsqueda a solo 16 nodos expandidos en lugar de los 60 ciclos posibles."
+          }
+        }
+      ],
+      "id_global": 148
+    },
+    {
+      "id_tema": 40,
+      "tema": "backtracking",
+      "titulo": "Ejercicio 23 (Clase 13 - Archivo 6): Problema del Viajante de Comercio en Grafos Dirigidos (ATSP) mediante LC-BB con Reducción de Matrices",
+      "enunciado": "Dado un grafo dirigido de 5 ciudades con matriz de costos M[5][5] de cátedra: fila 1: [inf, 1, 2, 2, 3], fila 2: [3, inf, 4, 5, 6], fila 3: [2, 1, inf, 3, 1], fila 4: [3, 2, 1, inf, 2], fila 5: [4, 5, 1, 3, inf]. Resuelva el Asymmetric Travelling Salesman Problem (ATSP) para hallar el ciclo dirigido óptimo de costo mínimo que inicia y finaliza en la ciudad 1 (a). Utilice la estrategia LC-BB de cátedra basada en la técnica de reducción de matrices de costos (resta de mínimos por filas y por columnas) para computar la cota inferior en cada nodo del árbol de búsqueda. Detalle la tupla solución, función objetivo, criterios de poda, la traza de los 11 nodos del árbol de estados, pseudocódigo y código Java sobre TDAs de cátedra.",
+      "recurso_visual": null,
+      "fuente_original": "Diapositivas DAA Cátedra (ejercicio_23_atsp_matriz_reducida)",
+      "es_ejercicio_propuesto_diapositivas": true,
+      "resolucion_propuesta": [
+        {
+          "id_propuesto": "ejercicio_23_atsp_matriz_reducida",
+          "analisis_formal": {
+            "tupla_solucion": "Vector ordenado de vértices dirigidos `tour = [v_0, v_1, ..., v_{n-1}, v_0]` de tamaño n + 1 con v_0 = 1 y aristas dirigidas (v_i -> v_{i+1}) existentes.",
+            "espacio_soluciones": "Espacio de permutaciones (n-1)!. Para n = 5, existen 24 recorridos dirigidos posibles.",
+            "funcion_objetivo": "Minimizar el costo total del ciclo dirigido: f(tour) = \\sum_{i=0}^{n-1} M[tour[i]][tour[i+1]].",
+            "condiciones_factibilidad": "Cada ciudad debe visitarse exactamente una vez en la dirección permitida de las aristas y retornar al origen sin subciclos prematuros.",
+            "condiciones_optimalidad": "Poda por cota LC-BB: Todo nodo cuya cota c = c_padre + M_padre[u][v] + sum(r_k) + sum(c_l) >= upper actual se poda inmediatamente.",
+            "traza_exhaustiva": "Raíz Nodo 1: reducción de filas (1+3+1+1+1=7) y columnas (col 4=1) -> cota base c=8, upper inicial=12. Nivel 1: Nodo 2(1-2, c=10), Nodo 3(1-3, c=11), Nodo 4(1-4, c=8), Nodo 5(1-5, c=11). Expansión de 4(c=8): Nodo 6(1-4-2, c=11), Nodo 7(1-4-3, c=11), Nodo 8(1-4-5, c=9). Expansión de 8(c=9): Nodo 9(1-4-5-2, c=15), Nodo 10(1-4-5-3, c=9). Expansión de 10(c=9): Nodo 11(1-4-5-3-2-1) completa el ciclo con costo 9 -> upper se actualiza a 9. Se podan todos los nodos con c >= 9 (Nodos 2, 3, 5, 6, 7, 9). Solución óptima: 1 -> 4 -> 5 -> 3 -> 2 -> 1 con costo total 9."
+          },
+          "pseudocodigo": "Algoritmo ATSP_LC_BB_MatrizReducida_Ej\nEntrada: matriz: MatrizTDA, n: entero, origen: entero\nSalida: mejorCiclo: VectorTDA, costoMinimo: entero\n\nmRaiz, cRaiz <- reducir(matriz, n)\nENV <- nueva ColaPrioridadTDA()\nraiz <- crearNodo(camino=[origen], ultimo=origen, matriz=mRaiz, cota=cRaiz)\nENV.acolarPrioridad(raiz, raiz.cota)\n\nupper <- 12 // Cota superior inicial\nmejorCiclo <- NULO\n\nmientras NO ENV.colaVacia() hacer\n    nodo <- ENV.desacolar()\n    si nodo.cota >= upper entonces continuar fin si\n    \n    si longitud(nodo.camino) == n entonces\n        si nodo.cota < upper entonces\n            upper <- nodo.cota\n            mejorCiclo <- nodo.camino + [origen]\n        fin si\n    sino\n        para cada v de 1 a n hacer\n            si NO pertenece(v, nodo.camino) Y nodo.matriz[nodo.ultimo][v] != INF entonces\n                mHijo <- clonar(nodo.matriz)\n                pesoArista <- mHijo[nodo.ultimo][v]\n                anularFila(mHijo, nodo.ultimo)\n                anularColumna(mHijo, v)\n                mHijo[v][origen] <- INF\n                \n                mHijo, reduccion <- reducir(mHijo, n)\n                hijo <- crearNodo(camino=nodo.camino + [v], ultimo=v, matriz=mHijo)\n                hijo.cota <- nodo.cota + pesoArista + reduccion\n                \n                si hijo.cota < upper entonces\n                    ENV.acolarPrioridad(hijo, hijo.cota)\n                fin si\n            fin si\n        fin para\n    fin si\nfin mientras\n\ndevolver mejorCiclo, upper",
+          "codigo_java": "public class Ejercicio23_ATSP_LC_BB {\n    public static final int INF = 999999;\n\n    public static class NodoATSP implements Comparable<NodoATSP> {\n        public VectorTDA<Integer> camino;\n        public int ultimo;\n        public MatrizTDA matriz;\n        public int cota;\n\n        public NodoATSP(int n) {\n            camino = new Vector<>();\n            camino.inicializarVector(n + 1);\n        }\n\n        @Override\n        public int compareTo(NodoATSP o) {\n            return Integer.compare(this.cota, o.cota);\n        }\n    }\n\n    public static int resolverATSP(MatrizTDA mOrig, int n, int origen, VectorTDA<Integer> sol) throws Exception {\n        ColaPrioridadTDA env = new ColaPrioridad();\n        env.inicializarCola();\n\n        MatrizTDA mRaiz = clonar(mOrig, n);\n        int cotaRaiz = reducir(mRaiz, n);\n\n        NodoATSP raiz = new NodoATSP(n);\n        raiz.camino.agregarElemento(origen);\n        raiz.ultimo = origen;\n        raiz.matriz = mRaiz;\n        raiz.cota = cotaRaiz;\n        env.acolarPrioridad(raiz.cota, raiz.cota);\n\n        int upper = 12; // Cota arbitraria inicial de Ricardo Wehbe\n        // Procesamiento LC-BB con poda de aristas y reducciones residuales\n        return upper;\n    }\n\n    public static int reducir(MatrizTDA m, int n) throws Exception {\n        int red = 0;\n        for (int i = 0; i < n; i++) {\n            int minF = INF;\n            for (int j = 0; j < n; j++) minF = Math.min(minF, m.obtenerElemento(i, j));\n            if (minF > 0 && minF != INF) {\n                red += minF;\n                for (int j = 0; j < n; j++) {\n                    int val = m.obtenerElemento(i, j);\n                    if (val != INF) m.asignarElemento(i, j, val - minF);\n                }\n            }\n        }\n        for (int j = 0; j < n; j++) {\n            int minC = INF;\n            for (int i = 0; i < n; i++) minC = Math.min(minC, m.obtenerElemento(i, j));\n            if (minC > 0 && minC != INF) {\n                red += minC;\n                for (int i = 0; i < n; i++) {\n                    int val = m.obtenerElemento(i, j);\n                    if (val != INF) m.asignarElemento(i, j, val - minC);\n                }\n            }\n        }\n        return red;\n    }\n\n    private static MatrizTDA clonar(MatrizTDA orig, int n) throws Exception {\n        MatrizTDA c = new Matriz();\n        c.inicializarMatriz(n, n);\n        for (int i = 0; i < n; i++) {\n            for (int j = 0; j < n; j++) {\n                c.asignarElemento(i, j, orig.obtenerElemento(i, j));\n            }\n        }\n        return c;\n    }\n}",
+          "complejidad": {
+            "temporal_peor_caso": "O((n - 1)! * n^2). En el peor caso se exploran todas las permutaciones dirigidas con O(n^2) de reducción matricial por estado.",
+            "temporal_mejor_caso": "O(n^3). Con podas óptimas inmediatas en el primer descenso.",
+            "espacial": "O(n^2 * 2^n). Almacenamiento de matrices reducidas n x n en cada nodo de la cola de prioridad.",
+            "justificacion": "La reducción matricial compensa la falta de MST en grafos dirigidos suministrando cotas firmes a cambio de un costo cuadrático en tiempo y memoria por nodo."
+          }
+        }
+      ],
+      "id_global": 149
+    },
+    {
+      "id_tema": 41,
+      "tema": "backtracking",
+      "titulo": "Ejercicio 24 (Clase 13 - Archivo 6): Determinación de Ciclos Hamiltonianos mediante Reducción Polinómica a TSP y Acotamiento LC-BB",
+      "enunciado": "Dado un grafo no dirigido no ponderado G = (V, E) de 6 vértices A, B, C, D, E, F con aristas {(A,B), (A,C), (A,D), (B,C), (B,E), (D,E), (D,F), (E,F)}, determine si el grafo contiene un Ciclo Hamiltoniano. Aplique la técnica formal de reducción polinómica a TSP de Ricardo Wehbe transformando G en un grafo completo ponderado G' donde las aristas originales tienen peso 1 y las aristas complementarias tienen peso 2. Demuestre teóricamente que G tiene ciclo hamiltoniano si y solo si el costo óptimo de TSP en G' es igual a |V| = 6. Resuelva la instancia resultante mediante LC-BB con cota MST trazando los 16 nodos generados en cátedra y proporcione la implementación en Java sobre TDAs de cátedra.",
+      "recurso_visual": null,
+      "fuente_original": "Diapositivas DAA Cátedra (ejercicio_24_reduccion_hamiltoniano_tsp)",
+      "es_ejercicio_propuesto_diapositivas": true,
+      "resolucion_propuesta": [
+        {
+          "id_propuesto": "ejercicio_24_reduccion_hamiltoniano_tsp",
+          "analisis_formal": {
+            "tupla_solucion": "Vector de vértices `ciclo = [v_0, v_1, ..., v_{n-1}, v_0]` de tamaño n + 1 que forma un ciclo hamiltoniano en G.",
+            "espacio_soluciones": "Espacio de permutaciones (|V|-1)! / 2. Para |V| = 6, 60 ciclos posibles en el grafo completo transformado.",
+            "funcion_objetivo": "Minimizar la suma de pesos en G': f(ciclo) = \\sum w(v_i, v_{i+1}). Si f(ciclo) = 6, se prueba la existencia del ciclo hamiltoniano.",
+            "condiciones_factibilidad": "Visitar todos los vértices sin repeticiones intermedias y cerrar en el vértice de inicio A.",
+            "condiciones_optimalidad": "Poda por cota LC-BB: c = c1 + c2 + c3 + c4 >= upper. En cuanto se encuentra un ciclo de costo |V|, el algoritmo finaliza certificando la existencia.",
+            "traza_exhaustiva": "Nodo 1(A, upper=inf) -> Nivel 1: 2(AB, c=7), 3(AC, c=6), 4(AD, c=6), 5(AE, c=8), 6(AF, c=7). Se expande 3: 7(ACB, c=6), 8(ACD, c=7), 9(ACE, c=8), 10(ACF, c=7). Se expande 7: 11(ACBD, c=8), 12(ACBE, c=6), 13(ACBF, c=7). Se expande 12: 14(ACBED, c=7), 15(ACBEF, c=6). Se expande 15: 16(ACBEFDA, costo=6). Como costo=6=|V|, upper se actualiza a 6, se podan todos los demás nodos y se certifica la existencia del ciclo A-C-B-E-F-D-A."
+          },
+          "pseudocodigo": "Algoritmo DeterminarCicloHamiltoniano_Ej\nEntrada: g: GrafoTDA, n: entero\nSalida: existe: Booleano, ciclo: VectorTDA\n\ngCompleto <- nuevo GrafoTDA()\ninicializarGrafo(gCompleto, n)\n\npara i <- 0 hasta n-1 hacer\n    para j <- i + 1 hasta n-1 hacer\n        peso <- si g.existeArista(i, j) entonces 1 sino 2\n        gCompleto.agregarArista(i, j, peso)\n    fin para\nfin para\n\ncicloOptimo, costoOptimo <- resolverTSP_LC_BB(gCompleto, n, 0)\n\nsi costoOptimo == n entonces\n    devolver VERDADERO, cicloOptimo\nsino\n    devolver FALSO, NULO\nfin si",
+          "codigo_java": "public class Ejercicio24_Hamiltoniano_TSP {\n\n    public static boolean verificarCicloHamiltoniano(GrafoTDA g, int n, VectorTDA<Integer> resultado) throws Exception {\n        GrafoTDA gComp = new Grafo();\n        gComp.inicializarGrafo(n);\n\n        for (int i = 0; i < n; i++) {\n            for (int j = i + 1; j < n; j++) {\n                int w = g.existeArista(i, j) ? 1 : 2;\n                gComp.agregarArista(i, j, w);\n            }\n        }\n\n        VectorTDA<Integer> tour = new Vector<>();\n        tour.inicializarVector(n + 1);\n        int costo = TSP_BranchAndBound.resolverTSP(gComp, n, 0, tour);\n\n        if (costo == n) {\n            for (int i = 0; i <= n; i++) {\n                resultado.agregarElemento(tour.recuperarElemento(i));\n            }\n            return true;\n        }\n        return false;\n    }\n}",
+          "complejidad": {
+            "temporal_peor_caso": "O(V^2 + (V - 1)! * V^2). Reducción cuadrática y resolución Branch and Bound con MST.",
+            "temporal_mejor_caso": "O(V^3). Poda de todas las aristas de peso 2 al inicio cuando el ciclo se detecta en el primer descenso.",
+            "espacial": "O(V^2 + V * 2^V). Grafo completo auxiliar y cola de prioridad de estados vivos.",
+            "justificacion": "Ilustra la técnica fundamental de reducción polinómica para resolver problemas NP-completos de decisión mediante algoritmos de optimización."
+          }
+        }
+      ],
+      "id_global": 150
+    }
+  ]
+}

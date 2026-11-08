@@ -1,0 +1,619 @@
+{
+  "modulo": "greedy",
+  "titulo": "Banco de Ejercicios: Algoritmos Greedy (Voraces)",
+  "descripcion": "Colección completa y consolidada de ejercicios sobre técnica Greedy, planificación de intervalos, minimización de demoras, matroides y árboles de recubrimiento mínimo (Clases 04 y 05).",
+  "total_ejercicios": 35,
+  "fecha_actualizacion": "2026-11-07",
+  "ejercicios": [
+    {
+      "id_tema": 1,
+      "tema": "greedy",
+      "titulo": "Café y estudio",
+      "enunciado": "Una estudiante está preparando un examen de Diseño y análisis de algoritmos. Su plan es estudiar toda la noche y tiene una provisión de café que le ayudará a llegar despierta al alba del día siguiente. Las cápsulas de café con que cuenta tienen diversas intensidades. El efecto del café es linealmente proporcional a su intensidad, por lo menos en lo que se refiere a nuestra protagonista: un café de Indonesia de intensidad 8 tiene el doble de efecto que uno de Etiopía de intensidad 4.\nPero, como sucede con todas las drogas, el efecto tiende a debilitarse con la repetición. Entonces, si el efecto de un café es x en la primera taza, si se lo toma en la segunda es 0.8x; en la tercera es 0.6x, y así sucesivamente; a partir de la sexta taza, el café no tiene más efecto, cualquiera que sea la intensidad.\nSabiendo esto, le pedimos por favor que responda las siguientes preguntas:\na) ¿Cómo debería organizarse la secuencia de cápsulas de café para maximizar el efecto? Describa una estrategia y justifíquela. Recuerde que la estudiante tiene un número limitado de cápsulas.\nb) ¿A cuál de las técnicas vistas en clase corresponde su estrategia y por qué?\nc) Suponiendo que el efecto E de una taza de café (sin tener en cuenta las repeticiones) se calcule como E = 5 * I donde I es la intensidad y sabiendo que las cápsulas de que dispone nuestra estudiante (una de cada una) son: India (I = 11), Sumatra (I = 7), Indonesia (I = 8), Colombia (I = 6), Etiopía (I = 4), Palermo Kazaar (I = 12) y Nicaragua (I = 5), ¿qué efecto final se lograría con la estrategia que usted propone?",
+      "recurso_visual": null,
+      "fuente_original": "DAA Ejercicios segundo parcial (Guía)",
+      "id_global": 42
+    },
+    {
+      "id_tema": 2,
+      "tema": "greedy",
+      "titulo": "Coloreo de intervalos",
+      "enunciado": "Tenemos un arreglo I de n intervalos que pueden superponerse. Estos intervalos vienen dados como una tupla (i, f) donde i < f. El número i representa el inicio del intervalo y el número f su fin. Tenemos además una colección de n colores diferentes. Queremos colorear cada intervalo de manera de asignar a cada par de intervalos que se superpongan colores diferentes.\nEn principio, existe una solución simple: asignar un color diferente a cada intervalo. Esto es posible, dado que tenemos un color para cada intervalo. Pero queremos utilizar el mínimo número de colores.\na) Proponga una estrategia greedy para resolver este problema.\nb) Justifique que su estrategia es adecuada.\nc) Escriba el pseudo-código de su estrategia.\nd) Calcule la complejidad de su algoritmo.\n\nAyuda: puede ser conveniente encontrar la máxima cantidad de intervalos que se superponen en un punto dado.",
+      "recurso_visual": null,
+      "fuente_original": "DAA Ejercicios segundo parcial (Guía)",
+      "resolucion_propuesta": [
+        {
+          "archivo_origen": "2023 04 Greedy parte 1.pdf",
+          "diapositiva_origen": 135,
+          "categoria": "Partición de Intervalos / Asignación de Recursos",
+          "elementos_greedy": {
+            "conjunto_candidatos": "Conjunto de cursos $C = \\{c_1, \\dots, c_n\\}$ con intervalos de tiempo $[inicio_i, fin_i)$.",
+            "funcion_seleccion": "Ordenar y procesar los cursos en orden creciente de hora de inicio ($inicio_i$).",
+            "funcion_factibilidad": "Asignar el curso a un aula existente que esté libre en el intervalo $[inicio_i, fin_i)$. Si ninguna aula existente está libre, abrir una nueva aula.",
+            "funcion_solucion": "Todos los cursos han sido asignados a un aula.",
+            "funcion_objetivo": "Minimizar la cantidad total de aulas utilizadas $k$."
+          },
+          "pistas_o_resolucion": {
+            "estrategia_optima": "Earliest Start Time First con cola de prioridad de aulas (Min-Heap de tiempos de liberación de aulas).",
+            "demostracion_optimalidad": "La profundidad (depth) del conjunto de intervalos es el número máximo de intervalos que se solapan en un mismo instante $t$. El número mínimo de aulas necesarias es exactamente igual a la profundidad $d$. El algoritmo greedy nunca asigna un aula de índice mayor a $d$, porque al procesar cualquier curso $c_i$, a lo sumo $d-1$ cursos anteriores se solapan con su hora de inicio; por lo tanto, siempre habrá al menos un aula de entre las $1 \\dots d$ que ya se desocupó.",
+            "complejidad": "$\\mathcal{O}(n \\log n)$ ordenando por $inicio_i$ y usando un Min-Heap de tamaño a lo sumo $n$ para consultar y actualizar el aula que se desocupa primero."
+          },
+          "nota_duplicado": "Coincide con el ejercicio propuesto #2 ('Aulas en la Universidad de Fraile Muerto (Interval Partitioning / Room Coloring)') de diapositivas de clase."
+        }
+      ],
+      "es_ejercicio_propuesto_diapositivas": true,
+      "id_global": 43
+    },
+    {
+      "id_tema": 3,
+      "tema": "greedy",
+      "titulo": "Cargamentos de soja en camiones (Fraile Muerto)",
+      "enunciado": "La ciudad de Fraile Muerto se encuentra, como todo el mundo sabe, en el centro de una importante zona productora de soja. Un centro de acopio recibe los cargamentos de soja y los despacha en camiones al puerto. Los cargamentos no se fraccionan y se mandan por estricto orden de llegada. Cuando un cargamento no entra en un camión, el camión se cierra y se envía y el cargamento se coloca en el siguiente camión.\nA usted lo llaman como consultor del centro de acopio para hacerle el siguiente planteo: se quiere saber si el método utilizado es óptimo en el sentido de acomodar todos los cargamentos en el mínimo número de viajes. Le aclaran que no es posible fraccionar los cargamentos ni alterar el orden. Pero tal vez sería posible no colocar un cargamento en el camión para llenar mejor el siguiente.\na) Decida si la metodología empleada es óptima o no.\nb) Justifique su resultado.",
+      "recurso_visual": null,
+      "fuente_original": "DAA Ejercicios segundo parcial (Guía)",
+      "id_global": 44
+    },
+    {
+      "id_tema": 4,
+      "tema": "greedy",
+      "titulo": "El algoritmo de González (k-centers)",
+      "enunciado": "Tenemos una colección de puntos en un espacio métrico. Queremos encontrar k puntos que sirvan como centros para otros tantos clusters de manera que la máxima distancia de cualquier punto a su centro más próximo esté minimizada. En otras palabras, si tomamos todas las distancias de cada punto a su respectivo centro, la máxima de estas distancias es minimizada. Este problema es NP-completo.\nEl algoritmo de González propone lo siguiente:\n1. Elija como primer centro un vértice arbitrario. Ponga el contador de centros en 1.\n2. Mientras el contador de centros no haya llegado a k, elija como nuevo centro el vértice más lejano de cualquiera de los ya seleccionados e incremente el contador de centros en 1.\na) Explique a qué técnica corresponde este algoritmo y por qué.\nb) Escriba el pseudo-código correspondiente.\nc) ¿Da este algoritmo una solución óptima? Explique por qué o por qué no.",
+      "recurso_visual": null,
+      "fuente_original": "DAA Ejercicios segundo parcial (Guía)",
+      "id_global": 45
+    },
+    {
+      "id_tema": 5,
+      "tema": "greedy",
+      "titulo": "Andenes en la estación de trenes de Fraile Muerto",
+      "enunciado": "La estación de trenes de Fraile Muerto tiene una actividad frenética durante la época de la cosecha de soja, cereal que ha contribuido a la riqueza de la región. Se prevé para la próxima temporada una gran demanda y ya se tiene la lista completa de horarios de arribo y partida de los trenes que llevarán la cosecha al puerto.\nEsta lista contiene n tuplas ti = (ai, pi), donde ai es el horario de partida y pi el de llegada. Queremos saber cuántos andenes debemos construir como mínimo para poder acomodar esta cantidad de trenes.\na) Describa una estrategia greedy para encontrar este número.\nb) Escriba el pseudocódigo del algoritmo.\nc) Calcule la complejidad de su algoritmo.\n\nAyuda: Considere la posibilidad de tomar siempre el próximo evento (arribo o partida) para calcular el número máximo de trenes que puede haber en un momento dado. Un arribo suma y una partida resta.",
+      "recurso_visual": null,
+      "fuente_original": "DAA Ejercicios segundo parcial (Guía)",
+      "id_global": 46
+    },
+    {
+      "id_tema": 6,
+      "tema": "greedy",
+      "titulo": "El juego de los corchos (versión normal)",
+      "enunciado": "Recordemos el juego de los corchos, que resolvimos con el algoritmo Min-Max. Hay una cantidad n de corchos sobre una mesa y dos jugadores juegan por turno. Cada uno de ellos en su turno saca uno, dos o tres corchos del montón. Ninguno puede \"pasar\". Pierde el jugador que retira el último corcho.\na) Muestre que para cualquier número n es posible una estrategia greedy que garantiza la victoria si es posible elegir el turno de jugar.\nb) Escriba el pseudo código de su programa.\nc) Calcule la complejidad de su programa.",
+      "recurso_visual": null,
+      "fuente_original": "DAA Ejercicios segundo parcial (Guía)",
+      "id_global": 47
+    },
+    {
+      "id_tema": 7,
+      "tema": "greedy",
+      "titulo": "El rincón surrealista: Antimateria cuántica en Fraile Muerto",
+      "enunciado": "El Centro de Investigaciones Espaciales de Fraile Muerto tiene un proyecto secreto sobre antimateria cuántica. La antimateria viene en frascos. Cada frasco p tiene asociado un entero positivo pk. Es importante llevar este número a 1 en la menor cantidad de pasos que sea posible. Para ello, podemos realizar tres operaciones:\n- Incrementar el número pk en 1: pk → pk + 1.\n- Decrementar el número pk en 1: pk → pk − 1.\n- Dividir el número por 2: pk → pk / 2. Debido a la energía destructiva liberada cuando se realiza este proceso, los controles de seguridad sólo permiten que suceda si el número pk es par.\na) Encuentre un proceso para minimizar el número de pasos requerido para llevar un valor pk dado a 1.\nb) Justifique su resultado.",
+      "recurso_visual": null,
+      "fuente_original": "DAA Ejercicios segundo parcial (Guía)",
+      "resolucion_propuesta": [
+        {
+          "archivo_origen": "2023 04 Greedy parte 1.pdf",
+          "diapositiva_origen": 137,
+          "categoria": "Optimización / Búsqueda de Camino Óptimo (Collatz-like)",
+          "elementos_greedy": {
+            "conjunto_candidatos": "Operaciones permitidas $\\{+1, -1, /2\\}$ aplicadas al estado actual $p_k$.",
+            "funcion_seleccion": "Si $p_k$ es par, la única y mejor opción es dividir por 2 ($p_k / 2$). Si $p_k$ es impar: si $p_k = 3$, elegir $p_k - 1 \\to 2$; si $p_k > 3$, evaluar $p_k \\pmod 4$: si $p_k \\equiv 1 \\pmod 4$, decrementar ($p_k - 1$ produce múltiplo de 4); si $p_k \\equiv 3 \\pmod 4$, incrementar ($p_k + 1$ produce múltiplo de 4).",
+            "funcion_factibilidad": "División por 2 sólo si $p_k$ es par; suma y resta siempre factibles.",
+            "funcion_solucion": "$p_k = 1$.",
+            "funcion_objetivo": "Minimizar la cantidad de transiciones."
+          },
+          "pistas_o_resolucion": {
+            "estrategia_optima": "Regla de paridad de bits (análisis en base 2): Todo número impar termina en `01` o `11` en binario. Si termina en `01`, restar 1 produce `...00`, permitiendo al menos dos divisiones por 2 consecutivas. Si termina en `11` (salvo el 3, que es `11_2` y con $-1$ va a $2 \\to 1$ en 2 pasos), sumar 1 produce `...00` (un acarreo que despeja ceros a la derecha).",
+            "demostracion_optimalidad": "Maximiza el número de ceros finales en la representación binaria en cada operación impar, garantizando la reducción logarítmica más acelerada posible.",
+            "complejidad": "$\\mathcal{O}(\\log p_k)$ pasos, ya que cada 1 ó 2 operaciones reducen la longitud binaria del número en al menos un bit."
+          },
+          "nota_duplicado": "Coincide con el ejercicio propuesto #6 ('El rincón surrealista: Antimateria cuántica en Fraile Muerto') de diapositivas de clase."
+        }
+      ],
+      "es_ejercicio_propuesto_diapositivas": true,
+      "id_global": 48
+    },
+    {
+      "id_tema": 8,
+      "tema": "greedy",
+      "titulo": "Minimización de la máxima demora (Lateness Scheduling)",
+      "enunciado": "Tenemos un conjunto de tareas que deben ser realizadas por un único recurso, de manera que no se pueden realizar dos al mismo tiempo. Cada tarea j tiene un tiempo de procesamiento tj y un plazo dj. Si la tarea j comienza en el tiempo sj, terminará en el tiempo fj = sj + tj. Definimos la demora ℓj de la tarea j como ℓj = max(0, fj − dj).\nQueremos un esquema greedy que minimice la máxima demora, es decir L = max_j ℓj.",
+      "recurso_visual": null,
+      "fuente_original": "DAA Ejercicios segundo parcial (Guía)",
+      "resolucion_propuesta": [
+        {
+          "archivo_origen": "2023 04 Greedy parte 1.pdf",
+          "diapositiva_origen": 136,
+          "categoria": "Planificación de Procesos con Plazos (Deadlines)",
+          "elementos_greedy": {
+            "conjunto_candidatos": "Conjunto de tareas $T = \\{1, 2, \\dots, n\\}$, cada una con duración $t_j$ y fecha límite (deadline) $d_j$.",
+            "funcion_seleccion": "Earliest Deadline First (EDF): ordenar las tareas de menor a mayor plazo de entrega ($d_1 \\le d_2 \\le \\dots \\le d_n$).",
+            "funcion_factibilidad": "Planificar la tarea en el siguiente intervalo disponible contiguo sin tiempo ocioso ($s_{j+1} = f_j$).",
+            "funcion_solucion": "Todas las tareas han sido agendadas consecutivamente.",
+            "funcion_objetivo": "Minimizar $L = \\max_{1 \\le j \\le n} \\ell_j$."
+          },
+          "pistas_o_resolucion": {
+            "estrategia_optima": "Algoritmo de Jackson (Earliest Deadline First).",
+            "demostracion_optimalidad": "Prueba por inversión de pares adyacentes: Supongamos una solución óptima sin tiempo muerto. Si tiene una inversión (dos tareas adyacentes $i$ y $j$ donde $i$ se procesa inmediatamente antes que $j$ pero $d_i > d_j$), intercambiarlas no aumenta la máxima demora del par ni altera la planificación del resto. Repitiendo el intercambio a lo sumo $\\binom{n}{2}$ veces se llega al orden greedy sin degradar la solución.",
+            "complejidad": "$\\mathcal{O}(n \\log n)$ por el ordenamiento según $d_j$."
+          },
+          "nota_duplicado": "Coincide con el ejercicio propuesto #3 ('Minimización de la Máxima Demora (Scheduling to Minimize Maximum Lateness)') de diapositivas de clase."
+        }
+      ],
+      "es_ejercicio_propuesto_diapositivas": true,
+      "id_global": 49
+    },
+    {
+      "id_tema": 9,
+      "tema": "greedy",
+      "titulo": "Propiedades del algoritmo de Dijkstra",
+      "enunciado": "Considere el algoritmo de Dijkstra. Supongamos que obtenemos un camino mínimo entre dos nodos p y q de un grafo g. Responda por favor a las preguntas siguientes. En todos los casos justifique su respuesta.\na) ¿Verdadero o falso? Si todos los costos de las aristas se incrementan en una constante k, el camino mínimo entre p y q continuará siendo el mismo.\nb) ¿Verdadero o falso? Si todos los costos de las aristas se incrementan en un 20 %, el camino mínimo entre p y q continuará siendo el mismo.\nc) ¿Verdadero o falso? Si todos los costos de las aristas se elevan al cuadrado, el camino mínimo entre p y q continuará siendo el mismo.",
+      "recurso_visual": null,
+      "fuente_original": "DAA Ejercicios segundo parcial (Guía)",
+      "resolucion_propuesta": [
+        {
+          "archivo_origen": "05 Greedy parte 2.pdf",
+          "diapositiva_origen": 171,
+          "categoria": "Invarianza de Caminos Mínimos bajo Transformaciones de Escala",
+          "elementos_greedy": {
+            "conjunto_candidatos": "Rutas aéreas entre ciudades.",
+            "funcion_seleccion": "Camino de menor costo con tarifas multiplicadas por $1.20$.",
+            "funcion_factibilidad": "Conexiones existentes.",
+            "funcion_solucion": "Camino mínimo recalculado vs anterior.",
+            "funcion_objetivo": "Minimizar el costo total del vuelo."
+          },
+          "pistas_o_resolucion": {
+            "estrategia_optima": "SÍ, la CEO está en lo cierto en este modelo específico de escala porcentual.",
+            "demostracion_optimalidad": "Sea $c(v)$ la tarifa del aeropuerto $v$. El costo de un vuelo en una arista $(u, v)$ es la suma de la tarifa de salida de $u$ y la tarifa de llegada de $v$: $peso(u, v) = c(u) + c(v)$. Al incrementar TODAS las tarifas de aeropuerto en un 20%, la nueva tarifa es $c'(v) = 1.20 \\cdot c(v)$. Por lo tanto, el nuevo costo de la arista es $peso'(u, v) = c'(u) + c'(v) = 1.20 \\cdot c(u) + 1.20 \\cdot c(v) = 1.20 \\cdot peso(u, v)$. Para cualquier camino $P = (e_1, e_2, \\dots, e_k)$, su nuevo costo es $costo'(P) = \\sum_{i=1}^k 1.20 \\cdot peso(e_i) = 1.20 \\sum_{i=1}^k peso(e_i) = 1.20 \\cdot costo(P)$. Como multiplicar los costos de todos los caminos posibles por una constante positiva fija ($1.20 > 0$) preserva estrictamente el orden de los costos ($costo(P_1) < costo(P_2) \\iff 1.20 \\cdot costo(P_1) < 1.20 \\cdot costo(P_2)$), el camino que minimizaba la suma antes del aumento sigue siendo exactamente el camino que minimiza la suma después del aumento. (Nota pedagógica: esto NO se cumple si el aumento fuera una suma fija $+K$, ya que penalizaría más a los caminos con mayor cantidad de escalas; pero al ser un porcentaje multiplicativo homogéneo, la invariancia es total).",
+            "complejidad": "No se requiere recalcular; costo computacional $\\mathcal{O}(1)$."
+          },
+          "nota_duplicado": "Coincide con el ejercicio propuesto #13 ('Tarifas de aeropuertos en Córdoba incrementadas un 20%') de diapositivas de clase."
+        }
+      ],
+      "es_ejercicio_propuesto_diapositivas": true,
+      "id_global": 50
+    },
+    {
+      "id_tema": 10,
+      "tema": "greedy",
+      "titulo": "Navegación en canoa en el río Ctalamochita",
+      "enunciado": "Usted planea navegar en canoa aguas abajo por el río Ctalamochita entre las ciudades de Morrison y Monte Leña. Hay n puestos de canoas a lo largo de este trayecto. Antes de comenzar su excursión, usted consigue para cada 1 ≤ i < j ≤ n, el precio fi,j para alquilar una canoa desde el puesto i hasta el puesto j. Estos precios son arbitrarios. Por ejemplo, es posible que sea f1,3 = 10 y f1,4 = 5. Usted comienza en el puesto 1 y debe terminar en el puesto n (usando canoas alquiladas). El objetivo es minimizar el costo.\nMuestre cómo podría aplicarse el algoritmo de Dijkstra para resolver este problema.",
+      "recurso_visual": null,
+      "fuente_original": "DAA Ejercicios segundo parcial (Guía)",
+      "resolucion_propuesta": [
+        {
+          "archivo_origen": "05 Greedy parte 2.pdf",
+          "diapositiva_origen": 169,
+          "categoria": "Caminos Mínimos en Grafos Dirigidos Acíclicos (DAG)",
+          "elementos_greedy": {
+            "conjunto_candidatos": "Vértices del grafo dirigidos $V = \\{1, 2, \\dots, n\\}$ que representan los puestos de canoas.",
+            "funcion_seleccion": "Vértice con menor costo acumulado provisional $dist[u]$ desde el origen 1.",
+            "funcion_factibilidad": "Aristas dirigidas $(i, j)$ sólo con $i < j$ (el río fluye aguas abajo, garantizando un Grafo Dirigido Acíclico - DAG) con pesos $f_{i,j} \\ge 0$.",
+            "funcion_solucion": "El puesto de destino $n$ es marcado como visitado y su distancia mínima queda fijada.",
+            "funcion_objetivo": "Minimizar el costo total de alquiler de canoas de 1 a $n$."
+          },
+          "pistas_o_resolucion": {
+            "estrategia_optima": "Modelar como un grafo dirigido ponderado acíclico (DAG) con $V = \\{1, \\dots, n\\}$ y aristas $(i, j)$ de peso $f_{i,j}$ para todo $1 \\le i < j \\le n$. Como todos los costos son no negativos ($f_{i,j} \\ge 0$), Dijkstra se aplica directamente con vértice origen $s=1$. Alternativamente, por ser un DAG con orden topológico natural $1, 2, \\dots, n$, se puede relajar en orden topológico lineal.",
+            "demostracion_optimalidad": "Dijkstra resuelve caminos mínimos con aristas no negativas en $\\mathcal{O}(V^2)$ o $\\mathcal{O}(E + V \\log V)$. En este DAG con orden topológico trivial, relajando aristas en orden $1 \\dots n$, el costo óptimo de cada puesto $j$ se define como $dist[j] = \\min_{1 \\le i < j} (dist[i] + f_{i,j})$, resoluble en $\\Theta(n^2)$ comparaciones.",
+            "complejidad": "$\\Theta(n^2)$ operaciones tanto para Dijkstra clásico con arreglo como para relajación por orden topológico (ya que hay $|E| = \\frac{n(n-1)}{2}$ aristas)."
+          },
+          "nota_duplicado": "Coincide con el ejercicio propuesto #7 ('Navegación en el río Ctalamochita (Dijkstra en DAG de puestos)') de diapositivas de clase."
+        }
+      ],
+      "es_ejercicio_propuesto_diapositivas": true,
+      "id_global": 51
+    },
+    {
+      "id_tema": 11,
+      "tema": "greedy",
+      "titulo": "Camino mínimo vs Árbol de Recubrimiento Mínimo (MST)",
+      "enunciado": "Queremos encontrar el costo mínimo entre dos vértices a y b de un grafo g y nos dan el árbol de recubrimiento mínimo de este grafo. Entonces tomamos este árbol de recubrimiento mínimo y seguimos el camino desde a hasta b sumando los costos de cada arista.\n¿Es la respuesta que da este procedimiento correcta?",
+      "recurso_visual": null,
+      "fuente_original": "DAA Ejercicios segundo parcial (Guía)",
+      "resolucion_propuesta": [
+        {
+          "archivo_origen": "05 Greedy parte 2.pdf",
+          "diapositiva_origen": 171,
+          "categoria": "Contraejemplos / Distinción entre MST y Shortest Path Tree",
+          "elementos_greedy": {
+            "conjunto_candidatos": "El único camino simple entre $a$ y $b$ existente en el MST $T$.",
+            "funcion_seleccion": "Camino en el árbol $T$.",
+            "funcion_factibilidad": "Camino conexo existente.",
+            "funcion_solucion": "Suma de pesos de las aristas del camino en $T$.",
+            "funcion_objetivo": "Minimizar la distancia entre $a$ y $b$."
+          },
+          "pistas_o_resolucion": {
+            "estrategia_optima": "NO, la respuesta es en general INCORRECTA. El árbol de recubrimiento mínimo (MST) optimiza la suma GLOBAL de todas las aristas del grafo, no las distancias individuales entre pares de vértices.",
+            "demostracion_optimalidad": "Contraejemplo clásico (triángulo): Sean los vértices $\\{a, b, c\\}$ con aristas $(a, c)$ de peso 1, $(c, b)$ de peso 1, y $(a, b)$ de peso 1.5. El MST de este grafo está compuesto por las aristas $(a, c)$ y $(c, b)$ con costo total $1 + 1 = 2$ (la arista $(a, b)$ de peso 1.5 queda excluida por ser la más pesada del ciclo). Siguiendo el camino en el MST entre $a$ y $b$, pasamos por $c$ con una distancia de $1 + 1 = 2$. Sin embargo, en el grafo original existe la arista directa $(a, b)$ con costo 1.5, que es un camino estrictamente más corto ($1.5 < 2$).",
+            "complejidad": "Para caminos mínimos entre pares de vértices se debe usar Dijkstra o Bellman-Ford, no el MST."
+          },
+          "nota_duplicado": "Coincide con el ejercicio propuesto #12 ('Camino mínimo entre dos vértices usando el MST') de diapositivas de clase."
+        }
+      ],
+      "es_ejercicio_propuesto_diapositivas": true,
+      "id_global": 52
+    },
+    {
+      "id_tema": 12,
+      "tema": "greedy",
+      "titulo": "Pesos negativos en Prim y Kruskal",
+      "enunciado": "Suponga que tiene un grafo no dirigido con pesos que pueden ser positivos o negativos. ¿Producen los algoritmos de Prim y Kruskal un árbol de recubrimiento mínimo para ese grafo?",
+      "recurso_visual": null,
+      "fuente_original": "DAA Ejercicios segundo parcial (Guía)",
+      "resolucion_propuesta": [
+        {
+          "archivo_origen": "05 Greedy parte 2.pdf",
+          "diapositiva_origen": 169,
+          "categoria": "Árboles de Recubrimiento Mínimo (MST) con Pesos Negativos",
+          "elementos_greedy": {
+            "conjunto_candidatos": "Vértices (en Prim) o aristas (en Kruskal) de un grafo ponderado no dirigido $G=(V, E, w)$ con $w: E \\to \\mathbb{R}$.",
+            "funcion_seleccion": "Arista de menor peso disponible (incluso si es muy negativa).",
+            "funcion_factibilidad": "No formar ciclos con las aristas ya elegidas.",
+            "funcion_solucion": "Árbol conexo que contiene todos los $|V|$ vértices con $|V|-1$ aristas.",
+            "funcion_objetivo": "Minimizar la suma algebraica de pesos $\\sum_{e \\in T} w(e)$."
+          },
+          "pistas_o_resolucion": {
+            "estrategia_optima": "SÍ, ambos algoritmos (Prim y Kruskal) funcionan exactamente igual y producen el MST óptimo incluso con aristas de peso negativo.",
+            "demostracion_optimalidad": "Las demostraciones de corrección de Prim y Kruskal se basan exclusivamente en la 'Propiedad de Corte' (Cut Property) y la 'Propiedad de Ciclo' (Cycle Property). Ambas propiedades dependen únicamente del ORDEN RELATIVO de los pesos de las aristas ($w(e_1) \\le w(e_2)$), y no de su signo. De hecho, si sumamos una constante positiva $C > \\max |w(e)|$ a todas las aristas, todos los pesos se vuelven positivos: $w'(e) = w(e) + C$. Como todo árbol de recubrimiento tiene exactamente $|V|-1$ aristas, el costo del árbol bajo $w'$ es $w'(T) = \\sum_{e \\in T} (w(e) + C) = w(T) + (|V|-1)C$. Como $(|V|-1)C$ es constante e idéntico para todos los árboles de recubrimiento posibles, el árbol que minimiza $w'(T)$ es exactamente el mismo que minimiza $w(T)$. Por tanto, la presencia de pesos negativos no altera la optimalidad.",
+            "complejidad": "Prim: $\\mathcal{O}(|V|^2)$; Kruskal: $\\mathcal{O}(|E| \\log |V|)$."
+          },
+          "nota_duplicado": "Coincide con el ejercicio propuesto #8 ('Grafos con pesos negativos en Prim y Kruskal') de diapositivas de clase."
+        }
+      ],
+      "es_ejercicio_propuesto_diapositivas": true,
+      "id_global": 53
+    },
+    {
+      "id_tema": 13,
+      "tema": "greedy",
+      "titulo": "Pesos negativos en Dijkstra y Floyd-Warshall",
+      "enunciado": "Explique qué pasa con pesos negativos en el algoritmo de Dijkstra y en el de Floyd-Warshall.",
+      "recurso_visual": null,
+      "fuente_original": "DAA Ejercicios segundo parcial (Guía)",
+      "id_global": 54
+    },
+    {
+      "id_tema": 14,
+      "tema": "greedy",
+      "titulo": "Costos de aristas cero o negativos en Dijkstra",
+      "enunciado": "Considere el algoritmo de Dijkstra. Responda las siguientes preguntas. Justifique su respuesta.\na) ¿Funciona el algoritmo para costos de aristas negativos? Explique por qué o por qué no.\nb) ¿Funciona el algoritmo para costos de aristas cero? Explique por qué o por qué no.",
+      "recurso_visual": null,
+      "fuente_original": "DAA Ejercicios segundo parcial (Guía)",
+      "id_global": 55
+    },
+    {
+      "id_tema": 15,
+      "tema": "greedy",
+      "titulo": "Cambio de monedas (Greedy)",
+      "enunciado": "Dado un conjunto C de N tipos de monedas con un número ilimitado de ejemplares de cada tipo, se requiere formar, si se puede, una cantidad M empleando el mínimo número de ellas. Por ejemplo, un cajero automático dispone de billetes de distintos valores: $100, $25, $10, $5 y $1, si se tiene que pagar $289, la mejor solución consiste en dar 10 billetes: 2 de $100, 3 de $25, 1 de $10 y 4 de $1.\n\nPara este ejercicio:\n- Esbozar el algoritmo que resuelve el problema.\n- Identificar las partes que componen la solución y su relación con el esquema modelo de la técnica elegida.\n- Demostrar su correctitud.\n- Detallar las estructuras que se utilizarán.\n- Escribir el método en Java para resolverlo.\n- Analizar la complejidad de la solución en tiempo y espacio.",
+      "recurso_visual": null,
+      "fuente_original": "UADE Progra III - Parte 3: Greedy",
+      "id_global": 56
+    },
+    {
+      "id_tema": 16,
+      "tema": "greedy",
+      "titulo": "Problema de la Mochila Fraccionaria",
+      "enunciado": "Se tienen n objetos y una mochila. Para i = 1,2,..n, el objeto i tiene un peso positivo pi y un valor positivo vi. La mochila puede llevar un peso que no sobrepase P. El objetivo es llenar la mochila de tal manera que se maximice el valor de los objetos transportados, respetando la limitación de capacidad impuesta. Los objetos pueden ser fraccionados, si una fracción xi (0 ≤ xi ≤ 1) del objeto i es ubicada en la mochila contribuye en xi*pi al peso total de la mochila y en xi*vi al valor de la carga.\nFormalmente: maximizar sum(xi * vi) con la restricción sum(xi * pi) <= P, donde vi > 0, pi > 0 y 0 <= xi <= 1 para 1 <= i <= n.\n\nPor ejemplo, para n = 3 y P = 20, (v1, v2, v3) = (25, 24, 15) y (p1, p2, p3) = (18, 15, 10).\nAlgunas soluciones posibles son:\n| (x1, x2, x3) | xi*pi | xi*vi |\n| :--- | :--- | :--- |\n| (1/2, 1/3, 1/4) | 16.5 | 24.25 |\n| (1, 2/15, 0) | 20 | 28.2 |\n| (0, 2/3, 1) | 20 | 31 |\n| (0, 1, 1/2) | 20 | 31.5 |\nPuede observarse que (0, 1, 1/2) produce el mayor beneficio.\n\nPara este ejercicio:\n- Esbozar el algoritmo que resuelve el problema.\n- Identificar las partes que componen la solución y su relación con el esquema modelo de la técnica elegida.\n- Demostrar su correctitud.\n- Detallar las estructuras que se utilizarán.\n- Escribir el método en Java para resolverlo.\n- Analizar la complejidad de la solución en tiempo y espacio.",
+      "recurso_visual": {
+        "tipo": "markdown_tabla",
+        "formato": "tabla",
+        "codigo": "| (x1, x2, x3) | xi*pi | xi*vi |\n| :--- | :--- | :--- |\n| (1/2, 1/3, 1/4) | 16.5 | 24.25 |\n| (1, 2/15, 0) | 20 | 28.2 |\n| (0, 2/3, 1) | 20 | 31 |\n| (0, 1, 1/2) | 20 | 31.5 |"
+      },
+      "fuente_original": "UADE Progra III - Parte 3: Greedy",
+      "id_global": 57
+    },
+    {
+      "id_tema": 17,
+      "tema": "greedy",
+      "titulo": "Planificación de tareas con plazo fijo (Unit Job Scheduling)",
+      "enunciado": "Se deben procesar n tareas en un único procesador. Cada tarea se procesa en una unidad de tiempo y debe ser ejecutada en un plazo no superior a ti. La tarea i produce una ganancia gi > 0 si se procesa en un instante anterior a ti. Una solución es factible si existe al menos una secuencia S de tareas que se ejecuten antes de sus respectivos plazos. Una solución óptima es aquella que maximiza la ganancia G = sum_{s in S} gs.\n\nPor ejemplo, para n = 4:\n(g1, g2, g3, g4) = (50, 10, 15, 30)\n(t1, t2, t3, t4) = (2, 1, 2, 1)\n\n| Secuencia | Beneficio | Secuencia | Beneficio |\n| :--- | :--- | :--- | :--- |\n| 1 | 50 | 2,1 | 60 |\n| 2 | 10 | 2,3 | 25 |\n| 3 | 15 | 3,1 | 65 |\n| 4 | 30 | 4,1 | 80 |\n| 1,3 | 65 | 4,3 | 45 |\nPara maximizar el beneficio en este ejemplo, se debería ejecutar la secuencia 4,1.\n\nPara este ejercicio:\n- Esbozar el algoritmo que resuelve el problema.\n- Identificar las partes que componen la solución y su relación con el esquema modelo de la técnica elegida.\n- Demostrar su correctitud.\n- Detallar las estructuras que se utilizarán.\n- Escribir el método en Java para resolverlo.\n- Analizar la complejidad de la solución en tiempo y espacio.",
+      "recurso_visual": {
+        "tipo": "markdown_tabla",
+        "formato": "tabla",
+        "codigo": "| Secuencia | Beneficio | Secuencia | Beneficio |\n| :--- | :--- | :--- | :--- |\n| 1 | 50 | 2,1 | 60 |\n| 2 | 10 | 2,3 | 25 |\n| 3 | 15 | 3,1 | 65 |\n| 4 | 30 | 4,1 | 80 |\n| 1,3 | 65 | 4,3 | 45 |"
+      },
+      "fuente_original": "UADE Progra III - Parte 3: Greedy",
+      "id_global": 58
+    },
+    {
+      "id_tema": 18,
+      "tema": "greedy",
+      "titulo": "Minimizar tiempo de espera",
+      "enunciado": "Un procesador debe atender n procesos. Se conoce de antemano el tiempo que necesita cada uno de ellos. Determinar en qué orden el procesador debe atender dichos procesos para minimizar la suma del tiempo que los procesos están en el sistema.\n\nPor ejemplo, para n = 3 se tienen los procesos (p1, p2, p3) y tiempos de proceso (5, 10, 3):\n| Orden de atención | Tiempo de espera |\n| :--- | :--- |\n| p1, p2, p3 | 5 + (5+10) + (5+10+3) = 38 |\n| p1, p3, p2 | 5 + (5+3) + (5+3+10) = 31 |\n| p2, p1, p3 | 10 + (10+5) + (10+5+3) = 43 |\n| p2, p3, p1 | 10 + (10+3) + (10+3+5) = 41 |\n| p3, p1, p2 | 3 + (3+5) + (3+5+10) = 29 |\n| p3, p2, p1 | 3 + (3+10) + (3+10+5) = 34 |\nLa ordenación que produce el tiempo de espera mínimo es (p3, p1, p2).\n\nPara este ejercicio:\n- Esbozar el algoritmo que resuelve el problema.\n- Identificar las partes que componen la solución y su relación con el esquema modelo de la técnica elegida.\n- Demostrar su correctitud.\n- Detallar las estructuras que se utilizarán.\n- Escribir el método en Java para resolverlo.\n- Analizar la complejidad de la solución en tiempo y espacio.",
+      "recurso_visual": {
+        "tipo": "markdown_tabla",
+        "formato": "tabla",
+        "codigo": "| Orden de atención | Tiempo de espera |\n| :--- | :--- |\n| p1, p2, p3 | 5 + (5+10) + (5+10+3) = 38 |\n| p1, p3, p2 | 5 + (5+3) + (5+3+10) = 31 |\n| p2, p1, p3 | 10 + (10+5) + (10+5+3) = 43 |\n| p2, p3, p1 | 10 + (10+3) + (10+3+5) = 41 |\n| p3, p1, p2 | 3 + (3+5) + (3+5+10) = 29 |\n| p3, p2, p1 | 3 + (3+10) + (3+10+5) = 34 |"
+      },
+      "fuente_original": "UADE Progra III - Parte 3: Greedy",
+      "id_global": 59
+    },
+    {
+      "id_tema": 19,
+      "tema": "greedy",
+      "titulo": "Mezcla óptima de cintas ordenadas",
+      "enunciado": "Dado un conjunto de n cintas con ni registros ordenados en cada una de ellas, se pretende mezclarlas de a pares hasta lograr una única cinta ordenada. La secuencia en la que se realiza la mezcla determinará la eficiencia del proceso. Diseñar un algoritmo que busque la solución óptima minimizando el número de movimientos.\nPor ejemplo: 3 cintas: A con 30 registros, B con 20 y C con 10:\nA. Mezclamos A con B (50 movimientos) y el resultado con C (60 movimientos), total = 110 movimientos.\nB. Mezclamos C con B (30 Movimientos) y el resultado con A (60), Total = 90 movimientos.\n\nPara este ejercicio:\n- Esbozar el algoritmo que resuelve el problema.\n- Identificar las partes que componen la solución y su relación con el esquema modelo de la técnica elegida.\n- Demostrar su correctitud.\n- Detallar las estructuras que se utilizarán.\n- Escribir el método en Java para resolverlo.\n- Analizar la complejidad de la solución en tiempo y espacio.",
+      "recurso_visual": null,
+      "fuente_original": "UADE Progra III - Parte 3: Greedy",
+      "id_global": 60
+    },
+    {
+      "id_tema": 20,
+      "tema": "greedy",
+      "titulo": "Tiempo medio de espera en taller mecánico",
+      "enunciado": "Un mecánico necesita llevar a cabo n reparaciones urgentes conociendo el tiempo que le va a llevar cada una de ellas, es decir, en la tarea i-ésima tardará ti minutos. Debido a que el pago que recibe el mecánico depende del nivel de satisfacción del cliente, necesita decidir el orden en el que atenderá cada reparación para minimizar el tiempo medio de espera de los clientes. Es decir, si llamamos Ei a lo que espera el cliente i-ésimo hasta ver finalizada su reparación, se necesita minimizar la expresión T(n) = sum_{i=1}^n Ei.\n\nPara este ejercicio:\n- Esbozar el algoritmo que resuelve el problema.\n- Identificar las partes que componen la solución y su relación con el esquema modelo de la técnica elegida.\n- Demostrar su correctitud.\n- Detallar las estructuras que se utilizarán.\n- Escribir el método en Java para resolverlo.\n- Analizar la complejidad de la solución en tiempo y espacio.",
+      "recurso_visual": null,
+      "fuente_original": "UADE Progra III - Parte 3: Greedy",
+      "id_global": 61
+    },
+    {
+      "id_tema": 21,
+      "tema": "greedy",
+      "titulo": "Camino mínimo de Escuela a Gimnasio",
+      "enunciado": "Dado un grafo G dirigido, cuyos nodos representan las escuelas y gimnasios de un barrio en forma numérica, y sus aristas la distancia en cuadras para llegar entre los diferentes lugares representados en el grafo. Determinar cuántas son las cuadras mínimas para llegar de la escuela X al gimnasio Y (ambos puntos están representados en el grafo).",
+      "recurso_visual": null,
+      "fuente_original": "UADE Progra III - Parte 3. Anexo Algoritmos sobre Grafos",
+      "id_global": 62
+    },
+    {
+      "id_tema": 22,
+      "tema": "greedy",
+      "titulo": "Kruskal y Prim sobre grafo ponderado",
+      "enunciado": "Aplicar el algoritmo de Kruskal sobre el siguiente grafo, mostrando el orden en que son añadidas las aristas a la solución.\n\nSi aplicáramos el algoritmo de Prim, ¿podemos asegurar que se obtendría siempre la misma solución? ¿Podemos asegurar que el coste de la solución sería el mismo? ¿Por qué?",
+      "recurso_visual": {
+        "tipo": "mermaid",
+        "formato": "graph",
+        "codigo": "graph TD\n    1((1)) --- |3| 2((2))\n    2 --- |5| 5((5))\n    5 --- |4| 6((6))\n    6 --- |6| 4((4))\n    4 --- |3| 1\n    1 --- |2| 3((3))\n    2 --- |1| 3\n    4 --- |2| 3\n    5 --- |7| 3\n    6 --- |8| 3"
+      },
+      "fuente_original": "UADE Progra III - Parte 3. Anexo Algoritmos sobre Grafos",
+      "id_global": 63
+    },
+    {
+      "id_tema": 23,
+      "tema": "greedy",
+      "titulo": "Vuelos entre Buenos Aires y capitales provinciales",
+      "enunciado": "Dado un GrafoTDA G dirigido, cuyos nodos representan la ciudad de Buenos Aires y las ciudades capitales de las provincias de la Argentina, y las aristas entre esos nodos los tiempos de vuelo entre las ciudades. Determinar cuáles ciudades convienen ser alcanzadas desde la ciudad de Buenos Aires a través de otra ciudad, y no en forma directa. Suponer que el tiempo de demora de aterrizaje es despreciable.",
+      "recurso_visual": null,
+      "fuente_original": "UADE Progra III - Parte 3. Anexo Algoritmos sobre Grafos",
+      "id_global": 64
+    },
+    {
+      "id_tema": 24,
+      "tema": "greedy",
+      "titulo": "Líneas de autobuses eléctricos en Ciudad Universitaria (Árbol de Máximo Recubrimiento)",
+      "enunciado": "Las emisiones de los automóviles privados son una de las principales fuentes de contaminación en las grandes ciudades. Las autoridades universitarias han decidido contribuir seriamente a la mejora de la calidad del aire prohibiendo el paso de automóviles por el campus y creando una serie de líneas de autobuses eléctricos que permitan acceder a distintos puntos de la Ciudad Universitaria. Para ello se han estudiado los principales flujos de vehículos entre distintos puntos seleccionados (facultades, estación de metro, etc.) de la Ciudad Universitaria. Los resultados del estudio contienen el número de vehículos que transitan al día entre estos puntos seleccionados (sin tener en cuenta el sentido en el que circulan). El objetivo de este estudio es localizar los trayectos entre puntos seleccionados que utilizan más vehículos y que permiten conectar todos los puntos seleccionados. Diseñar un algoritmo que proporcione estos trayectos. Validar que el algoritmo sea óptimo en base a algoritmos conocidos.",
+      "recurso_visual": null,
+      "fuente_original": "UADE Progra III - Parte 3. Anexo Algoritmos sobre Grafos",
+      "resolucion_propuesta": [
+        {
+          "archivo_origen": "05 Greedy parte 2.pdf",
+          "diapositiva_origen": 170,
+          "categoria": "Adaptaciones de Algoritmos Greedy (Dualidad Min/Max)",
+          "elementos_greedy": {
+            "conjunto_candidatos": "Aristas del grafo.",
+            "funcion_seleccion": "Invertir el criterio: seleccionar la arista de costo MÁXIMO en lugar de mínimo.",
+            "funcion_factibilidad": "No formar ciclos (Kruskal) o conectar un nuevo vértice al árbol (Prim).",
+            "funcion_solucion": "Árbol con $|V|-1$ aristas.",
+            "funcion_objetivo": "Maximizar $\\sum_{e \\in T} w(e)$."
+          },
+          "pistas_o_resolucion": {
+            "estrategia_optima": "SÍ, ambos algoritmos resuelven de manera óptima el Maximum Spanning Tree invirtiendo la función de selección, o negando los pesos de las aristas.",
+            "demostracion_optimalidad": "Método 1 (Negación de pesos): Multiplicar todos los pesos por $-1$: $w'(e) = -w(e)$. Encontrar el árbol de recubrimiento que minimiza $w'(T)$ equivale exactamente a maximizar $w(T)$, ya que $\\min \\sum (-w(e)) = - \\max \\sum w(e)$. Como Prim y Kruskal funcionan correctamente con pesos negativos (según el Ejercicio 8), ejecutar cualquiera de ellos sobre $w'$ produce el árbol de recubrimiento máximo. Método 2 (Estructura de Matroide): Los bosques de un grafo forman un matroide gráfico. Por el teorema fundamental de Rado-Edmonds, el algoritmo greedy encuentra de forma exacta tanto la base de peso mínimo como la base de peso máximo en cualquier matroide simplemente ordenando los pesos en sentido inverso.",
+            "complejidad": "Prim: $\\mathcal{O}(|V|^2)$; Kruskal: $\\mathcal{O}(|E| \\log |V|)$."
+          },
+          "nota_duplicado": "Coincide con el ejercicio propuesto #11 ('Árbol de recubrimiento máximo con Prim y Kruskal') de diapositivas de clase."
+        }
+      ],
+      "es_ejercicio_propuesto_diapositivas": true,
+      "id_global": 65
+    },
+    {
+      "id_tema": 25,
+      "tema": "greedy",
+      "titulo": "Maximizar número de actividades compatibles",
+      "enunciado": "Se tienen n actividades que necesitan utilizar un recurso, tal como una sala de conferencias, en exclusión mutua. Cada actividad i tiene asociado un tiempo de comienzo ci y un tiempo de finalización fi de utilización del recurso, con ci < fi. Si la actividad i es seleccionada se llevará a cabo durante el intervalo [ci, fi). Las actividades i y j son compatibles si los intervalos [ci, fi) y [cj, fj) no se superponen (es decir, ci >= fj o cj >= fi). El problema consiste en encontrar la cantidad máxima de actividades compatibles entre sí.\n\nPara este ejercicio:\n- Justificar la elección de la técnica.\n- Esbozar el algoritmo que resuelve el problema.\n- Detallar las estructuras que se utilizarán.\n- Escribir el método en Java para resolverlo.\n- Analizar la complejidad de la solución en tiempo y espacio.",
+      "recurso_visual": null,
+      "fuente_original": "UADE Progra III - Repaso de las tres técnicas anteriores",
+      "resolucion_propuesta": [
+        {
+          "archivo_origen": "2023 04 Greedy parte 1.pdf",
+          "diapositiva_origen": 135,
+          "categoria": "Planificación de Intervalos / Selección de Actividades",
+          "elementos_greedy": {
+            "conjunto_candidatos": "Conjunto de solicitudes de uso del piano $S = \\{s_1, s_2, \\dots, s_n\\}$, donde cada solicitud $s_i$ tiene una hora de inicio $inicio_i$ y una hora de finalización $fin_i$ ($inicio_i < fin_i$).",
+            "funcion_seleccion": "Seleccionar la solicitud compatible cuyo tiempo de finalización $fin_i$ sea mínimo (Earliest Finish Time).",
+            "funcion_factibilidad": "Una solicitud $s_i$ es factible si no se solapa con las ya seleccionadas, es decir, $inicio_i \\ge fin_{ultimo\\_seleccionado}$.",
+            "funcion_solucion": "Se alcanza cuando no quedan solicitudes compatibles por evaluar.",
+            "funcion_objetivo": "Maximizar la cardinalidad del conjunto de solicitudes aceptadas $|A|$."
+          },
+          "pistas_o_resolucion": {
+            "estrategia_optima": "Earliest Finish Time First (ordenar solicitudes por tiempo de finalización creciente).",
+            "demostracion_optimalidad": "Demostración por intercambio (Greedy Stays Ahead): Si $A = \\{a_1, \\dots, a_k\\}$ es la solución greedy y $O = \\{o_1, \\dots, o_m\\}$ es una solución óptima, por inducción se prueba que $fin(a_r) \\le fin(o_r)$ para todo $r \\le k$. Al terminar el algoritmo greedy con $k$ elementos, si fuera $m > k$, existiría al menos la actividad $o_{k+1}$ en la solución óptima que comenzaría después de $fin(o_k) \\ge fin(a_k)$, por lo que greedy la habría seleccionado, contradiciendo la terminación de greedy. Por ende, $k = m$ y greedy es óptimo.",
+            "complejidad": "$\\mathcal{O}(n \\log n)$ por el ordenamiento inicial de las $n$ solicitudes; la selección lineal posterior toma $\\mathcal{O}(n)$."
+          },
+          "nota_duplicado": "Coincide con el ejercicio propuesto #1 ('El conservatorio de música de Fraile Muerto (Interval Scheduling)') de diapositivas de clase."
+        }
+      ],
+      "es_ejercicio_propuesto_diapositivas": true,
+      "id_global": 66
+    },
+    {
+      "id_tema": 26,
+      "tema": "greedy",
+      "titulo": "Red de traducción entre idiomas",
+      "enunciado": "Una empresa de traducciones desea realizar la traducción de textos de un idioma a otro. Para ello cuenta con algunos diccionarios bilingües. Cada diccionario sirve para hacer la traducción entre dos idiomas en cualquiera de los dos sentidos. Si se tienen N idiomas y M diccionarios, determinar la menor cantidad de traducciones que se deberán realizar para traducir un texto entre cualquier par de idiomas, siempre que sea posible realizarlo con los diccionarios disponibles.\n\nPara este ejercicio:\n- Justificar la elección de la técnica.\n- Esbozar el algoritmo que resuelve el problema.\n- Detallar las estructuras que se utilizarán.\n- Escribir el método en Java para resolverlo.\n- Analizar la complejidad de la solución en tiempo y espacio.",
+      "recurso_visual": null,
+      "fuente_original": "UADE Progra III - Repaso de las tres técnicas anteriores",
+      "id_global": 67
+    },
+    {
+      "id_tema": 27,
+      "tema": "greedy",
+      "titulo": "Maximización de programas en disco",
+      "enunciado": "Sean n programas P1, ..., Pn que hay que almacenar en un disco. El programa Pi requiere Si GB de espacio y la capacidad del disco es D GB. Realizar un algoritmo que ingrese la mayor cantidad posible de programas en el disco.\n\nPara este ejercicio:\n- Justificar la elección de la técnica.\n- Esbozar el algoritmo que resuelve el problema.\n- Detallar las estructuras que se utilizarán.\n- Escribir el método en Java para resolverlo.\n- Analizar la complejidad de la solución en tiempo y espacio.",
+      "recurso_visual": null,
+      "fuente_original": "UADE Progra III - Repaso de las tres técnicas anteriores",
+      "id_global": 68
+    },
+    {
+      "id_tema": 28,
+      "tema": "greedy",
+      "titulo": "Minimizar paradas de combustible de A a B",
+      "enunciado": "Un viajante realiza un recorrido desde la ciudad A a la ciudad B siguiendo una ruta dada y llevando un vehículo que le permite, con el tanque de combustible lleno, recorrer N kilómetros sin parar. El viajante dispone de un mapa de rutas que le indica las distancias entre las estaciones de servicio que hay en su ruta. Como va con prisa, el viajante desea pararse a cargar combustible el menor número de veces posible. Diseñar un algoritmo para determinar en qué estaciones de servicio tiene que parar.\n\nPara este ejercicio:\n- Justificar la elección de la técnica.\n- Esbozar el algoritmo que resuelve el problema.\n- Detallar las estructuras que se utilizarán.\n- Escribir el método en Java para resolverlo.\n- Analizar la complejidad de la solución en tiempo y espacio.",
+      "recurso_visual": null,
+      "fuente_original": "UADE Progra III - Repaso de las tres técnicas anteriores",
+      "id_global": 69
+    },
+    {
+      "id_tema": 29,
+      "tema": "greedy",
+      "titulo": "Máxima suma igual de tres pilas (Greedy)",
+      "enunciado": "Tenemos tres pilas s1, s2 y s3 con números naturales. Queremos encontrar la máxima suma igual de las tres pilas, es decir la máxima suma que podemos lograr simultáneamente en las tres pilas. Dado que son pilas, lo único que podemos hacer es desapilar elementos de alguna de ellas. Conocemos la suma de los elementos de cada pila.\n\nEjemplos:\n- Si tenemos s1 = [4, 3, 2, 1, 1, 1], s2 = [4, 3, 2] y s3 = [5, 2, 4, 1] entonces el algoritmo debe devolver 5. Esto porque si desapilamos 4 y 3 de la pila s1, 4 de la pila s2 y 5 y 2 de la pila s3, entonces las tres pilas suman 5.\n- Si tenemos s1 = [3, 10], s2 = [4, 3, 2] y s3 = [2, 1] entonces el algoritmo debe devolver 0. La suma igual sólo se logra cuando se han removido todos los elementos de todas las pilas.\n\na) Encuentre una estrategia greedy para resolver este problema. Justifique que su estrategia encuentra la máxima suma igual.\nb) Escriba el pseudo-código.\nc) Calcule la complejidad de su algoritmo.",
+      "recurso_visual": null,
+      "fuente_original": "Parcial 2026.06.22 2A",
+      "id_global": 70
+    },
+    {
+      "id_tema": 30,
+      "tema": "greedy",
+      "titulo": "Niños codiciosos y galletitas de tamaño variable (Assign Cookies - Greedy)",
+      "enunciado": "Tenemos un arreglo greedyChildren de n posiciones y un arreglo cookies también de n posiciones. El valor greedyChildren[i] nos dice el mínimo tamaño de galletita que quiere recibir el niño i. El valor cookies[j] nos da el tamaño de la galletita j. Queremos encontrar el máximo número de niños que estarán contentos al final de un reparto óptimo. Un niño i está contento si le damos una galletita j tal que greedyChildren[i] ≤ cookies[j].\n\nEjemplos:\n- Si greedyChildren = [1, 10, 2] y cookies = [1, 2, 3], el programa debe devolver 2, ya que hay dos niños que estarán satisfechos y un tercero que no.\n- Si greedyChildren = [1, 3, 2] y cookies = [1, 2, 3], el programa debe devolver 3, ya que podemos satisfacer los requerimientos de todos los niños.\n- Si greedyChildren = [10, 12] y cookies = [1, 2], el programa debe devolver 0, ya que no podemos satisfacer a ninguno de los niños.\n\na) Describa una estrategia greedy para encontrar este número. Recuerde que sólo queremos el número, no el reparto.\nb) Escriba el pseudocódigo del programa.\nc) Calcule la complejidad de su programa.\n\nAyuda: considere la posibilidad de ordenar ambos arreglos.",
+      "recurso_visual": null,
+      "fuente_original": "Parcial 2026.06.22 2B",
+      "id_global": 71
+    },
+    {
+      "id_tema": 31,
+      "tema": "greedy",
+      "titulo": "Esquema de prueba para el problema del cambio en el caso de las frutillas",
+      "enunciado": "Encuentre un esquema de prueba para el algoritmo greedy del problema del cambio en el caso de las frutillas (sistema monetario suizo de francos: 5fr, 2fr, 1fr, 50c, 20c, 10c, 5c, 1c).",
+      "recurso_visual": null,
+      "fuente_original": "2023 04 Greedy parte 1.pdf (Slide 136)",
+      "es_ejercicio_propuesto_diapositivas": true,
+      "resolucion_propuesta": [
+        {
+          "categoria": "Demostración Formal de Optimalidad",
+          "elementos_greedy": {
+            "conjunto_candidatos": "Denominaciones canónicas suizas $\\{500, 200, 100, 50, 20, 10, 5, 1\\}$ centavos.",
+            "funcion_seleccion": "Moneda de mayor valor $\\le$ monto remanente.",
+            "funcion_factibilidad": "El valor acumulado no supera el total a pagar.",
+            "funcion_solucion": "El monto remanente es 0.",
+            "funcion_objetivo": "Minimizar la cantidad total de monedas entregadas."
+          },
+          "pistas_o_resolucion": {
+            "estrategia_optima": "Demostración de sistema canónico mediante acotación de cantidades máximas por denominación.",
+            "demostracion_optimalidad": "En cualquier solución óptima para el sistema suizo: (a) No puede haber más de 4 monedas de 1c (sumarían 5c $\\to$ reemplazables por 1 de 5c). (b) No puede haber más de 1 moneda de 5c (2 de 5c $\\to$ 1 de 10c). (c) No puede haber más de 1 moneda de 10c ni más de 2 de 20c, y la combinación 2 de 20c + 1 de 10c suma 50c (1 moneda). (d) No puede haber más de 1 moneda de 50c. (e) No puede haber más de 2 monedas de 1fr ni 2 de 2fr con 1 de 1fr (suman 5fr). Sumando las cotas máximas estrictas debajo de cada denominación, la suma siempre es estrictamente menor a la denominación siguiente (ej. 4x1c = 4c < 5c; 1x5c + 4x1c = 9c < 10c; 2x20c + 0x10c + 9c = 49c < 50c). Por ende, el óptimo está obligado a tomar la moneda mayor posible, coincidiendo exactamente con la decisión greedy.",
+            "complejidad": "$\\mathcal{O}(v)$ o $\\mathcal{O}(c)$ donde $c$ es el número de denominaciones."
+          }
+        }
+      ],
+      "id_global": 72
+    },
+    {
+      "id_tema": 32,
+      "tema": "greedy",
+      "titulo": "Implementación del código de Huffman sin árboles",
+      "enunciado": "Implemente el algoritmo del código de Huffman, no necesariamente con árboles.",
+      "recurso_visual": null,
+      "fuente_original": "2023 04 Greedy parte 1.pdf (Slide 136)",
+      "es_ejercicio_propuesto_diapositivas": true,
+      "resolucion_propuesta": [
+        {
+          "categoria": "Estructuras de Datos y Algoritmos de Compresión",
+          "elementos_greedy": {
+            "conjunto_candidatos": "Conjunto de símbolos con sus frecuencias.",
+            "funcion_seleccion": "Fusión de los dos elementos de menor frecuencia acumulada.",
+            "funcion_factibilidad": "Siempre factible mientras queden más de un elemento sin fusionar.",
+            "funcion_solucion": "Un único elemento consolidado.",
+            "funcion_objetivo": "Minimizar la longitud ponderada media de los códigos."
+          },
+          "pistas_o_resolucion": {
+            "estrategia_optima": "Representación basada en tablas/arreglos de padres y bits ('Parent Array Representation') o el algoritmo de Huffman en tiempo lineal con dos colas (Two Queues Algorithm de Van Leeuwen, 1976).",
+            "demostracion_optimalidad": "En lugar de crear nodos con punteros `izq` y `der`, se mantiene un arreglo `padre[]` de longitud $2n-1$ y un arreglo `codigo_bit[]`. Cada paso registra el índice del padre fusionado y el bit asignado (0 ó 1). Al terminar, el código de cada símbolo hoja se reconstruye recorriendo hacia arriba la cadena de padres hasta la raíz e invirtiendo los bits resultantes.",
+            "complejidad": "Con símbolos previamente ordenados por frecuencia, se utilizan dos colas FIFO: $Q_1$ (hojas ordenadas) y $Q_2$ (nodos internos fusionados). En cada paso, el mínimo de las dos cabezas de cola se extrae en $\\mathcal{O}(1)$. Complejidad total: $\\mathcal{O}(n \\log n)$ por el ordenamiento, o $\\mathcal{O}(n)$ si ya vienen ordenados."
+          }
+        }
+      ],
+      "id_global": 73
+    },
+    {
+      "id_tema": 33,
+      "tema": "greedy",
+      "titulo": "La propiedad de ciclo en Árboles de Recubrimiento Mínimo",
+      "enunciado": "La propiedad de ciclo: Suponga que $G$ es un grafo no dirigido con pesos. Suponga que el grafo tiene por lo menos un ciclo y elija alguno. Para ese ciclo, supongamos que hay una arista $e$ cuyo peso es estrictamente mayor que el de todas las otras aristas del ciclo. Observe que una arista así no necesariamente existe, pero supondremos que en este caso sí. Muestre que $e$ no aparece en ningún árbol de recubrimiento mínimo de $G$.",
+      "recurso_visual": null,
+      "fuente_original": "05 Greedy parte 2.pdf (Slide 170)",
+      "es_ejercicio_propuesto_diapositivas": true,
+      "resolucion_propuesta": [
+        {
+          "categoria": "Teoría Estructural de Grafos y Matroides",
+          "elementos_greedy": {
+            "conjunto_candidatos": "Aristas del ciclo $C \\subseteq E$.",
+            "funcion_seleccion": "Identificar la arista más pesada $e \\in C$ tal que $w(e) > w(e')$ para todo $e' \\in C \\setminus \\{e\\}$.",
+            "funcion_factibilidad": "Verificar pertenencia a un hipotético MST.",
+            "funcion_solucion": "Demostración de que $e \\notin T$ para todo MST $T$.",
+            "funcion_objetivo": "Minimizar el peso total del árbol."
+          },
+          "pistas_o_resolucion": {
+            "estrategia_optima": "Demostración por contradicción mediante intercambio de aristas (Cut-and-Paste argument).",
+            "demostracion_optimalidad": "Supongamos por contradicción que existe un MST $T$ tal que $e = (u, v) \\in T$. Si eliminamos $e$ de $T$, el árbol se divide en exactamente dos componentes conexas disjuntas, definiendo un corte $(S, V \\setminus S)$ con $u \\in S$ y $v \\in V \\setminus S$. Como el ciclo $C$ conecta $u$ y $v$ por un camino alternativo dentro de $G$, debe existir al menos otra arista $e' \\in C$ ($e' \\ne e$) que cruza el corte entre $S$ y $V \\setminus S$. Al agregar $e'$ a $T \\setminus \\{e\\}$, obtenemos un nuevo árbol de recubrimiento $T' = (T \\setminus \\{e\\}) \\cup \\{e'\\}$. El peso del nuevo árbol es $w(T') = w(T) - w(e) + w(e')$. Como $e$ era estrictamente más pesada que todas las demás aristas del ciclo, $w(e') < w(e)$, lo que implica $w(T') < w(T)$. Esto contradice la premisa de que $T$ era un árbol de recubrimiento MÍNIMO. En consecuencia, $e$ no puede pertenecer a ningún MST.",
+            "complejidad": "Demostración teórica pura."
+          }
+        }
+      ],
+      "id_global": 74
+    },
+    {
+      "id_tema": 34,
+      "tema": "greedy",
+      "titulo": "Unicidad del MST cuando todos los pesos son diferentes",
+      "enunciado": "Pruebe que si un grafo no dirigido con pesos es tal que los pesos son todos diferentes, entonces su árbol de recubrimiento mínimo es único. Ayuda: la propiedad de corte dice que, si una arista es la de menor costo entre dos particiones de los vértices de un grafo, entonces esta arista debe estar en todos los árboles de recubrimiento mínimo del grafo.",
+      "recurso_visual": null,
+      "fuente_original": "05 Greedy parte 2.pdf (Slide 170)",
+      "es_ejercicio_propuesto_diapositivas": true,
+      "resolucion_propuesta": [
+        {
+          "categoria": "Teoremas Fundamentales de Árboles de Recubrimiento",
+          "elementos_greedy": {
+            "conjunto_candidatos": "Aristas de cruce de cualquier corte $(S, V \\setminus S)$.",
+            "funcion_seleccion": "Arista $e$ de peso estrictamente mínimo que cruza el corte.",
+            "funcion_factibilidad": "Propiedad de corte estricta.",
+            "funcion_solucion": "El árbol $T$ es idéntico en cualquier ejecución.",
+            "funcion_objetivo": "Unicidad del conjunto de aristas óptimas."
+          },
+          "pistas_o_resolucion": {
+            "estrategia_optima": "Uso de la Propiedad de Corte Estricta.",
+            "demostracion_optimalidad": "Sea $G=(V, E)$ un grafo conexo ponderado donde todas las aristas tienen pesos distintos. Supongamos por contradicción que existen dos MSTs distintos $T_1$ y $T_2$ ($T_1 \\ne T_2$). Consideremos la arista de menor peso en la diferencia simétrica: $e \\in (T_1 \\setminus T_2) \\cup (T_2 \\setminus T_1)$. Sin pérdida de generalidad, sea $e = (u, v) \\in T_1 \\setminus T_2$. Si quitamos $e$ de $T_1$, $T_1$ se particiona en dos componentes $S$ y $V \\setminus S$. Como $T_2$ es un árbol conexo, contiene un camino entre $u$ y $v$, el cual debe cruzar el corte $(S, V \\setminus S)$ en alguna arista $e'$. Como $e'$ cruza el corte y $e$ no estaba en $T_2$, $e' \\ne e$. Por definición de $e$ como la arista de menor peso en la diferencia simétrica, debe ser $w(e) < w(e')$. Pero al reemplazar $e'$ por $e$ en $T_2$, formamos $T_2' = (T_2 \\setminus \\{e'\\}) \\cup \\{e\\}$, cuyo peso es $w(T_2') = w(T_2) - w(e') + w(e) < w(T_2)$, contradiciendo que $T_2$ fuera mínimo. Por lo tanto, el MST debe ser único.",
+            "complejidad": "Demostración teórica pura."
+          }
+        }
+      ],
+      "id_global": 75
+    },
+    {
+      "id_tema": 35,
+      "tema": "greedy",
+      "titulo": "Grafo de 6 nodos: Dijkstra paso a paso, unicidad y arista negativa",
+      "enunciado": "Considere el grafo siguiente con vértices $\\{s, 1, 2, 3, 4, 5\\}$ y las siguientes aristas dirigidas ponderadas: $(s, 1): 3$, $(s, 2): 4$, $(1, 2): 6$, $(1, 3): 1$, $(1, 4): 3$, $(2, 4): 2$, $(2, 5): 3$, $(3, 4): 1$, $(3, 5): 1$, $(4, 5): 2$, y arista adicional $(4, 1): 1$. (1) Calcule el camino más corto desde $s$ a todos los otros vértices usando el algoritmo de Dijkstra. Determine el árbol de costos mínimos. (2) ¿Es el árbol de costos mínimos único? (3) Ahora cambie el peso de la arista $(3, 4)$ a $-2$. Muestre que el algoritmo de Dijkstra no funciona en este caso.",
+      "recurso_visual": null,
+      "fuente_original": "05 Greedy parte 2.pdf (Slide 172)",
+      "es_ejercicio_propuesto_diapositivas": true,
+      "resolucion_propuesta": [
+        {
+          "categoria": "Traza Exhaustiva de Dijkstra y Fallo con Pesos Negativos",
+          "elementos_greedy": {
+            "conjunto_candidatos": "Vértices pendientes $V \\setminus \\{s\\}$.",
+            "funcion_seleccion": "Vértice con menor distancia tentativa.",
+            "funcion_factibilidad": "Relajación de aristas dirigidas salientes.",
+            "funcion_solucion": "Todos los vértices han sido incorporados al conjunto visitado.",
+            "funcion_objetivo": "Determinar distancias mínimas y analizar robustez ante pesos negativos."
+          },
+          "pistas_o_resolucion": {
+            "estrategia_optima": "Simulación paso a paso de Dijkstra con origen en $s$.",
+            "demostracion_optimalidad": "Parte 1: Inicialización: $dist[s]=0$; $dist[1]=3$, $dist[2]=4$, resto $\\infty$. (Paso 1) Extraer $1$ ($dist=3$): relaja a 3 ($3+1=4$), a 4 ($3+3=6$). (Paso 2) Extraer 2 ($dist=4$): relaja a 4 ($4+2=6$, empate), a 5 ($4+3=7$). (Paso 3) Extraer 3 ($dist=4$): relaja a 4 ($4+1=5 < 6$, nuevo óptimo!), a 5 ($4+1=5 < 7$, nuevo óptimo!). (Paso 4) Extraer 4 ($dist=5$): aristas salientes no mejoran. (Paso 5) Extraer 5 ($dist=5$). Distancias finales: $s:0, 1:3, 2:4, 3:4, 4:5, 5:5$. Árbol de caminos mínimos: aristas $(s, 1), (s, 2), (1, 3), (3, 4), (3, 5)$. Parte 2 (Unicidad): El árbol de caminos mínimos es único porque los caminos más cortos a cada nodo son estrictamente únicos con estos pesos (la arista $(2, 4)$ empataba en 6 pero luego fue estrictamente superada por el camino vía 3 que cuesta 5). Parte 3 (Fallo con arista $(3, 4) = -2$): Si $w(3, 4) = -2$, cuando se selecciona el nodo 4 (o si un camino llegara a 4 antes que a 3), Dijkstra asume que una vez que un nodo se marca como visitado ('cerrado'), su distancia es definitiva. Con arista negativa, un camino que pase por 3 podría alcanzar a 4 con costo $4 + (-2) = 2 < 4$. Si 4 ya hubiese sido cerrado previamente con una distancia mayor (por ejemplo desde 2 con 4+2=6), Dijkstra jamás reconsideraría a 4, propagando distancias subóptimas a sus sucesores.",
+            "complejidad": "Dijkstra: $\\mathcal{O}(V^2)$ con arreglo lineal."
+          }
+        }
+      ],
+      "id_global": 76
+    }
+  ]
+}

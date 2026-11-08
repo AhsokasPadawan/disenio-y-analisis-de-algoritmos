@@ -1,0 +1,520 @@
+{
+  "modulo": "programacion_dinamica",
+  "titulo": "Banco de Ejercicios: Programación Dinámica",
+  "descripcion": "Colección completa y consolidada de ejercicios de Programación Dinámica sobre problemas de optimización, recurrencias, reconstrucción de soluciones, matrices y grafos acíclicos (Clases 06 y 07).",
+  "total_ejercicios": 33,
+  "fecha_actualizacion": "2026-11-07",
+  "ejercicios": [
+    {
+      "id_tema": 1,
+      "tema": "programacion_dinamica",
+      "titulo": "El reparto del botín",
+      "enunciado": "Dos ladrones robaron equipos del laboratorio de una universidad privada. Los cacos desean dividir los objetos robados en dos grupos tales que la diferencia en valor sea mínima. Por ejemplo, si robaron tres equipos de valor $998, $499 y $1500, la división óptima sería {$998, $499} y {$1500}. Una división exacta es imposible, ya que la suma del valor de todos los equipos robados es impar.\nPodemos asumir que los objetos se encuentran en un arreglo botín, donde botín[i] nos da el valor del objeto i.\na) Determine cuál es la técnica más adecuada para resolver este problema y describa una estrategia para resolverlo.\nb) Escriba el pseudo-código correspondiente.\nc) Estime la complejidad de su algoritmo.\n\nAyuda: puede construirse una matriz que tenga tantas filas como objetos tengamos y tantas columnas como el valor sumado de ellos. Se puede entonces marcar sucesivamente los valores a los que se puede llegar. Por ejemplo, si el arreglo comienza con [6, 2, ...], en la primera fila se marcará 6, en la segunda fila se marcará 2 y 8, y así sucesivamente.",
+      "recurso_visual": null,
+      "fuente_original": "DAA Ejercicios primer parcial (Guía)",
+      "id_global": 77
+    },
+    {
+      "id_tema": 2,
+      "tema": "programacion_dinamica",
+      "titulo": "Árboles isomorfos",
+      "enunciado": "Dados dos BST, queremos determinar si son isomorfos. Dos BST son isomorfos si el dibujo es idéntico aunque los valores no lo sean.\n\nNota: asumimos que tenemos un TDA BST equipado con las siguientes operaciones (emptyBST, leftChild, rightChild, addElem, delElem, root).\n\na) Describa una estrategia para resolver este problema.\nb) Escriba el pseudo-código de su solución.\nc) Determine la complejidad de su algoritmo.",
+      "recurso_visual": null,
+      "fuente_original": "DAA Ejercicios primer parcial (Guía)",
+      "id_global": 78
+    },
+    {
+      "id_tema": 3,
+      "tema": "programacion_dinamica",
+      "titulo": "Máxima sub-cadena común",
+      "enunciado": "Se tienen dos cadenas de caracteres s1 y s2 de longitud m y n respectivamente. Queremos encontrar la máxima sub-cadena común.\n\nNota: este ejercicio no debe ser confundido con el de la máxima subsecuencia común. Si tenemos las cadenas s1 = 'SCHOENBERG' y s2 = 'WEBERN', la máxima subcadena común es 'BER' y la máxima subsecuencia común es 'EBER'.\n\na) Determine cuál es la técnica más adecuada para resolver este problema y describa una estrategia para resolverlo.\nb) Escriba el pseudo-código correspondiente.\nc) Estime la complejidad de su algoritmo.",
+      "recurso_visual": null,
+      "fuente_original": "DAA Ejercicios primer parcial (Guía)",
+      "resolucion_propuesta": [
+        {
+          "origen": "DAA 07 DP parte 2.pdf, Diapositiva 188 (Ejercicios propuestos 1)",
+          "analisis_teorico": "En la Subsecuencia Común Más Larga (LCS), los caracteres comunes pueden estar separados por caracteres descartados. Por ello, cuando X[i] != Y[j], la recurrencia conserva el mejor resultado acumulado previo: M[i, j] = max(M[i-1, j], M[i, j-1]). En cambio, en una Subcadena Común (Substring), los caracteres deben ser rigurosamente contiguos en ambas secuencias. Si los caracteres X[i-1] e Y[j-1] difieren, cualquier subcadena común que finalice exactamente en dichas posiciones se interrumpe y su longitud cae inmediatamente a 0. Si coinciden, la longitud de la subcadena común contigua se extiende en 1 respecto a la diagonal previa M[i-1, j-1]. A diferencia de LCS (donde el óptimo siempre termina en la esquina inferior derecha M[n, m]), en Substring Común el óptimo puede localizarse en cualquier celda de la matriz; por lo tanto, se mantiene un registro global del valor máximo observado (max_len) y de las coordenadas donde se alcanzó.",
+          "definicion_estado_dp": "L[i, j] es la longitud del substring común más largo que termina obligatoriamente en X[i - 1] e Y[j - 1].",
+          "ecuacion_recurrencia": "$$L[i, j] = \\begin{cases} 0 & \\text{si } i = 0 \\lor j = 0 \\\\ L[i-1, j-1] + 1 & \\text{si } i > 0 \\land j > 0 \\land X[i-1] = Y[j-1] \\\\ 0 & \\text{si } i > 0 \\land j > 0 \\land X[i-1] \\ne Y[j-1] \\end{cases}$$",
+          "orden_llenado_y_dimensiones": "Matriz L de tamaño (n + 1) x (m + 1). Orden de llenado: por filas de arriba hacia abajo (i de 1 a n) y columnas de izquierda a derecha (j de 1 a m).",
+          "pseudocodigo_resolucion": "Algoritmo LongestCommonSubstring_DP(X: Cadena, Y: Cadena) -> (entero, Cadena):\n    Entrada: Cadenas X de longitud n e Y de longitud m\n    Salida: Longitud máxima y texto de la subcadena común más larga\n    \n    n = longitud(X)\n    m = longitud(Y)\n    L = inicializarMatriz(n + 1, m + 1, valor: 0)\n    \n    maxLongitud = 0\n    finX = 0\n    \n    Para i desde 1 hasta n hacer:\n        Para j desde 1 hasta m hacer:\n            Si X[i - 1] == Y[j - 1] entonces:\n                L[i, j] = L[i - 1, j - 1] + 1\n                Si L[i, j] > maxLongitud entonces:\n                    maxLongitud = L[i, j]\n                    finX = i  // Guarda el extremo final en X\n                Fin Si\n            Sino:\n                L[i, j] = 0  // Ruptura de contigüidad: reseteo estricto a cero\n            Fin Si\n        Fin Para\n    Fin Para\n    \n    // Reconstrucción inmediata por corte contiguo\n    substringOptimo = subcadena(X, finX - maxLongitud, finX)\n    \n    Retornar (maxLongitud, substringOptimo)",
+          "analisis_complejidad_temporal_espacial": {
+            "temporal": "O(n * m)",
+            "espacial": "O(n * m) con la matriz completa; optimizable a O(min(n, m)) usando dos vectores unidimensionales ya que L[i, j] solo depende de L[i-1, j-1]",
+            "justificacion": "La matriz posee (n + 1) * (m + 1) celdas. Cada celda se evalúa en O(1) con una comparación de caracteres. La extracción del substring contiguo toma O(maxLongitud) <= O(min(n, m))."
+          },
+          "nota_duplicado": "Coincide con el ejercicio propuesto #9 ('Subcadena Común Más Larga (Longest Common Substring)') de diapositivas de clase."
+        }
+      ],
+      "es_ejercicio_propuesto_diapositivas": true,
+      "id_global": 79
+    },
+    {
+      "id_tema": 4,
+      "tema": "programacion_dinamica",
+      "titulo": "Problema de la mochila con repetición (unbounded knapsack)",
+      "enunciado": "Tenemos una mochila de capacidad máxima c y un arreglo a de objetos o tales que cada objeto o[i] tiene un valor o[i].v y un peso o[i].p. Queremos colocar objetos en la mochila de manera que se obtenga el máximo valor sin que se exceda el límite de peso de la mochila. Los objetos pueden repetirse cuantas veces lo queramos.\na) Describa una estrategia para resolver este problema.\nb) Escriba el pseudo-código correspondiente.\nc) Estime la complejidad temporal y espacial de su algoritmo.",
+      "recurso_visual": null,
+      "fuente_original": "DAA Ejercicios primer parcial (Guía)",
+      "id_global": 80
+    },
+    {
+      "id_tema": 5,
+      "tema": "programacion_dinamica",
+      "titulo": "Diferentes posibilidades para subir una escalera",
+      "enunciado": "Un niño sube una escalera con una combinación de saltos de uno, dos o tres escalones. Queremos saber cuántas posibilidades tiene para subir una escalera de n escalones. Llamamos a este número P(n).\n\nAlgunos ejemplos:\n- Si n = 1, sólo hay una posibilidad: subir un escalón, o sea P(1) = |{(1)}| = 1.\n- Si n = 2, hay dos posibilidades: subir dos tramos de un escalón o uno de dos: P(2) = |{(1, 1), (2)}| = 2.\n- Si n = 3, entonces hay cuatro posibilidades: {(1, 1, 1), (1, 2), (2, 1), (3)}. Por lo tanto, P(3) = 4.\n- Si n = 5, tenemos que P(5) = 13.\n\na) Describa una estrategia de programación dinámica para encontrar P(n) para dos parámetros arbitrarios.\nb) Escriba el pseudo-código de su solución.\nc) Determine la complejidad de su algoritmo. Justifique su resultado.",
+      "recurso_visual": null,
+      "fuente_original": "DAA Ejercicios primer parcial (Guía)",
+      "id_global": 81
+    },
+    {
+      "id_tema": 6,
+      "tema": "programacion_dinamica",
+      "titulo": "Combinaciones de n elementos tomados de k",
+      "enunciado": "Como usted sabe, el número de combinaciones de n elementos tomados de k (que aquí vamos a denotar C(n, k)) es:\nC(n, k) = n! / ((n − k)! k!)\nEsta fórmula puede escribirse en términos de resultados anteriores:\nC(n, k) = C(n − 1, k − 1) + C(n − 1, k)\nEstá claro que no tiene sentido calcular esta fórmula para k > n.\n\nAlgunos ejemplos:\n- Si n = 4 y k = 2, tenemos C(4, 2) = 4! / ((4−2)! 2!) = 6. Esto corresponde a los pares (1, 2), (1, 3), (1, 4), (2, 3), (2, 4), (3, 4).\n- Si n = k entonces claramente C(n, n) = 1.\n- Si k = 0, entonces C(n, 0) = 1.\n- Si n = 4 y k = 3, entonces C(4, 3) = 4. Esto corresponde a las tuplas (1, 2, 3), (1, 2, 4), (1, 3, 4), (2, 3, 4).\n\na) Describa una estrategia para encontrar C(n, k) para dos parámetros arbitrarios n, k con n ≥ k.\nb) Escriba el pseudo-código de su solución.\nc) Determine la complejidad de su algoritmo. Justifique su resultado.\n\nAyuda: puede construir una matriz M de n + 1 filas que vayan de 0 a n y k + 1 columnas que vayan de 0 a k de manera que en la posición M[i, j] se tenga el coeficiente C(i, j).",
+      "recurso_visual": null,
+      "fuente_original": "DAA Ejercicios primer parcial (Guía)",
+      "id_global": 82
+    },
+    {
+      "id_tema": 7,
+      "tema": "programacion_dinamica",
+      "titulo": "La diligencia",
+      "enunciado": "Un buscador de fortuna de Missouri decide ir al oeste para unirse a la fiebre del oro en California a mediados del siglo XIX. El viaje requiere viajar en diligencia a través de un territorio inexplorado donde existe un grave peligro de ataque. Aunque el punto de partida (Missouri) y el de destino (California) son fijos, hay bastante libertad para elegir qué estados atravesar. Las posibles rutas se muestran en la figura, donde cada estado está representado por un nodo y la dirección del viaje siempre es de izquierda a derecha. Así, hacen falta cuatro etapas (trayectos de diligencia) para viajar desde el punto de embarque en el estado A (Missouri) hasta su destino en el estado J (California).\nEsta persona se preocupaba mucho por su seguridad. Tras reflexionar un poco, ideó una forma ingeniosa de determinar la ruta más segura. Se ofrecen pólizas de seguro de vida a los pasajeros de las diligencias. Dado que el costo de la póliza para cualquier viaje en diligencia se basa en una evaluación cuidadosa de la seguridad de dicho viaje, la ruta más segura debería ser aquella con la póliza de seguro de vida total más barata. Estos costos también se muestran en la figura.\na) Describa una estrategia para encontrar el camino más seguro.\nb) Escriba el pseudo-código de su solución.\nc) Determine la complejidad de su algoritmo. Justifique su resultado.",
+      "recurso_visual": {
+        "tipo": "mermaid",
+        "formato": "graph",
+        "codigo": "graph LR\n    subgraph Dia1[\"Día 1\"]\n        A((A))\n    end\n    subgraph Dia2[\"Día 2\"]\n        B((B))\n        C((C))\n        D((D))\n    end\n    subgraph Dia3[\"Día 3\"]\n        E((E))\n        F((F))\n        G((G))\n    end\n    subgraph Dia4[\"Día 4\"]\n        H((H))\n        I((I))\n    end\n    subgraph Dia5[\"Día 5\"]\n        J((J))\n    end\n    A -- 2 --> B\n    A -- 4 --> C\n    A -- 3 --> D\n    B -- 7 --> E\n    B -- 4 --> F\n    B -- 6 --> G\n    C -- 3 --> E\n    C -- 2 --> F\n    C -- 4 --> G\n    D -- 4 --> E\n    D -- 1 --> F\n    D -- 5 --> G\n    E -- 1 --> H\n    E -- 4 --> I\n    F -- 6 --> H\n    F -- 3 --> I\n    G -- 3 --> H\n    G -- 3 --> I\n    H -- 3 --> J\n    I -- 3 --> J"
+      },
+      "fuente_original": "DAA Ejercicios primer parcial (Guía)",
+      "id_global": 83
+    },
+    {
+      "id_tema": 8,
+      "tema": "programacion_dinamica",
+      "titulo": "Mínimo ancestro común en BST",
+      "enunciado": "Se tiene un BST t y dos números a y b, a ≠ b, que están en el árbol pero no en la raíz. Queremos un método que nos devuelva el mínimo ancestro común de ambos, es decir el mínimo número que es un ascendiente de a y b. O, si lo prefiere, el mínimo número que tiene en su descendencia a a y a b.\n\nNota: asumimos que tenemos un TDA BST equipado con las operaciones estándar (emptyBST, leftChild, rightChild, addElem, delElem, root).\n\na) Describa la secuencia de pasos que realizará para resolver este ejercicio.\nb) Escriba el pseudocódigo correspondiente.\n\nEjemplo: en el árbol de la figura, el programa debería devolver 4 para las entradas 1 y 5, 8 para las entradas 9 y 12, y 8 para las entradas 1 y 11.\n\nAyuda: ¿cuál es el mínimo ancestro común de dos números cuando uno de ellos es mayor que la raíz?",
+      "recurso_visual": {
+        "tipo": "mermaid",
+        "formato": "graph",
+        "codigo": "graph TD\n    8((8)) --> 4((4))\n    8 --> 12((12))\n    4 --> 2((2))\n    4 --> 5((5))\n    12 --> 10((10))\n    12 --> 15((15))\n    2 --> 1((1))\n    2 --> 3((3))\n    10 --> 9((9))\n    10 --> 11((11))"
+      },
+      "fuente_original": "DAA Ejercicios primer parcial (Guía)",
+      "id_global": 84
+    },
+    {
+      "id_tema": 9,
+      "tema": "programacion_dinamica",
+      "titulo": "Tráfico en la ciudad de Fraile Muerto (barrio a centro)",
+      "enunciado": "La ciudad de Fraile Muerto tiene un ajetreado centro y el tráfico en horas pico se vuelve lento por las demoras en las esquinas. Queremos encontrar la demora mínima para ir desde el barrio cerrado hasta el centro. Se puede ingresar por cualquier intersección de la izquierda y se puede salir por cualquier intersección de la derecha.\na) Describa una estrategia para encontrar el tiempo más rápido para ir desde el barrio hasta el centro.\nb) Escriba el pseudo-código de su solución.\nc) ¿Qué debería agregarse para tener además el listado de intersecciones para obtener el mínimo camino? Basta la estrategia. No es necesario el pseudo-código.",
+      "recurso_visual": {
+        "tipo": "mermaid",
+        "formato": "graph",
+        "codigo": "graph LR\n    subgraph Barrio[\"Barrio (Entrada)\"]\n        B1((2))\n        B2((5))\n        B3((7))\n        B4((4))\n        B5((5))\n        B6((0))\n    end\n    subgraph Col2[\"Etapa 2\"]\n        C2_1((3))\n        C2_2((6))\n        C2_3((7))\n        C2_4((3))\n        C2_5((9))\n        C2_6((4))\n    end\n    subgraph Col3[\"Etapa 3\"]\n        C3_1((6))\n        C3_2((5))\n        C3_3((2))\n        C3_4((6))\n        C3_5((3))\n        C3_6((9))\n    end\n    subgraph Col4[\"Etapa 4\"]\n        C4_1((3))\n        C4_2((0))\n        C4_3((6))\n        C4_4((3))\n        C4_5((1))\n        C4_6((2))\n    end\n    subgraph Col5[\"Etapa 5\"]\n        C5_1((3))\n        C5_2((5))\n        C5_3((7))\n        C5_4((0))\n        C5_5((3))\n        C5_6((3))\n    end\n    subgraph Centro[\"Centro (Salida)\"]\n        S1((8))\n        S2((2))\n        S3((6))\n        S4((5))\n        S5((5))\n        S6((3))\n    end\n    B1 --- C2_1\n    B1 --- C2_2\n    B2 --- C2_1\n    B2 --- C2_3\n    B3 --- C2_2\n    B3 --- C2_4\n    B4 --- C2_3\n    B4 --- C2_5\n    B5 --- C2_4\n    B5 --- C2_6\n    B6 --- C2_5\n    B6 --- C2_6"
+      },
+      "fuente_original": "DAA Ejercicios primer parcial (Guía)",
+      "id_global": 85
+    },
+    {
+      "id_tema": 10,
+      "tema": "programacion_dinamica",
+      "titulo": "Desplazamiento de costo mínimo en matriz (robot)",
+      "enunciado": "Se tiene una matriz M ∈ N^(n×m) donde cada posición M[i, j] representa un costo. Un robot se debe desplazar desde la posición M[0, 0] hasta la posición M[n-1, m-1] con mínimo costo. El robot sólo puede desplazarse en sentido horizontal hacia la derecha o vertical hacia abajo; no puede moverse en diagonal. El costo de un camino es la suma de los costos de las celdas visitadas.\na) Describa detalladamente una estrategia de programación dinámica que dé el costo mínimo para ir de M[0, 0] a M[n-1, m-1].\nb) Escriba el pseudo-código de su solución y calcule la complejidad correspondiente.\nc) Defina una estrategia para recuperar el recorrido de costo mínimo. Se pide sólo la estrategia. No es necesario que haga el pseudo-código.\n\nAyuda: para el punto a, considere la posibilidad, dada una matriz M ∈ N^(n×m), de construir otra matriz Aux ∈ N^(n×m) en la que cada posición Aux[i, j] nos dé el costo mínimo de desplazarse de M[0, 0] a M[i, j].",
+      "recurso_visual": null,
+      "fuente_original": "DAA Ejercicios primer parcial (Guía)",
+      "id_global": 86
+    },
+    {
+      "id_tema": 11,
+      "tema": "programacion_dinamica",
+      "titulo": "Puentes en el río Ctalamochita",
+      "enunciado": "La ciudad de Fraile Muerto está atravesada por el río Ctalamochita. Varios barrios se han construido en ambas márgenes del río y el intendente, en pleno año electoral quiere construir puentes que unan estos barrios. Podemos imaginar esto como un mapa bidimensional con un río horizontal que lo atraviesa por el centro. Hay n barrios en la margen sur con coordenadas x [a1, a2, ..., an] y n ciudades en la margen norte con coordenadas x [b1, b2, ..., bn]. El intendente quiere conectar la mayor cantidad posible de pares de barrios norte-sur mediante puentes, de manera que ningún puente se cruce con otro. Al conectar las ciudades, sólo podemos conectar la ciudad ai de la margen norte con la ciudad bi de la margen sur.\na) Describa una estrategia para encontrar el mayor número de puentes entre ambas márgenes del río.\nb) Escriba el pseudo-código de su solución y calcule la complejidad correspondiente.\nc) Defina una estrategia para recuperar los barrios que queden conectados por puentes. Se pide sólo la estrategia. No es necesario que haga el pseudo-código.\n\nAyuda 1: observe que para que dos puentes ai − bi y aj − bj se crucen, es necesario que tengan diferente orden de derecha a izquierda. En otras palabras, debe ser ai > aj y bi < bj o bien aj > ai y bj < bi.\nAyuda 2: es posible llenar un arreglo p de n posiciones en el que la posición p[i] indique la cantidad máxima de puentes que pueden construirse hasta el punto i.",
+      "recurso_visual": null,
+      "fuente_original": "DAA Ejercicios primer parcial (Guía)",
+      "id_global": 87
+    },
+    {
+      "id_tema": 12,
+      "tema": "programacion_dinamica",
+      "titulo": "Laberintos en matriz binaria",
+      "enunciado": "Un laberinto es una matriz ℓ ∈ m × n con una entrada en la posición ℓ[0, 0] y una salida en la posición ℓ[m − 1, n − 1]. En otras palabras, se entra arriba a la izquierda y se sale abajo a la derecha. La matriz tiene únicamente valores 0 y 1. Un valor 0 significa que la posición se puede usar. Un valor 1 significa que hay un obstáculo y que la posición no se puede usar. Sólo se admiten desplazamientos hacia la derecha (este) y hacia abajo (sur). No hacia arriba (norte) ni hacia la izquierda (oeste). Queremos determinar si es posible salir de un laberinto dado.\na) Encuentre una estrategia que resuelva el problema.\nb) Escriba el pseudo-código de su programa.\nc) Calcule la complejidad de su programa.\nd) Explique qué debería hacerse para devolver, además de la existencia o no de un camino, la secuencia de vértices visitados. No es necesario que escriba el pseudo-código; basta la explicación de la estrategia.\n\nAyuda: es posible pensar en completar otra matriz indicando si cada posición es accesible o no desde la entrada.",
+      "recurso_visual": null,
+      "fuente_original": "DAA Ejercicios primer parcial (Guía)",
+      "id_global": 88
+    },
+    {
+      "id_tema": 13,
+      "tema": "programacion_dinamica",
+      "titulo": "El triángulo de Tartaglia / Pascal / Yang Hui",
+      "enunciado": "El coeficiente binomial C(n, k) da el coeficiente de la potencia k de x en el polinomio (1 + x)^n. Observe que C(n, k) puede ser computado a partir de resultados previos:\nC(n, k) = C(n − 1, k − 1) + C(n − 1, k)\n\nEjemplos:\n- C(4, 3) = 4 porque (1 + x)^4 = 1 + 4x + 6x^2 + 4x^3 + x^4.\n\na) Describa una estrategia para encontrar C(n, k) a partir de dos valores n y k dados.\nb) Escriba el pseudo-código de su solución.\nc) Calcule la complejidad espacial y temporal de su solución.",
+      "recurso_visual": null,
+      "fuente_original": "DAA Ejercicios primer parcial (Guía)",
+      "resolucion_propuesta": [
+        {
+          "origen": "DAA 06 DP parte 1.pdf, Diapositiva 264 (Ejercicios propuestos 5)",
+          "analisis_teorico": "Calcular C(n, k) mediante la fórmula factorial C(n, k) = n! / (k! * (n-k)!) provoca desbordamientos aritméticos (integer overflow) incluso para valores moderados de n (como n = 30), a pesar de que el resultado final quepa en un entero estándar. La recursión ingenua directa a partir de la identidad de Pascal C(n, k) = C(n-1, k-1) + C(n-1, k) genera un árbol binario redundante idéntico al de Fibonacci, requiriendo tiempo exponencial Omega(2^k). La Programación Dinámica resuelve esto tabulando los valores de menor a mayor mediante sumas enteras puras sin desbordamiento por divisiones ni factoriales.",
+          "definicion_estado_dp": "C[i, j] representa el coeficiente binomial C(i, j) = \\binom{i}{j}, es decir, el número de subconjuntos de tamaño j que pueden formarse a partir de i elementos.",
+          "ecuacion_recurrencia": "$$C[i, j] = \\begin{cases} 1 & \\text{si } j = 0 \\lor j = i \\\\ C[i-1, j-1] + C[i-1, j] & \\text{si } 0 < j < i \\end{cases}$$",
+          "orden_llenado_y_dimensiones": "Matriz triangular de tamaño (n + 1) x (k + 1). Llenado por filas de i = 0 hasta n, y dentro de cada fila, j de 0 hasta min(i, k). Puede optimizarse a un vector de tamaño k + 1 llenando de derecha a izquierda.",
+          "pseudocodigo_resolucion": "Algoritmo CoeficienteBinomial_DP(n: entero, k: entero) -> entero:\n    Entrada: Enteros no negativos n y k con 0 <= k <= n\n    Salida: Valor del coeficiente binomial C(n, k)\n    \n    Si k == 0 o k == n entonces:\n        Retornar 1\n    Fin Si\n    \n    // Optimización de simetría: C(n, k) = C(n, n - k)\n    Si k > n - k entonces:\n        k = n - k\n    Fin Si\n    \n    // Versión optimizada con vector de dimensión k + 1\n    tabla = inicializarVector(k + 1, valor: 0)\n    tabla[0] = 1\n    \n    Para i desde 1 hasta n hacer:\n        // Recorrido inverso para evitar sobreescribir los valores de la fila anterior\n        Para j desde Min(i, k) descendiendo hasta 1 hacer:\n            tabla[j] = tabla[j] + tabla[j - 1]\n        Fin Para\n    Fin Para\n    \n    Retornar tabla[k]",
+          "analisis_complejidad_temporal_espacial": {
+            "temporal": "O(n * k)",
+            "espacial": "O(k) con vector optimizado (u O(n * k) en matriz 2D completa)",
+            "justificacion": "Se ejecutan n pasadas externas y a lo sumo k iteraciones internas, donde cada iteración realiza una única suma entera O(1). El vector unidimensional de tamaño k + 1 requiere memoria estrictamente O(k)."
+          },
+          "nota_duplicado": "Coincide con el ejercicio propuesto #7 ('Coeficientes Binomiales (Triángulo de Tartaglia / Pascal / Yang Hui)') de diapositivas de clase."
+        }
+      ],
+      "es_ejercicio_propuesto_diapositivas": true,
+      "id_global": 89
+    },
+    {
+      "id_tema": 14,
+      "tema": "programacion_dinamica",
+      "titulo": "Centro Ecológico de Fraile Muerto: Latas de alimento",
+      "enunciado": "El Centro Ecológico de Fraile Muerto, en el sur de Córdoba, abriga una serie de animales regionales en riesgo de extinción. El cuidador los alimenta con un producto balanceado que cuenta con todos los nutrientes que los animales necesitan. Este alimento viene en latas de 10, 40, y 60 unidades. El cuidador desea minimizar el número de latas que se utilizan (hay que justificar el nombre de \"ecológico\"). Se sabe, de acuerdo con el número y tipo de los animales, cuántas unidades de alimento son necesarias.\na) Describa una estrategia que le permita minimizar las latas para obtener n unidades de alimento.\nb) Escriba el pseudo-código de su algoritmo.\nc) Determine la complejidad espacial y temporal de su algoritmo.\nd) Utilice su algoritmo para determinar la cantidad óptima de 80 y 160 unidades.",
+      "recurso_visual": null,
+      "fuente_original": "DAA Ejercicios primer parcial (Guía)",
+      "id_global": 90
+    },
+    {
+      "id_tema": 15,
+      "tema": "programacion_dinamica",
+      "titulo": "Ofertas en el supermercado",
+      "enunciado": "Un supermercado decide poner en oferta determinados productos. Se decide limitar la cantidad de productos en oferta que pueden ser adquiridos por cliente a dos. Para cada producto en oferta se detalla precio y descuento. Por ejemplo, aceite de oliva extra virgen, $ 420.00, 25 %, lo que significa que si se compra una botella, el ahorro es de $ 105.00 y, si se compran dos, el ahorro es de $ 210.00.\nPara un cliente hipotético con un presupuesto limitado se desea maximizar el ahorro.\na) Encuentre la estrategia apropiada para resolver este problema. Describa detalladamente su estrategia (un programador debería saber exactamente qué debe hacer luego de leer su descripción) y diga en cuál de las técnicas vistas en clase se encuadra y por qué. Aplique su estrategia al siguiente conjunto de productos suponiendo que su presupuesto es $ 1200.00.\n\n| Producto | Precio | Descuento |\n| --- | --- | --- |\n| A | $ 500.00 | 20 % |\n| B | $ 300.00 | 25 % |\n| C | $ 200.00 | 20 % |\n| D | $ 400.00 | 10 % |\n\nb) Escriba el pseudo-código que realiza su estrategia.\nc) Calcule la complejidad de su algoritmo.",
+      "recurso_visual": {
+        "tipo": "markdown_tabla",
+        "formato": "tabla",
+        "codigo": "| Producto | Precio | Descuento |\n| :--- | :--- | :--- |\n| A | $ 500.00 | 20 % |\n| B | $ 300.00 | 25 % |\n| C | $ 200.00 | 20 % |\n| D | $ 400.00 | 10 % |"
+      },
+      "fuente_original": "DAA Ejercicios primer parcial (Guía)",
+      "id_global": 91
+    },
+    {
+      "id_tema": 16,
+      "tema": "programacion_dinamica",
+      "titulo": "Caminos de costo mínimo en una grilla cilíndrica",
+      "enunciado": "Tenemos una grilla C de m filas y n columnas que ha sido enrollada en forma de cilindro, de manera que la primera y la última fila son adyacentes. Cada columna forma entonces una pista que circunda el cilindro.\nCada posición C[i, j] de la grilla tiene un número entero que se interpreta como un costo. Es posible ir de una pista j a la pista siguiente j + 1 pasando de una celda C[i, j] a cualquiera de las celdas adyacentes de la siguiente pista: C[i + 1, j + 1], C[i, j + 1] o C[i − 1, j + 1]. Además, dado que la grilla es cilíndrica, es posible pasar de C[0, j] a C[m − 1, j + 1] y de C[m − 1, j] a C[0, j + 1]. Éstos son los únicos desplazamientos válidos.\nUn recorrido en una grilla es un camino con desplazamientos válidos desde la pista 0 (primera pista) a la pista n − 1 (última pista). Dado que cada celda contiene un costo, queremos encontrar el recorrido de costo mínimo. Se puede comenzar desde cualquier celda de la primera pista.\n\nEjemplo: en la figura se muestran desplazamientos válidos en una grilla cilíndrica de 6 filas por 8 columnas y un ejemplo de recorrido.\n\na) Elabore una estrategia para encontrar el recorrido de menor costo. Recuerde que se puede partir de cualquier fila de la primera pista.\nb) Escriba el pseudo-código de su solución.\nc) ¿Qué debe modificarse para que el algoritmo devuelva, además del menor costo, el camino que debe seguirse para lograr este costo?",
+      "recurso_visual": {
+        "tipo": "svg",
+        "formato": "svg",
+        "codigo": "<svg viewBox=\"0 0 400 240\" xmlns=\"http://www.w3.org/2000/svg\">\n  <defs>\n    <marker id=\"arrow\" viewBox=\"0 0 10 10\" refX=\"5\" refY=\"5\" markerWidth=\"6\" markerHeight=\"6\" orient=\"auto-start-reverse\">\n      <path d=\"M 0 0 L 10 5 L 0 10 z\" fill=\"#1e293b\"/>\n    </marker>\n  </defs>\n  <!-- Grid background -->\n  <rect width=\"400\" height=\"240\" fill=\"#f8fafc\" rx=\"8\"/>\n  <!-- Grid lines -->\n  <g stroke=\"#cbd5e1\" stroke-width=\"1\">\n    <!-- Columns 0 to 7 -->\n    <line x1=\"40\" y1=\"30\" x2=\"40\" y2=\"210\"/>\n    <line x1=\"80\" y1=\"30\" x2=\"80\" y2=\"210\"/>\n    <line x1=\"120\" y1=\"30\" x2=\"120\" y2=\"210\"/>\n    <line x1=\"160\" y1=\"30\" x2=\"160\" y2=\"210\"/>\n    <line x1=\"200\" y1=\"30\" x2=\"200\" y2=\"210\"/>\n    <line x1=\"240\" y1=\"30\" x2=\"240\" y2=\"210\"/>\n    <line x1=\"280\" y1=\"30\" x2=\"280\" y2=\"210\"/>\n    <line x1=\"320\" y1=\"30\" x2=\"320\" y2=\"210\"/>\n    <line x1=\"360\" y1=\"30\" x2=\"360\" y2=\"210\"/>\n    <!-- Rows 0 to 5 -->\n    <line x1=\"40\" y1=\"30\" x2=\"360\" y2=\"30\"/>\n    <line x1=\"40\" y1=\"60\" x2=\"360\" y2=\"60\"/>\n    <line x1=\"40\" y1=\"90\" x2=\"360\" y2=\"90\"/>\n    <line x1=\"40\" y1=\"120\" x2=\"360\" y2=\"120\"/>\n    <line x1=\"40\" y1=\"150\" x2=\"360\" y2=\"150\"/>\n    <line x1=\"40\" y1=\"180\" x2=\"360\" y2=\"180\"/>\n    <line x1=\"40\" y1=\"210\" x2=\"360\" y2=\"210\"/>\n  </g>\n  <!-- Column labels -->\n  <g font-size=\"11\" font-family=\"monospace\" fill=\"#475569\" text-anchor=\"middle\">\n    <text x=\"60\" y=\"22\">0</text><text x=\"100\" y=\"22\">1</text><text x=\"140\" y=\"22\">2</text><text x=\"180\" y=\"22\">3</text>\n    <text x=\"220\" y=\"22\">4</text><text x=\"260\" y=\"22\">5</text><text x=\"300\" y=\"22\">6</text><text x=\"340\" y=\"22\">7</text>\n  </g>\n  <!-- Row labels -->\n  <g font-size=\"11\" font-family=\"monospace\" fill=\"#475569\" text-anchor=\"middle\">\n    <text x=\"25\" y=\"48\">0</text><text x=\"25\" y=\"78\">1</text><text x=\"25\" y=\"108\">2</text><text x=\"25\" y=\"138\">3</text><text x=\"25\" y=\"168\">4</text><text x=\"25\" y=\"198\">5</text>\n  </g>\n  <!-- Cylindrical wrap annotations -->\n  <path d=\"M 100 45 C 100 15, 140 15, 140 195\" fill=\"none\" stroke=\"#3b82f6\" stroke-width=\"1.5\" stroke-dasharray=\"3 3\" marker-end=\"url(#arrow)\"/>\n  <!-- Sample step arrows -->\n  <line x1=\"60\" y1=\"105\" x2=\"95\" y2=\"78\" stroke=\"#e11d48\" stroke-width=\"2\" marker-end=\"url(#arrow)\"/>\n  <line x1=\"60\" y1=\"105\" x2=\"95\" y2=\"105\" stroke=\"#e11d48\" stroke-width=\"2\" marker-end=\"url(#arrow)\"/>\n  <line x1=\"60\" y1=\"105\" x2=\"95\" y2=\"132\" stroke=\"#e11d48\" stroke-width=\"2\" marker-end=\"url(#arrow)\"/>\n</svg>"
+      },
+      "fuente_original": "DAA Ejercicios primer parcial (Guía)",
+      "id_global": 92
+    },
+    {
+      "id_tema": 17,
+      "tema": "programacion_dinamica",
+      "titulo": "El campo de zanahorias",
+      "enunciado": "Se tiene un campo de zanahorias representado por una matriz z, que es una cuadrícula m × n, en la que cada posición z[i, j] representa la cantidad de zanahorias que se pueden encontrar allí. Un conejo recorre el campo de izquierda a derecha. Comienza en la columna 0 y puede elegir cualquier fila desde 0 hasta m − 1. Por supuesto, el conejo devorará todas las zanahorias que encuentre en cada posición por la que pase.\nSi el conejo está en la posición z[i, j], tiene las siguientes posibilidades:\n- Arriba a la derecha: z[i, j] → z[i − 1, j + 1] (si i > 0 y j < n − 1).\n- A la derecha: z[i, j] → z[i, j + 1] (si j < n − 1).\n- Abajo a la derecha: z[i, j] → z[i + 1, j + 1] (si i < m − 1 y j < n − 1).\n\na) Encuentre una estrategia para que el conejo maximice la cantidad de zanahorias comidas.\nb) Escriba el pseudo-código de su algoritmo.\nc) Determine la complejidad espacial y temporal de su algoritmo.",
+      "recurso_visual": null,
+      "fuente_original": "DAA Ejercicios primer parcial (Guía)",
+      "resolucion_propuesta": [
+        {
+          "origen": "DAA 06 DP parte 1.pdf, Diapositiva 263 (Ejercicios propuestos 4)",
+          "analisis_teorico": "El conejo avanza una columna estrictamente hacia la derecha en cada paso ($j \\to j+1$). Al no existir movimientos hacia la izquierda o en la misma columna, no hay ciclos y la estructura topológica queda fijada por el índice de columna. Para alcanzar la celda $(i, j)$ habiendo recolectado la máxima cantidad posible de zanahorias, el conejo debe provenir de la mejor entre las tres celdas adyacentes de la columna anterior $j-1$: la celda diagonal superior $(i-1, j-1)$, la horizontal $(i, j-1)$ o la diagonal inferior $(i+1, j-1)$. La subestructura óptima garantiza que sumar las zanahorias locales $M[i, j]$ al máximo de dichas tres alternativas parciales produce la solución óptima acumulada.",
+          "definicion_estado_dp": "Z[i, j] almacena la cantidad máxima de zanahorias que el conejo puede haber comido en una trayectoria válida que comience en cualquier fila de la columna 0 y culmine exactamente en la celda (i, j).",
+          "ecuacion_recurrencia": "$$Z[i, j] = \\begin{cases} M[i, 0] & \\text{si } j = 0 \\\\ M[i, j] + \\max_{k \\in \\{-1, 0, 1\\}, \\, 0 \\le i+k < m} \\{ Z[i+k, j-1] \\} & \\text{si } 1 \\le j < n \\end{cases}$$",
+          "orden_llenado_y_dimensiones": "Matriz Z de tamaño m x n. Orden de llenado: por columnas de izquierda a derecha (j de 1 a n - 1), y dentro de cada columna, para todas las filas i de 0 a m - 1.",
+          "pseudocodigo_resolucion": "Algoritmo CampoZanahorias(M: Matriz<entero>, m: entero, n: entero) -> (entero, Lista<Par>):\n    Entrada: Matriz M de m filas x n columnas con zanahorias por celda\n    Salida: Cantidad máxima de zanahorias recolectadas y ruta de celdas elegidas\n    \n    Z = inicializarMatriz(m, n)\n    predecesorFila = inicializarMatriz(m, n)\n    \n    // Casos base: columna inicial 0\n    Para i desde 0 hasta m - 1 hacer:\n        Z[i, 0] = M[i, 0]\n        predecesorFila[i, 0] = -1\n    Fin Para\n    \n    // Llenado inductivo columna a columna\n    Para j desde 1 hasta n - 1 hacer:\n        Para i desde 0 hasta m - 1 hacer:\n            mejorPrevio = Z[i, j - 1]  // Movimiento horizontal desde (i, j-1)\n            mejorK = i\n            \n            // Diagonal superior (i - 1, j - 1)\n            Si i > 0 y Z[i - 1, j - 1] > mejorPrevio entonces:\n                mejorPrevio = Z[i - 1, j - 1]\n                mejorK = i - 1\n            Fin Si\n            \n            // Diagonal inferior (i + 1, j - 1)\n            Si i < m - 1 y Z[i + 1, j - 1] > mejorPrevio entonces:\n                mejorPrevio = Z[i + 1, j - 1]\n                mejorK = i + 1\n            Fin Si\n            \n            Z[i, j] = M[i, j] + mejorPrevio\n            predecesorFila[i, j] = mejorK\n        Fin Para\n    Fin Para\n    \n    // Encontrar la fila final de máxima cosecha en la última columna n - 1\n    maxZanahorias = Z[0, n - 1]\n    filaFinal = 0\n    Para i desde 1 hasta m - 1 hacer:\n        Si Z[i, n - 1] > maxZanahorias entonces:\n            maxZanahorias = Z[i, n - 1]\n            filaFinal = i\n        Fin Si\n    Fin Para\n    \n    // Reconstrucción de la trayectoria hacia atrás\n    trayectoria = nuevaLista()\n    currFila = filaFinal\n    Para j desde n - 1 descendiendo hasta 0 hacer:\n        trayectoria.agregarAlInicio(Par(currFila, j))\n        currFila = predecesorFila[currFila, j]\n    Fin Para\n    \n    Retornar (maxZanahorias, trayectoria)",
+          "analisis_complejidad_temporal_espacial": {
+            "temporal": "O(m * n)",
+            "espacial": "O(m * n) con la matriz completa; reducible a O(m) si solo se requiere el valor numérico máximo conservando dos columnas",
+            "justificacion": "La cuadrícula tiene m * n celdas y cada una realiza a lo sumo 3 comparaciones en tiempo constante O(1). La reconstrucción de la trayectoria recorre n pasos desde la columna n-1 a la 0."
+          },
+          "nota_duplicado": "Coincide con el ejercicio propuesto #6 ('El Campo de Zanahorias (Cosecha Óptima del Conejo)') de diapositivas de clase."
+        }
+      ],
+      "es_ejercicio_propuesto_diapositivas": true,
+      "id_global": 93
+    },
+    {
+      "id_tema": 18,
+      "tema": "programacion_dinamica",
+      "titulo": "Cambio de monedas (Programación Dinámica)",
+      "enunciado": "Dado un conjunto C de N tipos de monedas, cada una con una denominación ci (1<=i<=n), con un número ilimitado de ejemplares de cada tipo, se requiere determinar, si se puede, la cantidad mínima de ellas necesarias para formar una cantidad M. Por ejemplo, un expendedor de boletos electrónico dispone de monedas de distintos valores: $100, $25, $10, $5 y $1, si se tiene que pagar $289, la mejor solución consiste en dar 10 monedas (2 de $100, 3 de $25, 1 de $10 y 4 de $1). Otro ejemplo sería si se disponen de monedas de $5, $4 y $1, y se quieren entregar $8, la mejor solución sería entregar 2 monedas de $4. ¿Y si además de saber cuántas monedas se requieren en total, se quisiera averiguar cuántas de cada denominación?\n\nPara este ejercicio:\n- Escribir el planteo recursivo que representa la solución.\n- Analizar la optimalidad de la solución.\n- Esbozar el algoritmo que resuelve el problema.\n- Detallar las estructuras que se utilizarán.\n- Escribir el método en Java para resolverlo.\n- Analizar la complejidad de la solución en tiempo y espacio.",
+      "recurso_visual": null,
+      "fuente_original": "UADE Progra III - Parte 4: Programación Dinámica",
+      "resolucion_propuesta": [
+        {
+          "origen": "DAA 06 DP parte 1.pdf, Diapositiva 260 (Ejercicios propuestos 1)",
+          "analisis_teorico": "El algoritmo estándar del Problema del Cambio llena una matriz C de tamaño n x (V + 1) donde la celda C[n-1, V] indica el número mínimo de monedas necesarias, pero no la combinación concreta de monedas. Para reconstruir la solución óptima, no es necesario recalcular nada: la propia matriz C contiene el historial completo de transiciones óptimas. Si el valor de la celda C[i, j] es igual a C[i-1, j], significa que no fue necesario incorporar la moneda d_i para alcanzar el costo óptimo de pagar j con las primeras i+1 denominaciones. En cambio, si C[i, j] < C[i-1, j] o si i == 0 (con C[i, j] != INF), obligatoriamente se tomó al menos una moneda d_i. Tras seleccionar d_i, el estado remanente pasa a ser (i, j - d_i). Se itera este procedimiento hasta cancelar la deuda (j = 0).",
+          "definicion_estado_dp": "C[i, j] es la cantidad mínima de monedas para devolver el valor j considerando las denominaciones d_0, ..., d_i. Durante la reconstrucción, el estado está parametrizado por (i, j), donde i es el índice de la denominación actual y j es el valor residual por pagar.",
+          "ecuacion_recurrencia": "$$\\text{Decisión}(i, j) = \\begin{cases} \\text{Avanzar a } (i - 1, j) & \\text{si } i > 0 \\land C[i, j] = C[i - 1, j] \\\\ \\text{Seleccionar } d_i \\text{ y avanzar a } (i, j - d_i) & \\text{si } C[i, j] = 1 + C[i, j - d_i] \\end{cases}$$",
+          "orden_llenado_y_dimensiones": "La matriz C es de tamaño n x (V + 1). La reconstrucción se efectúa en orden inverso (backtracking determinista), partiendo de la esquina inferior derecha (n - 1, V) y finalizando en una celda con j = 0.",
+          "pseudocodigo_resolucion": "Algoritmo ReconstruirMonedasUsadas(D: Vector<entero>, C: Matriz<entero>, V: entero) -> Lista<entero>:\n    Entrada: Vector D de n denominaciones, Matriz DP C de tamaño n x (V + 1), monto V\n    Salida: Lista de denominaciones de las monedas utilizadas\n    \n    n = longitud(D)\n    monedasSeleccionadas = nuevaLista()\n    i = n - 1\n    j = V\n    \n    Si C[i, j] == +INFINITO entonces:\n        Retornar Error(\"No existe combinacion valida para pagar el monto exacto\")\n    Fin Si\n    \n    Mientras j > 0 y i >= 0 hacer:\n        Si i > 0 y C[i, j] == C[i - 1, j] entonces:\n            // La moneda D[i] no fue utilizada para el óptimo\n            i = i - 1\n        Sino:\n            // Se utilizó la moneda D[i]\n            monedasSeleccionadas.agregar(D[i])\n            j = j - D[i]  // Se descuenta el valor de la moneda (se permanece en fila i por repetición)\n        Fin Si\n    Fin Mientras\n    \n    Retornar monedasSeleccionadas",
+          "analisis_complejidad_temporal_espacial": {
+            "temporal": "O(n + k) donde n es el número de denominaciones y k es la cantidad total de monedas en la solución óptima (en el peor caso k <= V/d_min, acotado por O(n + V)).",
+            "espacial": "O(k) para almacenar la lista de monedas seleccionadas, sin memoria auxiliar adicional sobre la matriz C.",
+            "justificacion": "En cada paso del bucle 'mientras', o bien se decrementa el índice i (a lo sumo n veces), o bien se reduce j en al menos 1 unidad (a lo sumo k veces). Por lo tanto, el número total de iteraciones es a lo sumo n + k, ejecutando operaciones en tiempo constante O(1)."
+          },
+          "nota_duplicado": "Coincide con el ejercicio propuesto #1 ('Reconstrucción del Problema del Cambio de Monedas') de diapositivas de clase."
+        }
+      ],
+      "es_ejercicio_propuesto_diapositivas": true,
+      "id_global": 94
+    },
+    {
+      "id_tema": 19,
+      "tema": "programacion_dinamica",
+      "titulo": "Problema de la Mochila 0/1",
+      "enunciado": "Se tienen n objetos y una mochila. Para i = 1, 2,..n, el objeto i tiene un peso positivo pi y un valor positivo vi. La mochila puede llevar un peso que no sobrepase P. Los objetos no pueden ser fraccionados. El objetivo es llenar la mochila de manera tal que se maximice el valor de los objetos transportados, respetando la limitación de capacidad impuesta. El algoritmo debe determinar el valor máximo que se podrá cargar. ¿Y si además se quiere saber qué objetos se deberá cargar para alcanzar dicho valor?\n\nPara este ejercicio:\n- Escribir el planteo recursivo que representa la solución.\n- Analizar la optimalidad de la solución.\n- Esbozar el algoritmo que resuelve el problema.\n- Detallar las estructuras que se utilizarán.\n- Escribir el método en Java para resolverlo.\n- Analizar la complejidad de la solución en tiempo y espacio.",
+      "recurso_visual": null,
+      "fuente_original": "UADE Progra III - Parte 4: Programación Dinámica",
+      "resolucion_propuesta": [
+        {
+          "origen": "DAA 06 DP parte 1.pdf, Diapositiva 260 (Ejercicios propuestos 1)",
+          "analisis_teorico": "Una vez calculada la matriz V de dimensiones (n + 1) x (P + 1), el valor óptimo global reside en V[n, P]. Para recuperar la lista de objetos que conforman la carga óptima, se realiza un seguimiento hacia atrás desde la celda (n, P). Para cada objeto i (de n descendiendo a 1): si V[i, j] == V[i-1, j], el objeto i no aportó al valor óptimo (fue descartado), por lo que se avanza a la fila i - 1 sin modificar la capacidad remanente j. Si V[i, j] > V[i-1, j], el objeto i fue necesariamente empacado; por lo tanto, se incluye en el conjunto solución, se descuenta su peso de la capacidad disponible (j = j - peso[i-1]) y se avanza a la fila anterior i - 1 (ya que en la mochila 0-1 cada objeto es indivisible y único).",
+          "definicion_estado_dp": "V[i, j] es el valor máximo alcanzable considerando un subconjunto de los primeros i objetos con capacidad máxima j. La reconstrucción avanza por estados (i, j) desde (n, P) hasta que i = 0 o j = 0.",
+          "ecuacion_recurrencia": "$$\\text{Acción}(i, j) = \\begin{cases} \\text{Descartar objeto } i \\text{ y pasar a } (i - 1, j) & \\text{si } V[i, j] = V[i - 1, j] \\\\ \\text{Incluir objeto } i, \\text{ restar peso } p_i \\text{ y pasar a } (i - 1, j - p_i) & \\text{si } V[i, j] > V[i - 1, j] \\end{cases}$$",
+          "orden_llenado_y_dimensiones": "La matriz V tiene tamaño (n + 1) x (P + 1). La reconstrucción se ejecuta en tiempo lineal respecto a la cantidad de objetos n, desde i = n hasta i = 1.",
+          "pseudocodigo_resolucion": "Algoritmo ReconstruirMochila01(pesos: Vector<entero>, valores: Vector<entero>, V: Matriz<entero>, P: entero) -> Conjunto<entero>:\n    Entrada: Vector de pesos (0..n-1), vector de valores (0..n-1), Matriz DP V de (n+1) x (P+1), capacidad P\n    Salida: Conjunto de índices de objetos seleccionados en la solución óptima\n    \n    n = longitud(pesos)\n    objetosElegidos = nuevoConjunto()\n    i = n\n    j = P\n    \n    Mientras i > 0 y j > 0 hacer:\n        Si V[i, j] == V[i - 1, j] entonces:\n            // El objeto i no fue seleccionado\n            i = i - 1\n        Sino:\n            // El objeto i fue seleccionado (índice 0-based: i - 1)\n            objetosElegidos.agregar(i - 1)\n            j = j - pesos[i - 1]\n            i = i - 1  // Se decrementa i porque el objeto no puede repetirse\n        Fin Si\n    Fin Mientras\n    \n    Retornar objetosElegidos",
+          "analisis_complejidad_temporal_espacial": {
+            "temporal": "O(n) donde n es el número total de objetos disponibles.",
+            "espacial": "O(n) en el peor caso para almacenar el conjunto de índices seleccionados.",
+            "justificacion": "El algoritmo realiza a lo sumo n iteraciones, dado que en cada paso el índice i se decrementa en 1 unidad de forma estricta. Cada iteración realiza una comparación y un acceso en matriz O(1)."
+          },
+          "nota_duplicado": "Coincide con el ejercicio propuesto #2 ('Reconstrucción del Problema de la Mochila 0-1') de diapositivas de clase."
+        }
+      ],
+      "es_ejercicio_propuesto_diapositivas": true,
+      "id_global": 95
+    },
+    {
+      "id_tema": 20,
+      "tema": "programacion_dinamica",
+      "titulo": "Problema del Viajante (TSP)",
+      "enunciado": "Un viajante de comercio debe visitar n ciudades. Cada ciudad está conectada con las restantes mediante carreteras de longitud conocida. El problema consiste en hallar la longitud de la ruta que deberá tomar para visitar todas las ciudades retornando a la ciudad de partida, pasando una única vez por cada ciudad y de modo tal que la longitud del camino recorrido sea mínima.\n\nPara este ejercicio:\n- Escribir el planteo recursivo que representa la solución.\n- Analizar la optimalidad de la solución.\n- Esbozar el algoritmo que resuelve el problema.\n- Detallar las estructuras que se utilizarán.\n- Escribir el método en Java para resolverlo.\n- Analizar la complejidad de la solución en tiempo y espacio.",
+      "recurso_visual": null,
+      "fuente_original": "UADE Progra III - Parte 4: Programación Dinámica",
+      "id_global": 96
+    },
+    {
+      "id_tema": 21,
+      "tema": "programacion_dinamica",
+      "titulo": "Multiplicación encadenada de matrices",
+      "enunciado": "Sea M = M1 x M2 x … x Mn una multiplicación encadenada de matrices de dimensiones conocidas. Como la multiplicación es asociativa, hay varias maneras de resolver secuencias de productos matriciales. Se desea conocer la menor cantidad posible de multiplicaciones necesarias para resolver el problema. Dadas dos matrices M1 y M2 de dimensiones m1xm2 y m2xm3 respectivamente, la cantidad necesaria de multiplicaciones es m1*m2*m3. ¿Y si además quisiéramos determinar las asociaciones necesarias?\n\nPara este ejercicio:\n- Escribir el planteo recursivo que representa la solución.\n- Analizar la optimalidad de la solución.\n- Esbozar el algoritmo que resuelve el problema.\n- Detallar las estructuras que se utilizarán.\n- Escribir el método en Java para resolverlo.\n- Analizar la complejidad de la solución en tiempo y espacio.",
+      "recurso_visual": null,
+      "fuente_original": "UADE Progra III - Parte 4: Programación Dinámica",
+      "id_global": 97
+    },
+    {
+      "id_tema": 22,
+      "tema": "programacion_dinamica",
+      "titulo": "Longitud de la subsecuencia común más larga (LCS)",
+      "enunciado": "Dada una secuencia X={x1 x2 ... xm}, decimos que Z={z1 z2 ... zk} es una subsecuencia de X (siendo k <= m) si existe una secuencia creciente {i1 i2 ... ik} de índices de X tales que para todo j = 1, 2, ..., k tenemos x_ij = zj.\nPor ejemplo, Z={BCDB} es una subsecuencia de X={ABCBDAB} con la correspondiente secuencia de índices {2,3,5,7}.\nDadas dos secuencias X e Y, decimos que Z es una subsecuencia común de X e Y si es subsecuencia de X y subsecuencia de Y.\nSe desea encontrar la longitud de la subsecuencia de longitud máxima común a dos secuencias dadas. ¿Y si además se quisiera encontrar la subsecuencia propiamente dicha?\n\nPara este ejercicio:\n- Escribir el planteo recursivo que representa la solución.\n- Analizar la optimalidad de la solución.\n- Esbozar el algoritmo que resuelve el problema.\n- Detallar las estructuras que se utilizarán.\n- Escribir el método en Java para resolverlo.\n- Analizar la complejidad de la solución en tiempo y espacio.",
+      "recurso_visual": null,
+      "fuente_original": "UADE Progra III - Parte 4: Programación Dinámica",
+      "id_global": 98
+    },
+    {
+      "id_tema": 23,
+      "tema": "programacion_dinamica",
+      "titulo": "Maximización de suma de funciones monótonas",
+      "enunciado": "Dadas n funciones f1, f2, ..., fn y un entero positivo M, deseamos maximizar la función f1(x1) + f2(x2) + ... + fn(xn) sujeta a la restricción x1 + x2 + ... + xn = M, donde fi(0) = 0 (i=1,..,n), xi son números naturales, y todas las funciones son monótonas crecientes, es decir, x > y implica que fi(x) > fi(y). Supóngase que los valores de cada función se almacenan en un vector.\n\nPara este ejercicio:\n- Escribir el planteo recursivo que representa la solución.\n- Analizar la optimalidad de la solución.\n- Esbozar el algoritmo que resuelve el problema.\n- Detallar las estructuras que se utilizarán.\n- Escribir el método en Java para resolverlo.\n- Analizar la complejidad de la solución en tiempo y espacio.",
+      "recurso_visual": null,
+      "fuente_original": "UADE Progra III - Parte 4: Programación Dinámica",
+      "resolucion_propuesta": [
+        {
+          "origen": "DAA 07 DP parte 2.pdf, Diapositiva 188 (Ejercicios propuestos 1)",
+          "analisis_teorico": "El problema modela la asignación óptima de un recurso escaso de tamaño total M entre n actividades o proyectos independientes para maximizar la utilidad agregada. Posee subestructura óptima: supongamos que a la función f_n se le asignan x_n unidades de recurso ($0 \\le x_n \\le M$). Las restantes $M - x_n$ unidades deben necesariamente distribuirse de forma óptima entre las primeras $n - 1$ funciones. Si no fuera así, podríamos mejorar la distribución de las $n - 1$ funciones y obtener una suma global mayor, contradiciendo la optimalidad. No es posible aplicar un algoritmo Greedy simple porque la tasa de crecimiento de las funciones puede no ser cóncava y asignar unidades de forma aislada puede llevar a óptimos locales. Programación Dinámica resuelve esto evaluando para cada función i y para cada presupuesto de recurso m la asignación de k unidades a la función actual y el restante m - k a las funciones previas.",
+          "definicion_estado_dp": "DP[i, m] representa el valor máximo alcanzable de sum_{k=1}^i f_k(x_k) asignando un total de m unidades de recurso entre las primeras i funciones (1 <= i <= n, 0 <= m <= M).",
+          "ecuacion_recurrencia": "$$DP[i, m] = \\begin{cases} 0 & \\text{si } i = 0 \\land m = 0 \\\\ -\\infty & \\text{si } i = 0 \\land m > 0 \\\\ f_1(m) & \\text{si } i = 1 \\\\ \\max_{0 \\le x_i \\le m} \\{ DP[i - 1, m - x_i] + f_i(x_i) \\} & \\text{si } i > 1 \\end{cases}$$",
+          "orden_llenado_y_dimensiones": "Matriz de dimensiones (n + 1) x (M + 1). Orden de llenado: por filas de i = 1 a n, y dentro de cada fila, m de 0 a M.",
+          "pseudocodigo_resolucion": "Algoritmo AsignacionRecursosMax(f: Matriz<real>, n: entero, M: entero) -> (real, Vector<entero>):\n    Entrada: f matriz n x (M + 1) donde f[i, x] es el valor f_i(x), n funciones, recurso total M\n    Salida: Valor máximo y asignación óptima [x_1, ..., x_n]\n    \n    DP = inicializarMatriz(n + 1, M + 1, valor: 0)\n    eleccion = inicializarMatriz(n + 1, M + 1, valor: 0)\n    \n    // Caso base i = 1: se asigna todo el recurso disponible a la primera función\n    Para m desde 0 hasta M hacer:\n        DP[1, m] = f[1, m]\n        eleccion[1, m] = m\n    Fin Para\n    \n    // Llenado para funciones 2 a n\n    Para i desde 2 hasta n hacer:\n        Para m desde 0 hasta M hacer:\n            maxVal = -INFINITO\n            mejorX = 0\n            Para x_i desde 0 hasta m hacer:\n                valorActual = DP[i - 1, m - x_i] + f[i, x_i]\n                Si valorActual > maxVal entonces:\n                    maxVal = valorActual\n                    mejorX = x_i\n                Fin Si\n            Fin Para\n            DP[i, m] = maxVal\n            eleccion[i, m] = mejorX\n        Fin Para\n    Fin Para\n    \n    // Reconstrucción de la asignación óptima de recursos\n    asignacion = inicializarVector(n + 1)\n    recursoRestante = M\n    Para i desde n descendiendo hasta 1 hacer:\n        asignacion[i] = eleccion[i, recursoRestante]\n        recursoRestante = recursoRestante - asignacion[i]\n    Fin Para\n    \n    Retornar (DP[n, M], asignacion)",
+          "analisis_complejidad_temporal_espacial": {
+            "temporal": "O(n * M^2)",
+            "espacial": "O(n * M) en tabla completa; reducible a O(M) si no se requiere reconstrucción",
+            "justificacion": "La matriz contiene n * M celdas. Para llenar cada celda DP[i, m], se evalúan m + 1 opciones de asignación x_i. La suma total de iteraciones es sum_{i=2}^n sum_{m=0}^M (m + 1) = (n - 1) * (M + 1)(M + 2)/2 = Theta(n * M^2). El espacio de la tabla es Theta(n * M)."
+          },
+          "nota_duplicado": "Coincide con el ejercicio propuesto #10 ('Maximización de Suma de Funciones Monótonas con Recurso Acotado') de diapositivas de clase."
+        }
+      ],
+      "es_ejercicio_propuesto_diapositivas": true,
+      "id_global": 99
+    },
+    {
+      "id_tema": 24,
+      "tema": "programacion_dinamica",
+      "titulo": "Compra del regalo de cumpleaños para Darío",
+      "enunciado": "Ana trabaja en una empresa de comunicaciones y le han encargado la compra del regalo de cumpleaños para Darío, un compañero de trabajo. Para ello Ana va a un negocio en donde hay diferentes obsequios que le pueden gustar a Darío. Cada obsequio tiene un precio determinado. Ana conoce el monto mínimo a gastar para la compra del regalo, y su objetivo es encontrar una combinación de objetos a comprar que cubra exactamente el monto a gastar o lo supere en forma mínima, considerando que no puede repetir objetos en su compra. Diseñar un algoritmo que determine cuáles son los objetos que conforman el regalo y el dinero óptimo gastado.\n\nPara este ejercicio:\n- Escribir el planteo recursivo que representa la solución.\n- Analizar la optimalidad de la solución.\n- Esbozar el algoritmo que resuelve el problema.\n- Detallar las estructuras que se utilizarán.\n- Escribir el método en Java para resolverlo.\n- Analizar la complejidad de la solución en tiempo y espacio.",
+      "recurso_visual": null,
+      "fuente_original": "UADE Progra III - Parte 4: Programación Dinámica",
+      "id_global": 100
+    },
+    {
+      "id_tema": 25,
+      "tema": "programacion_dinamica",
+      "titulo": "Compra de comics con maximización de páginas (Howard)",
+      "enunciado": "Howard es un fanático de los comics. En la tienda de comics tienen un único ejemplar de cada revista. Cada revista tiene en la tapa el precio y la cantidad de páginas que contiene. Un día particular Howard decide comprar todas las revistas posibles de modo de maximizar la cantidad total de páginas sin superar su presupuesto disponible de $P. La tienda tiene listados con la información de precio y cantidad de páginas de cada revista ordenados por todos los criterios que sean necesarios. ¿Cuántas páginas en total tendrá si compra la mejor combinación posible de revistas?\n\nPara este ejercicio:\n- Escribir el planteo recursivo que representa la solución.\n- Analizar la optimalidad de la solución.\n- Esbozar el algoritmo que resuelve el problema.\n- Detallar las estructuras que se utilizarán.\n- Escribir el método en Java para resolverlo.\n- Analizar la complejidad de la solución en tiempo y espacio.",
+      "recurso_visual": null,
+      "fuente_original": "UADE Progra III - Parte 4: Programación Dinámica",
+      "id_global": 101
+    },
+    {
+      "id_tema": 26,
+      "tema": "programacion_dinamica",
+      "titulo": "N embarcaderos río abajo",
+      "enunciado": "A lo largo de un río hay n embarcaderos. En cada embarcadero se puede tomar una lancha que va hasta cualquier otro embarcadero río abajo (no es posible ir río arriba). Existe una tabla de tarifas de cada viaje entre un embarcadero i y un embarcadero j (i < j). El objetivo del problema es llegar desde un embarcadero i hasta un embarcadero j utilizando la menor cantidad de dinero posible, aunque haya que cambiar de lancha todas las veces que sea necesario, ya que este cambio no tiene costo adicional.\n\nPara este ejercicio:\n- Justificar la elección de la técnica.\n- Esbozar el algoritmo que resuelve el problema.\n- Detallar las estructuras que se utilizarán.\n- Escribir el método en Java para resolverlo.\n- Analizar la complejidad de la solución en tiempo y espacio.",
+      "recurso_visual": null,
+      "fuente_original": "UADE Progra III - Repaso de las tres técnicas anteriores",
+      "resolucion_propuesta": [
+        {
+          "origen": "DAA 06 DP parte 1.pdf, Diapositiva 260 (Ejercicios propuestos 1)",
+          "analisis_teorico": "El problema modela un camino mínimo en un Grafo Acíclico Dirigido (DAG) donde los puestos representan vértices numerados del 1 al n y los alquileres corresponden a aristas dirigidas (i, j) con costo f_{i,j} (solo existen aristas hacia adelante i < j porque se navega aguas abajo). Posee subestructura óptima: para llegar al puesto j con costo mínimo, debió haberse alcanzado previamente algún puesto intermedio i (1 <= i < j) con costo mínimo y desde allí alquilar una canoa directa de i a j. La superposición de subproblemas es evidente: múltiples trayectos hacia puestos aguas abajo comparten los costos óptimos de arribo a los puestos intermedios.",
+          "definicion_estado_dp": "C[j] es el costo mínimo de navegar en canoas desde el puesto inicial 1 hasta el puesto j (para 1 <= j <= n).",
+          "ecuacion_recurrencia": "$$C[j] = \\begin{cases} 0 & \\text{si } j = 1 \\\\ \\min_{1 \\le i < j} \\{ C[i] + f_{i, j} \\} & \\text{si } 2 \\le j \\le n \\end{cases}$$",
+          "orden_llenado_y_dimensiones": "Vector unidimensional C de longitud n (índices 1 a n). Llenado secuencial ascendente: j = 2, 3, 4, ..., n.",
+          "pseudocodigo_resolucion": "Algoritmo NavegacionCtalamochita(f: Matriz<real>, n: entero) -> (real, Vector<entero>):\n    Entrada: f matriz donde f[i, j] es el costo de alquilar de puesto i a j (1 <= i < j <= n), n puestos\n    Salida: Costo mínimo C[n] y ruta óptima de paradas intermedias\n    \n    C = inicializarVector(n + 1)\n    predecesor = inicializarVector(n + 1)\n    \n    C[1] = 0\n    predecesor[1] = 0\n    \n    Para j desde 2 hasta n hacer:\n        minCosto = +INFINITO\n        mejorI = 1\n        Para i desde 1 hasta j - 1 hacer:\n            costoActual = C[i] + f[i, j]\n            Si costoActual < minCosto entonces:\n                minCosto = costoActual\n                mejorI = i\n            Fin Si\n        Fin Para\n        C[j] = minCosto\n        predecesor[j] = mejorI\n    Fin Para\n    \n    // Reconstrucción de la ruta de paradas\n    ruta = nuevaLista()\n    actual = n\n    Mientras actual != 0 hacer:\n        ruta.agregarAlInicio(actual)\n        actual = predecesor[actual]\n    Fin Mientras\n    \n    Retornar (C[n], ruta)",
+          "analisis_complejidad_temporal_espacial": {
+            "temporal": "O(n^2)",
+            "espacial": "O(n)",
+            "justificacion": "Para calcular cada C[j] se exploran j - 1 puestos previos. La cantidad total de operaciones es sum_{j=2}^n (j - 1) = n(n - 1)/2 = Theta(n^2). El espacio de almacenamiento requiere únicamente dos vectores de tamaño n (costos y predecesores), demandando O(n) de memoria."
+          },
+          "nota_duplicado": "Coincide con el ejercicio propuesto #3 ('Navegación en el río Ctalamochita (Alquiler Óptimo de Canoas)') de diapositivas de clase."
+        }
+      ],
+      "es_ejercicio_propuesto_diapositivas": true,
+      "id_global": 102
+    },
+    {
+      "id_tema": 27,
+      "tema": "programacion_dinamica",
+      "titulo": "La caza del snark (DP en matriz con valores positivos y negativos)",
+      "enunciado": "Un cazador de snarks ingresa a un campo que será su espacio de caza. La caza del snark es un deporte no exento de riesgos: en algunas ocasiones el snark puede ser un boojum; el cazador que tenga la desgracia de cruzarse con un boojum perderá puntos.\nEl espacio de caza mencionado se representa con una matriz c ∈ Z^(m×n). Una posición c[i][j] de esta matriz puede contener:\n- Un valor positivo (hay un snark de peso c[i][j]).\n- Un valor negativo (hay un boojum de peso c[i][j]).\n- Un valor 0 (no hay nada en c[i][j]).\n\nEl cazador comienza en la posición noroeste del campo (c[0][0]) y sólo puede desplazarse hacia la derecha (c[i][j] → c[i][j + 1]) o hacia abajo (c[i][j] → c[i + 1][j]). La salida es en el rincón sudeste (c[m − 1][n − 1]). Queremos encontrar el mejor resultado posible para el cazador en su recorrido de la matriz.\n\na) Describa detalladamente una estrategia de programación dinámica que resuelva el ejercicio planteado.\nb) Escriba el pseudo-código de su solución y calcule la complejidad correspondiente.\nc) Defina una estrategia para recuperar el recorrido efectuado. Se pide sólo la estrategia. No es necesario que haga el pseudo-código.",
+      "recurso_visual": null,
+      "fuente_original": "Parcial 2026.09.18 1A ViMa",
+      "id_global": 103
+    },
+    {
+      "id_tema": 28,
+      "tema": "programacion_dinamica",
+      "titulo": "El programa de jazz (Subset Sum / Mochila 0-1)",
+      "enunciado": "Usted tiene un programa de jazz en la radio de t minutos. Tiene además un arreglo songs con las canciones que podría pasar. El arreglo contiene objetos s con su identificador y su duración. Por ejemplo, s[i].id nos da el identificador de la canción i y s[i].time nos da su duración. Usted quiere pasar música siguiendo las siguientes reglas:\n- Las canciones no pueden repetirse en un mismo programa.\n- Se trata de llenar lo mejor posible el tiempo que se tiene (o sea, los t minutos de programa).\n- Las canciones deben pasarse completas. No se puede cortar una canción porque se cumplieron los t minutos. En otras palabras, la duración total debe ser igual o menor a t.\n\na) Describa una estrategia para encontrar el mejor tiempo que puede cubrir con música en su programa.\nb) Escriba el pseudo-código de su solución.\nc) Determine la complejidad de su algoritmo. Justifique su resultado.",
+      "recurso_visual": null,
+      "fuente_original": "Parcial 2026.09.18 1C ViNo",
+      "id_global": 104
+    },
+    {
+      "id_tema": 29,
+      "tema": "programacion_dinamica",
+      "titulo": "Caminos Más Largos en Grafos Ordenados (DAG)",
+      "enunciado": "Caminos más largos en grafos ordenados: supongamos que tenemos un grafo dirigido G = (V, E) con V = {v_1, ..., v_n}. Decimos que G es ordenado si satisface las siguientes condiciones: Todas las aristas tienen la forma (v_i, v_j) con i < j; Todos los vértices tienen aristas salientes excepto v_n. El objetivo es encontrar la longitud del camino más largo que va de v_1 a v_n. Se pide una estrategia de programación dinámica para resolver este problema. Por ejemplo, en el grafo de ejemplo ordenado con vértices 0 a 5, el camino más largo de 0 a 5 es (0-1-2-3-4-5), o sea tiene longitud 5.",
+      "recurso_visual": null,
+      "fuente_original": "DAA 06 DP parte 1.pdf, Diapositiva 261 (Ejercicios propuestos 2)",
+      "es_ejercicio_propuesto_diapositivas": true,
+      "resolucion_propuesta": [
+        {
+          "analisis_teorico": "En un grafo arbitrario con ciclos, el problema del camino más simple más largo es NP-Hard. Sin embargo, al establecerse que todas las aristas van de v_i a v_j con i < j, el grafo es formalmente un Grafo Acíclico Dirigido (DAG) ya ordenado topológicamente por la propia numeración de sus vértices. En un DAG, los subproblemas no contienen dependencias circulares, lo que permite aplicar Programación Dinámica directamente. La subestructura óptima establece que el camino más largo hacia v_j se compone del camino más largo hacia algún predecesor v_i sumado a la arista (v_i, v_j).",
+          "definicion_estado_dp": "L[j] almacena la longitud del camino más largo desde el vértice inicial v_1 hasta el vértice v_j (para 1 <= j <= n).",
+          "ecuacion_recurrencia": "$$L[j] = \\begin{cases} 0 & \\text{si } j = 1 \\\\ \\max_{(v_i, v_j) \\in E} \\{ L[i] + 1 \\} & \\text{si } 2 \\le j \\le n \\quad (\\text{con } \\max \\emptyset = -\\infty) \\end{cases}$$",
+          "orden_llenado_y_dimensiones": "Vector unidimensional L de longitud n. Llenado en orden topológico natural ascendente: j = 2, 3, ..., n.",
+          "pseudocodigo_resolucion": "Algoritmo CaminoMasLargoDAG(V: Conjunto<Vertice>, E: Conjunto<Arista>, n: entero) -> (entero, Lista<entero>):\n    Entrada: Grafo ordenado con vértices v_1 a v_n y aristas (v_i, v_j) con i < j\n    Salida: Longitud máxima y secuencia de vértices del camino más largo de v_1 a v_n\n    \n    L = inicializarVector(n + 1, valor: -INFINITO)\n    padre = inicializarVector(n + 1, valor: -1)\n    \n    L[1] = 0\n    \n    Para j desde 2 hasta n hacer:\n        Para cada arista incidente (v_i, v_j) en E hacer:\n            Si L[i] != -INFINITO y L[i] + 1 > L[j] entonces:\n                L[j] = L[i] + 1\n                padre[j] = i\n            Fin Si\n        Fin Para\n    Fin Para\n    \n    // Reconstrucción de la ruta más larga\n    camino = nuevaLista()\n    curr = n\n    Mientras curr != -1 hacer:\n        camino.agregarAlInicio(curr)\n        curr = padre[curr]\n    Fin Mientras\n    \n    Retornar (L[n], camino)",
+          "analisis_complejidad_temporal_espacial": {
+            "temporal": "O(|V| + |E|)",
+            "espacial": "O(|V|)",
+            "justificacion": "Cada vértice se procesa una vez en orden de índice y cada arista entrante se examina exactamente una vez. Si el grafo está representado por listas de adyacencia inversa, el costo total es Theta(|V| + |E|). El espacio se reduce a almacenar los vectores de longitud y predecesores de tamaño |V|."
+          }
+        }
+      ],
+      "id_global": 105
+    },
+    {
+      "id_tema": 30,
+      "tema": "programacion_dinamica",
+      "titulo": "El Paseo Probabilístico del Párroco en Fraile Muerto",
+      "enunciado": "El paseo probabilístico. El párroco de la iglesia de San Hilario en Fraile Muerto es conocido por ser una persona de costumbres sistemáticas. Todos los días, luego de su inevitable siesta, se dirige desde su casa (situada en la esquina noroeste en el mapa del centro de la ciudad (posición M[0,0])) a su iglesia situada en el extremo opuesto, es decir la esquina sudeste del mapa (posición M[m-1, n-1]). El mapa del centro de la ciudad de Fraile Muerto es una cuadrícula M de m filas por n columnas. Su recorrido se dirige hacia el este o hacia el sur (nunca vuelve hacia el oeste ni hacia el norte). La probabilidad de que en un punto dado se dirija hacia el este es del 40%; la probabilidad de que se dirija hacia el sur es del 60%. Por supuesto, una vez que llega al extremo sur (fila m-1), la probabilidad de tomar hacia el este es del 100% y análogamente cuando llega al extremo este. Describa una estrategia de programación dinámica para determinar la probabilidad de que el cura pase por un punto M[x, y] dado con x en {0, ..., m-1}, y en {0, ..., n-1}.",
+      "recurso_visual": null,
+      "fuente_original": "DAA 06 DP parte 1.pdf, Diapositiva 262 (Ejercicios propuestos 3)",
+      "es_ejercicio_propuesto_diapositivas": true,
+      "resolucion_propuesta": [
+        {
+          "analisis_teorico": "Dado que el movimiento se restringe exclusivamente al Este y al Sur, la cuadrícula forma una Cadena de Markov dirigida acíclica. Cada camino desde el origen (0,0) hasta cualquier celda (i, j) está compuesto únicamente por transiciones desde la celda superior (i - 1, j) al avanzar hacia el Sur, o desde la celda izquierda (i, j - 1) al avanzar hacia el Este. Por el Teorema de la Probabilidad Total y la ausencia de ciclos, la probabilidad acumulada P[i, j] de visitar la intersección (i, j) es la suma ponderada de las probabilidades de haber visitado sus predecesores inmediatos multiplicadas por la probabilidad de transición condicional correspondiente. Las condiciones de frontera modifican las probabilidades de transición debido a que el párroco no puede salirse de la cuadrícula.",
+          "definicion_estado_dp": "P[i, j] es la probabilidad absoluta de que el párroco transite por la intersección de la fila i y la columna j partiendo de (0,0).",
+          "ecuacion_recurrencia": "$$P[i, j] = \\begin{cases} 1.0 & \\text{si } i = 0 \\land j = 0 \\\\ P[0, j-1] \\cdot p_{este}(0, j-1) & \\text{si } i = 0 \\land j > 0 \\\\ P[i-1, 0] \\cdot p_{sur}(i-1, 0) & \\text{si } i > 0 \\land j = 0 \\\\ P[i-1, j] \\cdot p_{sur}(i-1, j) + P[i, j-1] \\cdot p_{este}(i, j-1) & \\text{si } i > 0 \\land j > 0 \\end{cases}$$\n\nDonde las probabilidades de transición son:\n- $p_{este}(i, j) = 1.0$ si $i = m - 1$ (borde sur), y $0.4$ si $i < m - 1$.\n- $p_{sur}(i, j) = 1.0$ si $j = n - 1$ (borde este), y $0.6$ si $j < n - 1$.",
+          "orden_llenado_y_dimensiones": "Matriz de dimensiones m x n. Orden de llenado: por filas de arriba hacia abajo (i de 0 a m - 1) y por columnas de izquierda a derecha (j de 0 a n - 1).",
+          "pseudocodigo_resolucion": "Algoritmo ProbabilidadPaseoFraileMuerto(m: entero, n: entero, targetX: entero, targetY: entero) -> real:\n    Entrada: Dimensiones de la cuadrícula m x n, coordenadas objetivo (targetX, targetY)\n    Salida: Probabilidad exacta P[targetX, targetY] de que el cura pase por dicha esquina\n    \n    P = inicializarMatrizReal(m, n)\n    P[0, 0] = 1.0\n    \n    // Llenado de primera fila (solo puede provenir del Oeste)\n    Para j desde 1 hasta n - 1 hacer:\n        probTrans = (m == 1) ? 1.0 : 0.4\n        P[0, j] = P[0, j - 1] * probTrans\n    Fin Para\n    \n    // Llenado de primera columna (solo puede provenir del Norte)\n    Para i desde 1 hasta m - 1 hacer:\n        probTrans = (n == 1) ? 1.0 : 0.6\n        P[i, 0] = P[i - 1, 0] * probTrans\n    Fin Para\n    \n    // Llenado del resto de la cuadrícula\n    Para i desde 1 hasta m - 1 hacer:\n        Para j desde 1 hasta n - 1 hacer:\n            // Contribución desde el Norte (moverse hacia el Sur)\n            p_desde_norte = (j == n - 1) ? 1.0 : 0.6\n            contribucionNorte = P[i - 1, j] * p_desde_norte\n            \n            // Contribución desde el Oeste (moverse hacia el Este)\n            p_desde_oeste = (i == m - 1) ? 1.0 : 0.4\n            contribucionOeste = P[i, j - 1] * p_desde_oeste\n            \n            P[i, j] = contribucionNorte + contribucionOeste\n        Fin Para\n    Fin Para\n    \n    Retornar P[targetX, targetY]",
+          "analisis_complejidad_temporal_espacial": {
+            "temporal": "O(m * n) (o O(targetX * targetY) si se acota el cómputo a la submatriz requerida).",
+            "espacial": "O(m * n) en la tabla completa; optimizable a O(n) conservando únicamente la fila anterior.",
+            "justificacion": "Cada una de las m * n celdas requiere una cantidad constante de sumas y productos flotantes O(1). Para el cálculo de un punto específico (x, y), solo se computan (x + 1) * (y + 1) celdas."
+          }
+        }
+      ],
+      "id_global": 106
+    },
+    {
+      "id_tema": 31,
+      "tema": "programacion_dinamica",
+      "titulo": "Extensión de Dijkstra para Mostrar Rutas Óptimas (Estrategia Punteros LIS)",
+      "enunciado": "Analice si es posible extender el algoritmo de Dijkstra para que muestre los caminos de costo mínimo (además de los costos mínimos) utilizado una estrategia similar a la del problema de la subsecuencia creciente más larga.",
+      "recurso_visual": null,
+      "fuente_original": "DAA 07 DP parte 2.pdf, Diapositiva 188 (Ejercicios propuestos 1)",
+      "es_ejercicio_propuesto_diapositivas": true,
+      "resolucion_propuesta": [
+        {
+          "analisis_teorico": "En el problema de la Subsecuencia Creciente Más Larga (LIS), la segunda fila de la matriz D[1, i] se destina exclusivamente a almacenar el puntero inx (el índice del elemento predecesor que maximizó la subsecuencia hasta la posición i). Para reconstruir la cadena óptima, una vez determinado el índice final de mayor longitud, simplemente se sigue la cadena de punteros hacia atrás en tiempo O(longitud). En el algoritmo de Dijkstra, la versión básica solo computa el vector de distancias mínimas dist[v]. Siguiendo exactamente la misma filosofía arquitectónica de LIS, se introduce un vector auxiliar predecesor[v] inicializado en -1 o null. Cada vez que una relajación de arista (u, v) resulta exitosa (dist[u] + peso(u, v) < dist[v]), no solo se actualiza dist[v], sino que se actualiza el puntero predecesor[v] = u. La reconstrucción de la ruta hacia cualquier vértice destino t consiste en un rastreo hacia atrás siguiendo la cadena de predecesores hasta el origen s.",
+          "definicion_estado_dp": "dist[v] almacena el costo mínimo desde el origen s hasta v; predecesor[v] almacena el nodo inmediatamente anterior a v en el árbol de caminos mínimos.",
+          "ecuacion_recurrencia": "$$\\begin{aligned} \\text{dist}[v] &\\leftarrow \\min(\\text{dist}[v],\\, \\text{dist}[u] + w(u, v)) \\\\ \\text{predecesor}[v] &\\leftarrow u \\quad (\\text{si ocurre una actualización exitosa}) \\end{aligned}$$",
+          "orden_llenado_y_dimensiones": "Vector de predecesores de tamaño |V|. Se actualiza dinámicamente durante la exploración greedy de la cola de prioridad de Dijkstra.",
+          "pseudocodigo_resolucion": "Algoritmo DijkstraConPunterosLIS(G: Grafo, s: Vertice) -> (Vector<real>, Vector<Vertice>):\n    Entrada: Grafo G ponderado positivo, vértice origen s\n    Salida: Vector dist y vector predecesor (estilo LIS D[1, i])\n    \n    dist = inicializarVector(|V|, valor: +INFINITO)\n    predecesor = inicializarVector(|V|, valor: -1)\n    dist[s] = 0\n    \n    Q = nuevaColaPrioridadMin()\n    Q.insertar(s, 0)\n    \n    Mientras no Q.estaVacia() hacer:\n        u = Q.extraerMinimo()\n        Para cada vecino v adyacente a u hacer:\n            Si dist[u] + peso(u, v) < dist[v] entonces:\n                dist[v] = dist[u] + peso(u, v)\n                predecesor[v] = u  // Asignación de puntero análoga a D[1, i] = j en LIS\n                Q.actualizarPrioridadOInsertar(v, dist[v])\n            Fin Si\n        Fin Para\n    Fin Mientras\n    \n    Retornar (dist, predecesor)\n\nFuncion ReconstruirCaminoDijkstra(predecesor: Vector<Vertice>, destino: Vertice) -> Lista<Vertice>:\n    // Reconstrucción hacia atrás exactamente como en LIS\n    ruta = nuevaLista()\n    actual = destino\n    Mientras actual != -1 hacer:\n        ruta.agregarAlInicio(actual)\n        actual = predecesor[actual]\n    Fin Mientras\n    Retornar ruta",
+          "analisis_complejidad_temporal_espacial": {
+            "temporal": "Mantiene la complejidad de Dijkstra O(|E| log |V| + |V| log |V|) con min-heap; la asignación del puntero añade O(1) por relajación. La reconstrucción toma O(k) donde k es la cantidad de aristas en la ruta.",
+            "espacial": "O(|V|) para almacenar el vector predecesor.",
+            "justificacion": "La analogía con LIS es formalmente idéntica: se acopla una estructura de punteros de un paso hacia atrás (back-pointers) que permite convertir un algoritmo de optimización de costo escalar en un generador de trayectorias completas."
+          }
+        }
+      ],
+      "id_global": 107
+    },
+    {
+      "id_tema": 32,
+      "tema": "programacion_dinamica",
+      "titulo": "Fábrica de Saxofones Blue Note de Fraile Muerto (Líneas de Ensamblaje)",
+      "enunciado": "La fábrica de saxofones. Son necesarias varias etapas para producir un saxofón: formación del cuerpo principal, curvado, perforación, adición de teclas, adición de la parte superior y adición de la boquilla (6 estaciones S[i,j] con i en {1,2} y j en {1, ..., 6}). Llamamos T[i,j] al tiempo pasado en la estación j de la línea de ensamblaje i. Cuando el instrumento pasa de la estación j a la estación j+1 de la misma línea, esto es instantáneo; pero cuando cambia de una línea a la otra, tiene una demora D[j] con j en {1, ..., 5}. Datos del ejemplo de diapositiva: D = [3, 2, 2, 3, 2] y T = [[6, 4, 5, 2, 3, 4], [4, 3, 5, 5, 6, 6]]. Encuentre una estrategia de programación dinámica para minimizar el tiempo de producción de un saxofón.",
+      "recurso_visual": null,
+      "fuente_original": "DAA 07 DP parte 2.pdf, Diapositivas 189-190 (Ejercicios propuestos 2 y 3)",
+      "es_ejercicio_propuesto_diapositivas": true,
+      "resolucion_propuesta": [
+        {
+          "analisis_teorico": "El problema es una instancia clásica del Assembly-Line Scheduling (popularizado por Cormen et al.). Posee una subestructura óptima perfecta: para salir de la estación j en la Línea 1 con el tiempo mínimo acumulado, el instrumento debió haber completado la estación j-1 en la Línea 1 y continuar en ella (costo F1[j-1]), O BIEN haber completado la estación j-1 en la Línea 2 y pagar la penalización de transferencia D[j-1] (costo F2[j-1] + D[j-1]), más el tiempo propio de procesamiento en la estación T[1, j]. De forma simétrica se calcula la Línea 2. No existen ciclos porque la producción siempre avanza de la etapa j a la etapa j+1.",
+          "definicion_estado_dp": "F1[j] y F2[j] representan el tiempo mínimo para completar el procesamiento de las primeras j estaciones finalizando en la línea 1 o en la línea 2, respectivamente (1 <= j <= 6).",
+          "ecuacion_recurrencia": "$$\\begin{aligned} F_1[1] &= T[1, 1], \\quad F_2[1] = T[2, 1] \\\\ F_1[j] &= T[1, j] + \\min(F_1[j - 1],\\, F_2[j - 1] + D[j - 1]) \\quad \\text{para } j = 2, \\dots, 6 \\\\ F_2[j] &= T[2, j] + \\min(F_2[j - 1],\\, F_1[j - 1] + D[j - 1]) \\quad \\text{para } j = 2, \\dots, 6 \\\\ \\text{TiempoÓptimo} &= \\min(F_1[6],\\, F_2[6]) \\end{aligned}$$",
+          "orden_llenado_y_dimensiones": "Dos vectores F1 y F2 de longitud 6 (o matriz 2 x 6). Llenado secuencial ascendente: j = 2, 3, 4, 5, 6.",
+          "pseudocodigo_resolucion": "Algoritmo EnsamblajeSaxofones(T: Matriz<real>, D: Vector<real>, k: entero) -> (real, Lista<entero>):\n    Entrada: T matriz 2 x k de tiempos de procesamiento, D vector de k-1 demoras de cambio, k estaciones\n    Salida: Tiempo total mínimo y secuencia de líneas elegidas en cada etapa\n    \n    F1 = inicializarVector(k + 1)\n    F2 = inicializarVector(k + 1)\n    ruta1 = inicializarVector(k + 1)\n    ruta2 = inicializarVector(k + 1)\n    \n    // Caso base (estación 1)\n    F1[1] = T[1, 1]\n    F2[1] = T[2, 1]\n    \n    // Llenado paso a paso para estaciones 2 a k\n    Para j desde 2 hasta k hacer:\n        // Para llegar a estación j en Línea 1\n        Si F1[j - 1] <= F2[j - 1] + D[j - 1] entonces:\n            F1[j] = F1[j - 1] + T[1, j]\n            ruta1[j] = 1\n        Sino:\n            F1[j] = F2[j - 1] + D[j - 1] + T[1, j]\n            ruta1[j] = 2\n        Fin Si\n        \n        // Para llegar a estación j en Línea 2\n        Si F2[j - 1] <= F1[j - 1] + D[j - 1] entonces:\n            F2[j] = F2[j - 1] + T[2, j]\n            ruta2[j] = 2\n        Sino:\n            F2[j] = F1[j - 1] + D[j - 1] + T[2, j]\n            ruta2[j] = 1\n        Fin Si\n    Fin Para\n    \n    // Selección de la mejor línea final en estación k\n    Si F1[k] <= F2[k] entonces:\n        tiempoMinimo = F1[k]\n        lineaFinal = 1\n    Sino:\n        tiempoMinimo = F2[k]\n        lineaFinal = 2\n    Fin Si\n    \n    // Reconstrucción de la ruta de estaciones\n    lineasElegidas = inicializarVector(k + 1)\n    lineasElegidas[k] = lineaFinal\n    currLinea = lineaFinal\n    Para j desde k descendiendo hasta 2 hacer:\n        currLinea = (currLinea == 1) ? ruta1[j] : ruta2[j]\n        lineasElegidas[j - 1] = currLinea\n    Fin Para\n    \n    Retornar (tiempoMinimo, lineasElegidas)",
+          "analisis_complejidad_temporal_espacial": {
+            "temporal": "O(k) donde k es el número de estaciones (para k = 6 es O(1) operaciones elementales).",
+            "espacial": "O(k) para retener las decisiones de ruta (u O(1) si solo se computa el costo mínimo).",
+            "justificacion": "En cada estación j se computan exactamente 2 mínimos entre 2 alternativas. El número total de pasos es lineal respecto al número de etapas de manufactura. En la instancia numérica de la diapositiva: F1=[6, 10, 15, 17, 20, 24], F2=[4, 7, 12, 17, 23, 29]. La ruta óptima es permanecer completamente en Línea 1 con costo total 24 (6+4+5+2+3+4 = 24), superando la alternativa con conmutaciones que daba 27."
+          }
+        }
+      ],
+      "id_global": 108
+    },
+    {
+      "id_tema": 33,
+      "tema": "programacion_dinamica",
+      "titulo": "Coeficiente de Permutaciones P(n, k)",
+      "enunciado": "La permutación de n elementos tomados de a k se refiere al proceso de acomodar k elementos de un conjunto de n para formar una secuencia. El coeficiente de permutaciones P(n,k) nos da el número de secuencias que podemos obtener tomando k elementos de un conjunto de n. Este coeficiente está dado por la fórmula P(n,k) = n! / (n-k)!. El coeficiente P(n,k) se puede computar a partir de resultados ya obtenidos para números menores: P(n,k) = P(n-1, k) + k * P(n-1, k-1). Además tenemos los casos base: si k > n entonces P(n,k) = 0, si k = 0 entonces P(n,0) = 1, y si k = n entonces P(n,n) = n!. Con esta información, se pide definir una estrategia de programación dinámica para encontrar P(n,k) dados n y k.",
+      "recurso_visual": null,
+      "fuente_original": "DAA 07 DP parte 2.pdf, Diapositiva 191 (Ejercicios propuestos 4)",
+      "es_ejercicio_propuesto_diapositivas": true,
+      "resolucion_propuesta": [
+        {
+          "analisis_teorico": "Justificación Combinatoria Formal: Consideremos un conjunto de n elementos A = {a_1, a_2, ..., a_n} y distingamos un elemento particular x = a_n. Al construir una secuencia ordenada de k elementos a partir de A, se presentan dos casos mutuamente excluyentes:\n1. El elemento x NO forma parte de la secuencia: Debemos elegir y ordenar los k elementos a partir de los restantes n - 1 elementos de A \\ {x}. Esto puede realizarse de P(n - 1, k) formas distintas.\n2. El elemento x SÍ forma parte de la secuencia: Primero, seleccionamos y ordenamos k - 1 elementos de entre los restantes n - 1 elementos, lo que da P(n - 1, k - 1) secuencias posibles de longitud k - 1. Luego, el elemento x puede insertarse en cualquiera de las k posiciones disponibles en la secuencia (antes del primer elemento, entre dos elementos, o después del último). Esto genera k * P(n - 1, k - 1) formas distintas.\nSumando ambos casos disjuntos, se obtiene la recurrencia exacta: P(n, k) = P(n - 1, k) + k * P(n - 1, k - 1). La Programación Dinámica permite evaluar este valor sin computar factoriales gigantescos, evitando el desbordamiento de enteros y eliminando llamadas recursivas redundantes.",
+          "definicion_estado_dp": "P[i, j] representa el número de permutaciones de i elementos tomados de a j, es decir, P(i, j) = i! / (i - j)!.",
+          "ecuacion_recurrencia": "$$P[i, j] = \\begin{cases} 1 & \\text{si } j = 0 \\\\ 0 & \\text{si } j > i \\\\ P[i - 1, j] + j \\cdot P[i - 1, j - 1] & \\text{si } 1 \\le j \\le i \\end{cases}$$",
+          "orden_llenado_y_dimensiones": "Matriz P de dimensiones (n + 1) x (k + 1). Llenado por filas de i = 1 hasta n, y dentro de cada fila, j de 1 hasta min(i, k). Puede optimizarse a memoria O(k) con un vector unidimensional recorrido de derecha a izquierda.",
+          "pseudocodigo_resolucion": "Algoritmo Permutaciones_DP(n: entero, k: entero) -> entero:\n    Entrada: Enteros n y k con n >= 0, k >= 0\n    Salida: Número de secuencias de k elementos tomados de n: P(n, k)\n    \n    Si k > n entonces:\n        Retornar 0\n    Fin Si\n    Si k == 0 entonces:\n        Retornar 1\n    Fin Si\n    \n    // Implementación optimizada con vector de dimensión k + 1\n    P = inicializarVector(k + 1, valor: 0)\n    P[0] = 1\n    \n    Para i desde 1 hasta n hacer:\n        // Recorrido descendente para no pisar valores de la fila anterior i - 1\n        Para j desde Min(i, k) descendiendo hasta 1 hacer:\n            P[j] = P[j] + j * P[j - 1]\n        Fin Para\n    Fin Para\n    \n    Retornar P[k]",
+          "analisis_complejidad_temporal_espacial": {
+            "temporal": "O(n * k)",
+            "espacial": "O(k) con vector optimizado; O(n * k) en matriz completa",
+            "justificacion": "El bucle exterior ejecuta n iteraciones y el interior a lo sumo k iteraciones. En cada celda se realiza una multiplicación y una suma en tiempo constante O(1), logrando Theta(n * k) de costo temporal. El espacio se reduce a Theta(k) al emplear el vector unidimensional con llenado en orden descendente."
+          }
+        }
+      ],
+      "id_global": 109
+    }
+  ]
+}
