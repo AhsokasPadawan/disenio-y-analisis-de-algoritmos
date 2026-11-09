@@ -9,6 +9,7 @@ import { TheorySlideBlock } from './TheorySlideBlock';
 export interface SlideBlockComponentProps {
   slide: ConceptSlide;
   sectionTheme: SectionTheme;
+  isMobileFeed?: boolean;
 }
 
 export type SlideBlockRegistry = Partial<

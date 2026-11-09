@@ -35,6 +35,7 @@ export interface StudySidebarProps {
   onToggleTheme: () => void;
   onToggleCollapse: () => void;
   onOpenSearch: () => void;
+  onCloseDrawer?: () => void;
 }
 
 export function StudySidebar({
@@ -56,6 +57,7 @@ export function StudySidebar({
   onToggleTheme,
   onToggleCollapse,
   onOpenSearch,
+  onCloseDrawer,
 }: StudySidebarProps) {
   const [prevActiveModuleId, setPrevActiveModuleId] = useState<ModuleId>(activeModuleId);
   const [openModuleId, setOpenModuleId] = useState<ModuleId | null>(activeModuleId);
@@ -109,7 +111,7 @@ export function StudySidebar({
   }
 
   return (
-    <div className="flex h-full w-72 flex-col gap-4 border-r border-zinc-200 bg-zinc-100 p-4 text-zinc-800 transition-all duration-300 dark:border-zinc-800 dark:bg-zinc-950 dark:text-zinc-100">
+    <div className="flex h-full w-full md:w-72 flex-col gap-4 border-r border-zinc-200 bg-zinc-100 p-4 text-zinc-800 transition-all duration-300 dark:border-zinc-800 dark:bg-zinc-950 dark:text-zinc-100">
       <SidebarHeader
         courseDepartment={courseDepartment}
         courseTitle={courseTitle}
@@ -118,6 +120,7 @@ export function StudySidebar({
         onOpenSearch={onOpenSearch}
         onToggleTheme={onToggleTheme}
         onToggleCollapse={onToggleCollapse}
+        onCloseDrawer={onCloseDrawer}
       />
 
       <div className="flex-1 min-h-0 overflow-y-auto space-y-4 pr-1">

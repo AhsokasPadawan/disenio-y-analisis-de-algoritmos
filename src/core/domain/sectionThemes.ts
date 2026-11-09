@@ -45,6 +45,7 @@ export interface SectionTheme {
   stepBadgeClass: string;
   primaryButtonClass: string;
   secondaryButtonClass: string;
+  actionButtonClass: string;
   sliderAccentClass: string;
 }
 
@@ -84,6 +85,7 @@ export const SECTION_THEME_PALETTES: Record<SectionThemePaletteKey, SectionTheme
     stepBadgeClass: 'bg-white text-stone-800 border border-stone-300 shadow-xs shadow-stone-500/10 dark:bg-stone-800 dark:text-stone-100 dark:border-stone-700',
     primaryButtonClass: 'bg-stone-100 text-stone-900 border border-stone-300 hover:bg-stone-200/80 shadow-xs shadow-stone-500/10 dark:bg-stone-700 dark:text-stone-100 dark:border-stone-600 dark:hover:bg-stone-600',
     secondaryButtonClass: 'border-stone-300 bg-white text-stone-800 hover:bg-stone-50 shadow-xs shadow-stone-500/5 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-200 dark:hover:bg-zinc-700',
+    actionButtonClass: 'bg-stone-700 hover:bg-stone-800 text-white dark:bg-stone-600 dark:hover:bg-stone-500',
     sliderAccentClass: 'accent-stone-600 dark:accent-stone-400',
   },
   sky: {
@@ -121,6 +123,7 @@ export const SECTION_THEME_PALETTES: Record<SectionThemePaletteKey, SectionTheme
     stepBadgeClass: 'bg-white text-sky-800 border border-sky-300 shadow-xs shadow-sky-500/10 dark:bg-sky-950 dark:text-sky-200 dark:border-sky-800',
     primaryButtonClass: 'bg-sky-50 text-sky-900 border border-sky-300 hover:bg-sky-100 shadow-xs shadow-sky-500/10 dark:bg-sky-900 dark:text-sky-100 dark:border-sky-700 dark:hover:bg-sky-800',
     secondaryButtonClass: 'border-sky-300 bg-white text-sky-800 hover:bg-sky-50 shadow-xs shadow-sky-500/5 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-200 dark:hover:bg-zinc-700',
+    actionButtonClass: 'bg-sky-600 hover:bg-sky-500 text-white',
     sliderAccentClass: 'accent-sky-600 dark:accent-sky-400',
   },
   rose: {
@@ -158,6 +161,7 @@ export const SECTION_THEME_PALETTES: Record<SectionThemePaletteKey, SectionTheme
     stepBadgeClass: 'bg-white text-rose-800 border border-rose-300 shadow-xs shadow-rose-500/10 dark:bg-rose-950 dark:text-rose-200 dark:border-rose-800',
     primaryButtonClass: 'bg-rose-50 text-rose-900 border border-rose-300 hover:bg-rose-100 shadow-xs shadow-rose-500/10 dark:bg-rose-900 dark:text-rose-100 dark:border-rose-700 dark:hover:bg-rose-800',
     secondaryButtonClass: 'border-rose-300 bg-white text-rose-800 hover:bg-rose-50 shadow-xs shadow-rose-500/5 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-200 dark:hover:bg-zinc-700',
+    actionButtonClass: 'bg-rose-600 hover:bg-rose-500 text-white',
     sliderAccentClass: 'accent-rose-600 dark:accent-rose-400',
   },
   emerald: {
@@ -195,6 +199,7 @@ export const SECTION_THEME_PALETTES: Record<SectionThemePaletteKey, SectionTheme
     stepBadgeClass: 'bg-white text-emerald-800 border border-emerald-300 shadow-xs shadow-emerald-500/10 dark:bg-emerald-950 dark:text-emerald-200 dark:border-emerald-800',
     primaryButtonClass: 'bg-emerald-50 text-emerald-900 border border-emerald-300 hover:bg-emerald-100 shadow-xs shadow-emerald-500/10 dark:bg-emerald-900 dark:text-emerald-100 dark:border-emerald-700 dark:hover:bg-emerald-800',
     secondaryButtonClass: 'border-emerald-300 bg-white text-emerald-800 hover:bg-emerald-50 shadow-xs shadow-emerald-500/5 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-200 dark:hover:bg-zinc-700',
+    actionButtonClass: 'bg-emerald-600 hover:bg-emerald-500 text-white',
     sliderAccentClass: 'accent-emerald-600 dark:accent-emerald-400',
   },
   amber: {
@@ -232,6 +237,7 @@ export const SECTION_THEME_PALETTES: Record<SectionThemePaletteKey, SectionTheme
     stepBadgeClass: 'bg-white text-amber-900 border border-amber-300 shadow-xs shadow-amber-500/10 dark:bg-amber-950 dark:text-amber-200 dark:border-amber-800',
     primaryButtonClass: 'bg-amber-50 text-amber-950 border border-amber-300 hover:bg-amber-100 shadow-xs shadow-amber-500/10 dark:bg-amber-900 dark:text-amber-100 dark:border-amber-700 dark:hover:bg-amber-800',
     secondaryButtonClass: 'border-amber-300 bg-white text-amber-900 hover:bg-amber-50 shadow-xs shadow-amber-500/5 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-200 dark:hover:bg-zinc-700',
+    actionButtonClass: 'bg-amber-600 hover:bg-amber-500 text-white',
     sliderAccentClass: 'accent-amber-600 dark:accent-amber-400',
   },
   violet: {
@@ -269,6 +275,7 @@ export const SECTION_THEME_PALETTES: Record<SectionThemePaletteKey, SectionTheme
     stepBadgeClass: 'bg-white text-violet-800 border border-violet-300 shadow-xs shadow-violet-500/10 dark:bg-violet-950 dark:text-violet-200 dark:border-violet-800',
     primaryButtonClass: 'bg-violet-50 text-violet-900 border border-violet-300 hover:bg-violet-100 shadow-xs shadow-violet-500/10 dark:bg-violet-900 dark:text-violet-100 dark:border-violet-700 dark:hover:bg-violet-800',
     secondaryButtonClass: 'border-violet-300 bg-white text-violet-800 hover:bg-violet-50 shadow-xs shadow-violet-500/5 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-200 dark:hover:bg-zinc-700',
+    actionButtonClass: 'bg-violet-600 hover:bg-violet-500 text-white',
     sliderAccentClass: 'accent-violet-600 dark:accent-violet-400',
   },
   fuchsia: {
@@ -306,6 +313,7 @@ export const SECTION_THEME_PALETTES: Record<SectionThemePaletteKey, SectionTheme
     stepBadgeClass: 'bg-white text-fuchsia-800 border border-fuchsia-300 shadow-xs shadow-fuchsia-500/10 dark:bg-fuchsia-950 dark:text-fuchsia-200 dark:border-fuchsia-800',
     primaryButtonClass: 'bg-fuchsia-50 text-fuchsia-900 border border-fuchsia-300 hover:bg-fuchsia-100 shadow-xs shadow-fuchsia-500/10 dark:bg-fuchsia-900 dark:text-fuchsia-100 dark:border-fuchsia-700 dark:hover:bg-fuchsia-800',
     secondaryButtonClass: 'border-fuchsia-300 bg-white text-fuchsia-800 hover:bg-fuchsia-50 shadow-xs shadow-fuchsia-500/5 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-200 dark:hover:bg-zinc-700',
+    actionButtonClass: 'bg-fuchsia-600 hover:bg-fuchsia-500 text-white',
     sliderAccentClass: 'accent-fuchsia-600 dark:accent-fuchsia-400',
   },
 };

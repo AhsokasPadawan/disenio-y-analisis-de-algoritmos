@@ -13,9 +13,10 @@ import {
 export interface TheorySlideBlockProps {
   slide: ConceptSlide;
   sectionTheme: SectionTheme;
+  isMobileFeed?: boolean;
 }
 
-export function TheorySlideBlock({ slide, sectionTheme }: TheorySlideBlockProps) {
+export function TheorySlideBlock({ slide, sectionTheme, isMobileFeed }: TheorySlideBlockProps) {
   if (!slide.theoryData) {
     return null;
   }
@@ -41,9 +42,9 @@ export function TheorySlideBlock({ slide, sectionTheme }: TheorySlideBlockProps)
 
   if (formulaCount > 0) {
     return (
-      <div className="min-h-full flex-1 flex flex-col justify-between gap-2.5 sm:gap-3 overflow-hidden">
+      <div className="w-full h-auto md:h-full md:flex-1 flex flex-col justify-between gap-2.5 sm:gap-3 overflow-visible md:overflow-hidden">
         <div
-          className={`shrink-0 rounded-2xl border p-2.5 sm:p-3 flex flex-col justify-start gap-2 shadow-xs overflow-hidden ${sectionTheme.formulaContainerClass}`}
+          className={`shrink-0 rounded-2xl border p-2.5 sm:p-3 flex flex-col justify-start gap-2 shadow-xs overflow-visible md:overflow-hidden ${sectionTheme.formulaContainerClass}`}
         >
           {slide.theoryData.summary &&
             renderSummaryContent(
@@ -80,14 +81,14 @@ export function TheorySlideBlock({ slide, sectionTheme }: TheorySlideBlockProps)
 
         {slide.theoryData.bulletPoints && slide.theoryData.bulletPoints.length > 0 && (
           <div
-            className={`flex-1 min-h-0 rounded-2xl border bg-white dark:bg-zinc-900 p-3 sm:p-3.5 flex flex-col justify-start shadow-xs overflow-hidden ${sectionTheme.cardBorderClass}`}
+            className={`w-full h-auto md:h-full md:flex-1 rounded-2xl border bg-white dark:bg-zinc-900 p-3 sm:p-3.5 flex flex-col justify-start shadow-xs overflow-visible md:overflow-hidden ${sectionTheme.cardBorderClass}`}
           >
             <ul className={bulletTypography.listGapClass}>
               {slide.theoryData.bulletPoints.map((pointText, index) => (
                 <li
                   key={index}
-                  style={{ flex: `${getBulletFlexWeight(pointText)} 1 0%` }}
-                  className={`${bulletTypography.itemClass} overflow-hidden`}
+                  style={isMobileFeed ? undefined : { flex: `${getBulletFlexWeight(pointText)} 1 0%` }}
+                  className={`${bulletTypography.itemClass} !flex-none md:!flex-1 overflow-visible md:overflow-hidden`}
                 >
                   <span className={bulletTypography.badgeClass}>{index + 1}</span>
                   <div className="flex-1 min-w-0 my-auto">
@@ -108,9 +109,9 @@ export function TheorySlideBlock({ slide, sectionTheme }: TheorySlideBlockProps)
   }
 
   return (
-    <div className="min-h-full flex-1 flex flex-col justify-between gap-2.5 sm:gap-3 overflow-hidden">
+    <div className="w-full h-auto md:h-full md:flex-1 flex flex-col justify-between gap-2.5 sm:gap-3 overflow-visible md:overflow-hidden">
       <div
-        className={`min-h-full flex-1 flex flex-col justify-start rounded-2xl border bg-white dark:bg-zinc-900 p-4 sm:p-5 shadow-xs overflow-hidden ${sectionTheme.cardBorderClass}`}
+        className={`w-full h-auto md:h-full md:flex-1 flex flex-col justify-start rounded-2xl border bg-white dark:bg-zinc-900 p-4 sm:p-5 shadow-xs overflow-visible md:overflow-hidden ${sectionTheme.cardBorderClass}`}
       >
         {slide.theoryData.summary && (
           <div className={`shrink-0 border-b pb-2.5 mb-3 ${sectionTheme.cardBorderClass}`}>
@@ -127,8 +128,8 @@ export function TheorySlideBlock({ slide, sectionTheme }: TheorySlideBlockProps)
             {slide.theoryData.bulletPoints.map((pointText, index) => (
               <li
                 key={index}
-                style={{ flex: `${getBulletFlexWeight(pointText)} 1 0%` }}
-                className={`${bulletTypography.itemClass} overflow-hidden`}
+                style={isMobileFeed ? undefined : { flex: `${getBulletFlexWeight(pointText)} 1 0%` }}
+                className={`${bulletTypography.itemClass} !flex-none md:!flex-1 overflow-visible md:overflow-hidden`}
               >
                 <span className={bulletTypography.badgeClass}>{index + 1}</span>
                 <div className="flex-1 min-w-0 my-auto">

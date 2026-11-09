@@ -178,23 +178,34 @@ function splitMarkdownBulletPoints(rawTheoryText: string): {
   summary: string;
   bulletPoints: string[];
 } {
-  const lines = rawTheoryText
-    .split(/\r?\n/)
-    .map((line) => line.trim())
-    .filter(Boolean);
+  const rawLines = rawTheoryText.split(/\r?\n/);
+  const summaryLines: string[] = [];
+  const bulletPoints: string[] = [];
+  let currentBullet: string[] = [];
 
-  if (lines.length === 0) {
-    return { summary: '', bulletPoints: [] };
+  for (const rawLine of rawLines) {
+    const trimmed = rawLine.trim();
+    if (!trimmed) continue;
+
+    const isBullet = /^([-*•]|\d+\.)\s+/.test(trimmed);
+    if (isBullet) {
+      if (currentBullet.length > 0) {
+        bulletPoints.push(currentBullet.join('\n'));
+        currentBullet = [];
+      }
+      currentBullet.push(trimmed.replace(/^([-*•]|\d+\.)\s+/, '').trim());
+    } else if (bulletPoints.length === 0 && currentBullet.length === 0) {
+      summaryLines.push(trimmed);
+    } else if (currentBullet.length > 0) {
+      currentBullet.push(trimmed);
+    }
   }
 
-  const bulletLines = lines
-    .filter((line) => /^[-*•]|\d+\./.test(line))
-    .map((line) => line.replace(/^([-*•]|\d+\.)\s*/, '').trim());
+  if (currentBullet.length > 0) {
+    bulletPoints.push(currentBullet.join('\n'));
+  }
 
-  const nonBulletLines = lines.filter((line) => !/^[-*•]|\d+\./.test(line));
-  const summary = nonBulletLines[0] ?? bulletLines[0] ?? lines[0];
-  const bulletPoints = bulletLines.length > 0 ? bulletLines : lines.slice(1);
-
+  const summary = summaryLines.join('\n');
   return { summary, bulletPoints };
 }
 

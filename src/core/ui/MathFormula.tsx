@@ -13,7 +13,8 @@ export function MathFormula({
   displayMode = false,
   className = '',
 }: MathFormulaProps) {
-  const latexSource = expression ?? formula ?? '';
+  let latexSource = expression ?? formula ?? '';
+  latexSource = latexSource.replace(/\\\\([a-zA-Z,])/g, '\\$1');
   const renderedHtml = katex.renderToString(latexSource, {
     throwOnError: false,
     displayMode,

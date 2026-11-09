@@ -13,6 +13,7 @@ export interface PresentationSlideViewProps {
   courseBlockRegistry?: SlideBlockRegistry;
   onNavigatePrevious: () => void;
   onNavigateNext: () => void;
+  isMobileFeed?: boolean;
 }
 
 export function PresentationSlideView({
@@ -24,6 +25,7 @@ export function PresentationSlideView({
   courseBlockRegistry,
   onNavigatePrevious,
   onNavigateNext,
+  isMobileFeed,
 }: PresentationSlideViewProps) {
   const isFirstSlide = currentSlideIndex === 0;
   const isLastSlide = currentSlideIndex === totalSlidesCount - 1;
@@ -42,7 +44,7 @@ export function PresentationSlideView({
         tabIndex={0}
         role="region"
         aria-label={`${slide.moduleTitle}: ${slide.conceptTitle}`}
-        className="flex h-full w-full flex-col justify-between rounded-none bg-white p-2.5 sm:p-3 md:p-3.5 transition-all outline-none dark:bg-zinc-900 overflow-hidden"
+        className="flex h-auto md:h-full w-full flex-col justify-between rounded-none bg-white p-2.5 sm:p-3 md:p-3.5 transition-all outline-none dark:bg-zinc-900 overflow-visible md:overflow-hidden"
       >
         <SlideHeader
           slide={slide}
@@ -53,9 +55,13 @@ export function PresentationSlideView({
           sectionTheme={sectionTheme}
         />
 
-        <div className="my-2 flex-1 min-h-0 flex flex-col overflow-hidden pr-0.5">
+        <div className="my-2 h-auto flex-initial md:flex-1 md:min-h-0 flex flex-col overflow-visible md:overflow-hidden pr-0.5">
           {ActiveSlideBlock && (
-            <ActiveSlideBlock slide={slide} sectionTheme={sectionTheme} />
+            <ActiveSlideBlock
+              slide={slide}
+              sectionTheme={sectionTheme}
+              isMobileFeed={isMobileFeed}
+            />
           )}
         </div>
 
@@ -70,6 +76,7 @@ export function PresentationSlideView({
           sectionTheme={sectionTheme}
           onNavigatePrevious={onNavigatePrevious}
           onNavigateNext={onNavigateNext}
+          isMobileFeed={isMobileFeed}
         />
       </div>
     </SectionThemeContext.Provider>

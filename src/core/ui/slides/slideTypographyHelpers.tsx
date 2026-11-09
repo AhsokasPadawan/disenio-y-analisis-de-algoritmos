@@ -1,4 +1,6 @@
+import { ReactNode } from 'react';
 import { SectionTheme } from '../../domain/sectionThemes';
+import { MathFormula } from '../MathFormula';
 
 const FORMULA_GRID_COLS_LOOKUP: Record<number, string> = {
   1: 'grid-cols-1',
@@ -7,6 +9,35 @@ const FORMULA_GRID_COLS_LOOKUP: Record<number, string> = {
 
 export function getFormulaGridColsClass(count: number): string {
   return FORMULA_GRID_COLS_LOOKUP[count] ?? 'grid-cols-1 md:grid-cols-3';
+}
+
+export function parseInlineTokens(text: string): ReactNode[] {
+  const tokenRegex = /(\$[^$]+\$|\*\*[^*]+\*\*|\*[^*]+\*)/g;
+  const parts = text.split(tokenRegex);
+
+  return parts.map((part, index) => {
+    if (part.startsWith('$') && part.endsWith('$') && part.length > 2) {
+      const latex = part.slice(1, -1);
+      return <MathFormula key={index} expression={latex} />;
+    }
+    if (part.startsWith('**') && part.endsWith('**') && part.length > 4) {
+      const boldText = part.slice(2, -2);
+      return (
+        <strong key={index} className="font-bold">
+          {boldText}
+        </strong>
+      );
+    }
+    if (part.startsWith('*') && part.endsWith('*') && part.length > 2) {
+      const italicText = part.slice(1, -1);
+      return (
+        <em key={index} className="italic">
+          {italicText}
+        </em>
+      );
+    }
+    return <span key={index}>{part}</span>;
+  });
 }
 
 export function getSummaryTypographyClass(textLength: number, titleTextClass: string): string {
@@ -22,15 +53,18 @@ export function getSummaryTypographyClass(textLength: number, titleTextClass: st
 export function renderColonFormattedLine(line: string, strongTextClass: string) {
   const colonIndex = line.indexOf(':');
   if (colonIndex === -1) {
-    return <span>{line}</span>;
+    return <span>{parseInlineTokens(line)}</span>;
   }
-  const prefix = line.slice(0, colonIndex).trim();
+  let rawPrefix = line.slice(0, colonIndex).trim();
+  if (rawPrefix.startsWith('**') && rawPrefix.endsWith('**') && rawPrefix.length > 4) {
+    rawPrefix = rawPrefix.slice(2, -2).trim();
+  }
   const rest = line.slice(colonIndex + 1);
 
   return (
     <span>
-      <strong className={`font-bold ${strongTextClass}`}>{prefix}:</strong>
-      {rest}
+      <strong className={`font-bold ${strongTextClass}`}>{rawPrefix}:</strong>
+      {parseInlineTokens(rest)}
     </span>
   );
 }
@@ -129,7 +163,7 @@ export function getBulletTypographyConfig(
       badgeClass: `flex h-8 w-8 sm:h-9 sm:w-9 md:h-10 md:w-10 shrink-0 items-center justify-center rounded-xl text-sm sm:text-base md:text-lg font-bold shadow-xs my-auto ${stepBadgeClass}`,
       itemClass: `w-full flex items-center gap-3.5 sm:gap-4 rounded-2xl border p-3 sm:p-3.5 md:p-4 shadow-xs transition-all ${accentSurfaceClass}`,
       listGapClass:
-        'flex-1 min-h-0 flex flex-col justify-between gap-2.5 sm:gap-3 overflow-hidden',
+        'flex-1 min-h-0 flex flex-col justify-between gap-2.5 sm:gap-3 overflow-visible md:overflow-hidden',
     };
   }
   if (itemCount >= 5) {
@@ -141,7 +175,7 @@ export function getBulletTypographyConfig(
       badgeClass: `flex h-6 w-6 sm:h-7 sm:w-7 shrink-0 items-center justify-center rounded-lg text-xs sm:text-sm font-bold shadow-xs my-auto ${stepBadgeClass}`,
       itemClass: `w-full flex items-center gap-2.5 sm:gap-3 rounded-xl border px-2.5 py-1.5 sm:px-3 sm:py-2 shadow-xs transition-all ${accentSurfaceClass}`,
       listGapClass:
-        'flex-1 min-h-0 flex flex-col justify-between gap-1.5 sm:gap-2 overflow-hidden',
+        'flex-1 min-h-0 flex flex-col justify-between gap-1.5 sm:gap-2 overflow-visible md:overflow-hidden',
     };
   }
   return {
@@ -152,6 +186,6 @@ export function getBulletTypographyConfig(
     badgeClass: `flex h-6 w-6 sm:h-7 sm:w-7 md:h-8 md:w-8 shrink-0 items-center justify-center rounded-xl text-xs sm:text-sm md:text-base font-bold shadow-xs my-auto ${stepBadgeClass}`,
     itemClass: `w-full flex items-center gap-3 rounded-xl border p-2 sm:p-2.5 md:p-3 shadow-xs transition-all ${accentSurfaceClass}`,
     listGapClass:
-      'flex-1 min-h-0 flex flex-col justify-between gap-2 sm:gap-2.5 overflow-hidden',
+      'flex-1 min-h-0 flex flex-col justify-between gap-2 sm:gap-2.5 overflow-visible md:overflow-hidden',
   };
 }

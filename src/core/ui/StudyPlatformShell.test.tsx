@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react';
+import { act, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { beforeEach, describe, expect, it } from 'vitest';
 import {
@@ -166,6 +166,12 @@ describe('StudyPlatformShell', () => {
     await user.keyboard('{ArrowLeft}');
     expect(screen.getByRole('heading', { name: /Bienvenida al Curso/i })).toBeInTheDocument();
 
+    await user.keyboard('{ArrowRight}');
+    expect(screen.getByRole('heading', { name: /Criterios de Evaluación/i })).toBeInTheDocument();
+
+    await user.click(screen.getByRole('button', { name: /Diapositiva siguiente/i }));
+    expect(screen.getByRole('heading', { name: /Teorema de Rouché-Frobenius/i })).toBeInTheDocument();
+
     await user.click(screen.getByRole('button', { name: /1\. Sistemas Lineales/i }));
     expect(screen.getByRole('heading', { name: /Teorema de Rouché-Frobenius/i })).toBeInTheDocument();
 
@@ -198,5 +204,55 @@ describe('StudyPlatformShell', () => {
     expect(screen.getByRole('button', { name: /Expandir barra lateral/i })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /Activar modo claro/i })).toBeInTheDocument();
     expect(screen.getByRole('progressbar', { name: /Progreso de repaso/i })).toHaveAttribute('aria-valuenow', '33');
+  });
+
+  it('opens and closes mobile navigation drawer and navigates to selected module', async () => {
+    const user = userEvent.setup();
+    renderSyntheticShell();
+
+    expect(screen.queryByRole('dialog', { name: /Navegación del curso/i })).not.toBeInTheDocument();
+
+    await user.click(screen.getByRole('button', { name: /Abrir menú de navegación/i }));
+    expect(screen.getByRole('dialog', { name: /Navegación del curso/i })).toBeInTheDocument();
+
+    await user.click(screen.getByRole('button', { name: /Cerrar menú de navegación/i }));
+    expect(screen.queryByRole('dialog', { name: /Navegación del curso/i })).not.toBeInTheDocument();
+
+    await user.click(screen.getByRole('button', { name: /Abrir menú de navegación/i }));
+    const drawer = screen.getByRole('dialog', { name: /Navegación del curso/i });
+    const moduleButton = drawer.querySelector('button[aria-label="1. Sistemas Lineales"]');
+    expect(moduleButton).toBeInTheDocument();
+    if (moduleButton) await user.click(moduleButton);
+
+    expect(screen.getByRole('heading', { name: /Teorema de Rouché-Frobenius/i })).toBeInTheDocument();
+    expect(screen.queryByRole('dialog', { name: /Navegación del curso/i })).not.toBeInTheDocument();
+  });
+
+  it('renders all module slides vertically in mobile mode without requiring next button', async () => {
+    const user = userEvent.setup();
+    const originalWidth = window.innerWidth;
+    act(() => {
+      window.innerWidth = 500;
+      window.dispatchEvent(new Event('resize'));
+    });
+
+    try {
+      renderSyntheticShell();
+
+      expect(screen.getByRole('heading', { name: /Bienvenida al Curso/i })).toBeInTheDocument();
+      expect(screen.getByRole('heading', { name: /Criterios de Evaluación/i })).toBeInTheDocument();
+      expect(screen.queryByRole('button', { name: /Diapositiva siguiente/i })).not.toBeInTheDocument();
+
+      const nextTopicButtons = screen.getAllByRole('button', { name: /Pasar al tema siguiente/i });
+      expect(nextTopicButtons).toHaveLength(1);
+      await user.click(nextTopicButtons[0]);
+
+      expect(screen.getByRole('heading', { name: /Teorema de Rouché-Frobenius/i })).toBeInTheDocument();
+    } finally {
+      act(() => {
+        window.innerWidth = originalWidth;
+        window.dispatchEvent(new Event('resize'));
+      });
+    }
   });
 });

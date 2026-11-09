@@ -12,6 +12,7 @@ export interface SlideFooterControlsProps {
   sectionTheme: SectionTheme;
   onNavigatePrevious: () => void;
   onNavigateNext: () => void;
+  isMobileFeed?: boolean;
 }
 
 export function SlideFooterControls({
@@ -25,7 +26,28 @@ export function SlideFooterControls({
   sectionTheme,
   onNavigatePrevious,
   onNavigateNext,
+  isMobileFeed,
 }: SlideFooterControlsProps) {
+  if (isMobileFeed) {
+    return (
+      <footer
+        className={`shrink-0 border-t pt-2.5 ${sectionTheme.cardBorderClass} flex items-center justify-between gap-3`}
+      >
+        <span
+          className={`font-mono text-xs font-bold px-2.5 py-1 rounded-lg border shrink-0 ${sectionTheme.counterBoxClass}`}
+        >
+          {isExercise && exerciseNumber !== undefined
+            ? `Ejercicio #${exerciseNumber}`
+            : `Subtema ${moduleSlideIndex + 1} de ${moduleSlidesCount}`}
+        </span>
+
+        <span className="text-xs font-semibold text-zinc-600 dark:text-zinc-400 truncate text-right">
+          {conceptSubtitle}
+        </span>
+      </footer>
+    );
+  }
+
   return (
     <footer
       className={`shrink-0 border-t pt-2.5 ${sectionTheme.cardBorderClass} flex items-center justify-between gap-3`}

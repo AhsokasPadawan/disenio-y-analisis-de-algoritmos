@@ -1,4 +1,4 @@
-import { GraduationCap, Moon, PanelLeftClose, Search, Sun } from 'lucide-react';
+import { GraduationCap, Moon, PanelLeftClose, Search, Sun, X } from 'lucide-react';
 import { SectionTheme } from '../../domain/sectionThemes';
 
 export interface SidebarHeaderProps {
@@ -9,6 +9,7 @@ export interface SidebarHeaderProps {
   onOpenSearch: () => void;
   onToggleTheme: () => void;
   onToggleCollapse: () => void;
+  onCloseDrawer?: () => void;
 }
 
 export function SidebarHeader({
@@ -19,6 +20,7 @@ export function SidebarHeader({
   onOpenSearch,
   onToggleTheme,
   onToggleCollapse,
+  onCloseDrawer,
 }: SidebarHeaderProps) {
   return (
     <div className="flex flex-col gap-3">
@@ -59,15 +61,27 @@ export function SidebarHeader({
           {isNight ? <Sun className="h-4 w-4 text-amber-400" /> : <Moon className="h-4 w-4" />}
         </button>
 
-        <button
-          type="button"
-          onClick={onToggleCollapse}
-          aria-label="Colapsar barra lateral"
-          title="Colapsar barra lateral"
-          className="flex h-9 w-full items-center justify-center rounded-xl border border-zinc-300 bg-white text-zinc-700 transition hover:bg-zinc-200/70 hover:text-zinc-950 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-300 dark:hover:bg-zinc-800 dark:hover:text-white"
-        >
-          <PanelLeftClose className="h-4 w-4" />
-        </button>
+        {onCloseDrawer ? (
+          <button
+            type="button"
+            onClick={onCloseDrawer}
+            aria-label="Cerrar menú de navegación"
+            title="Cerrar menú de navegación"
+            className="flex h-9 w-full items-center justify-center rounded-xl border border-zinc-300 bg-white text-zinc-700 transition hover:bg-zinc-200/70 hover:text-zinc-950 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-300 dark:hover:bg-zinc-800 dark:hover:text-white"
+          >
+            <X className="h-4 w-4" />
+          </button>
+        ) : (
+          <button
+            type="button"
+            onClick={onToggleCollapse}
+            aria-label="Colapsar barra lateral"
+            title="Colapsar barra lateral"
+            className="flex h-9 w-full items-center justify-center rounded-xl border border-zinc-300 bg-white text-zinc-700 transition hover:bg-zinc-200/70 hover:text-zinc-950 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-300 dark:hover:bg-zinc-800 dark:hover:text-white"
+          >
+            <PanelLeftClose className="h-4 w-4" />
+          </button>
+        )}
       </div>
     </div>
   );

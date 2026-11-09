@@ -5,6 +5,7 @@ import { SectionTheme } from '../../domain/sectionThemes';
 export interface QuoteSlideBlockProps {
   slide: ConceptSlide;
   sectionTheme: SectionTheme;
+  isMobileFeed?: boolean;
 }
 
 export function QuoteSlideBlock({ slide, sectionTheme }: QuoteSlideBlockProps) {
@@ -14,7 +15,7 @@ export function QuoteSlideBlock({ slide, sectionTheme }: QuoteSlideBlockProps) {
 
   return (
     <div
-      className={`h-full min-h-0 flex-1 flex flex-col justify-between rounded-2xl border p-5 sm:p-7 shadow-lg overflow-hidden ${sectionTheme.quoteCardClass}`}
+      className={`w-full h-auto md:h-full md:flex-1 flex flex-col justify-between rounded-2xl border p-5 sm:p-7 shadow-lg overflow-visible md:overflow-hidden ${sectionTheme.quoteCardClass}`}
     >
       <div
         className={`shrink-0 flex items-center justify-between border-b pb-2.5 ${sectionTheme.cardBorderClass}`}

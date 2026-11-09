@@ -128,7 +128,7 @@ export function ExamPracticeView({
   };
 
   return (
-    <div className="flex h-full min-h-0 flex-1 flex-col gap-3 overflow-hidden">
+    <div className="flex flex-col gap-3 w-full h-auto lg:h-full lg:flex-1 lg:overflow-hidden p-2.5 sm:p-4 pb-24">
       <PracticeFilterBar
         headingTitle={headingTitle}
         exercises={effectiveList}
@@ -153,7 +153,7 @@ export function ExamPracticeView({
         onSearchQueryChange={setSearchQuery}
       />
 
-      <div className="flex flex-1 min-h-0 flex-col gap-3 overflow-hidden lg:flex-row">
+      <div className="flex flex-col lg:flex-row gap-3 w-full h-auto lg:flex-1 lg:min-h-0 lg:overflow-hidden">
         <PracticeStatementPanel
           currentExercise={currentExercise}
           isCompleted={isCompleted}
@@ -166,7 +166,7 @@ export function ExamPracticeView({
           onToggleCompletedItem={onToggleCompletedItem}
         />
 
-        <div className="flex flex-1 min-h-0 flex-col overflow-hidden">
+        <div className="w-full lg:flex-1 min-h-[480px] lg:min-h-0 flex flex-col overflow-visible lg:overflow-hidden">
           <ExerciseWorkspace
             key={currentExercise.id}
             exerciseId={currentExercise.id}

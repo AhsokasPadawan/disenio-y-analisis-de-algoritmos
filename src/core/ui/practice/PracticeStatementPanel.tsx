@@ -31,7 +31,7 @@ export function PracticeStatementPanel({
 }: PracticeStatementPanelProps) {
   return (
     <div
-      className={`flex flex-col justify-between overflow-y-auto rounded-2xl border bg-white/95 p-4 shadow-sm lg:w-[32%] shrink-0 dark:bg-zinc-900 ${practiceTheme.cardBorderClass}`}
+      className={`flex flex-col justify-between rounded-2xl border bg-white/95 p-4 shadow-sm w-full lg:w-[35%] shrink-0 overflow-visible lg:overflow-y-auto dark:bg-zinc-900 ${practiceTheme.cardBorderClass}`}
     >
       <div className="space-y-3">
         <div className="space-y-1.5">
